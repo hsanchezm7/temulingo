@@ -1,2 +1,2 @@
-# learning-app
-Prácticas PDS 2024/2025 Universidad de Murcia
+# Learning App
+**Learning App** 📚 es una plataforma de aprendizaje desarrollada en Java para crear y realizar cursos con ejercicios interactivos y *flashcards*. Permite guardar progreso, elegir estrategias de aprendizaje y compartir cursos en formato JSON/YAML.

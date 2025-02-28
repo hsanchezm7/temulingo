@@ -1,0 +1,73 @@
+@startuml
+skinparam defaultFontName Helvetica
+
+class LearningApp {
+    +login()
+}
+
+class Usuario {
+    - id: int
+    - nombre: String
+    - email: String
+    +registrar()
+    +iniciarSesion()
+}
+
+class Curso {
+    - id: int
+    - titulo: String
+    - descripcion: String
+    - crearCurso()
+}
+
+class CatalogoUsuarios {
+    +getUsuario()
+    +addUsuario()
+}
+
+class CatalogoCursos {
+    +getCurso()
+    +addCurso()
+}
+
+class Estadisticas {
+    -usuarioId: int
+    -tiempoUso: int
+    -mejorRacha: int
+    +actualizarEstadisticas()
+}
+
+interface CargadorCursos {
+    +cargarCurso()
+}
+
+class CargadorCursosJSON implements CargadorCursos {
+    +cargarCurso()
+}
+
+class CargadorCursosXML implements CargadorCursos {
+    +cargarCurso()
+}
+
+note right of LearningApp : Controlador
+
+hide LearningApp attributes
+hide CatalogoUsuarios attributes
+hide CatalogoCursos attributes
+hide CargadorCursos attributes
+hide CargadorCursosXML attributes
+hide CargadorCursosJSON attributes
+
+
+LearningApp *-- "1" CatalogoCursos
+LearningApp *-- "1" CatalogoUsuarios
+
+CatalogoUsuarios *-- "0..*" Usuario
+CatalogoCursos *-- "0..*" Curso
+
+Usuario "1" -right- "*" Curso : crea
+Usuario "1" -left- "1" Estadisticas : tiene
+
+CatalogoCursos o-right- CargadorCursos : usa
+
+@enduml
