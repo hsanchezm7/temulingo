@@ -1,0 +1,79 @@
+/* File path: src/main/resources/css/colorful_styles.css */
+
+.root {
+    -fx-font-family: "Montserrat", "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.text-field, .password-field {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 10 15 10 15;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 0);
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-background-color: white;
+    -fx-border-color: #2575fc;
+    -fx-border-width: 2;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to right, #6a11cb, #2575fc);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 25;
+    -fx-padding: 10 20 10 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to right, #5a0cb3, #1565c0);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 4);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to right, #4a0a99, #0d47a1);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+    -fx-translate-y: 1;
+}
+
+.hyperlink {
+    -fx-text-fill: #2575fc;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-font-weight: bold;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #6a11cb;
+    -fx-underline: true;
+}
+
+.hyperlink:visited {
+    -fx-text-fill: #2575fc;
+}
+
+.check-box {
+    -fx-text-fill: #757575;
+    -fx-font-size: 13px;
+}
+
+.check-box .box {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #2575fc;
+}
