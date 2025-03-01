@@ -1,52 +1,79 @@
-@startuml
+@startuml LearningApp
+
 skinparam defaultFontName Helvetica
+skinparam nodePadding 200
+skinparam classAttributeIconSize 0
 
 class LearningApp {
-    +login()
+    + login()
 }
 
 class Usuario {
-    - id: int
     - nombre: String
     - email: String
-    +registrar()
-    +iniciarSesion()
+    + registrar()
+    + iniciarSesion()
 }
 
 class Curso {
-    - id: int
     - titulo: String
     - descripcion: String
     - crearCurso()
 }
 
 class CatalogoUsuarios {
-    +getUsuario()
-    +addUsuario()
+    + getUsuario()
+    + addUsuario()
 }
 
 class CatalogoCursos {
-    +getCurso()
-    +addCurso()
+    + getCurso()
+    + addCurso()
 }
 
 class Estadisticas {
-    -usuarioId: int
-    -tiempoUso: int
-    -mejorRacha: int
-    +actualizarEstadisticas()
+    - usuarioId: int
+    - tiempoUso: int
+    - mejorRacha: int
+    + actualizarEstadisticas()
+}
+
+class Progreso {
+    - usuario: Usuario
+    - curso: Curso
 }
 
 interface CargadorCursos {
-    +cargarCurso()
+    + cargarCurso()
 }
 
 class CargadorCursosJSON implements CargadorCursos {
-    +cargarCurso()
+    + cargarCurso()
 }
 
 class CargadorCursosXML implements CargadorCursos {
-    +cargarCurso()
+    + cargarCurso()
+}
+
+class Bloque {
+    - nombre: String
+    - descripción: String
+}
+
+abstract class Pregunta {
+    - enunciado: String
+}
+
+class PreguntaTest {
+
+}
+
+class PreguntaHuecos {
+    
+}
+
+class PreguntaTraduccion {
+    
 }
 
 note right of LearningApp : Controlador
@@ -58,16 +85,31 @@ hide CargadorCursos attributes
 hide CargadorCursosXML attributes
 hide CargadorCursosJSON attributes
 
+hide PreguntaTest attributes
+hide PreguntaHuecos attributes
+hide PreguntaTraduccion attributes
+
 
 LearningApp *-- "1" CatalogoCursos
 LearningApp *-- "1" CatalogoUsuarios
 
+Usuario *-down- "1" Progreso
+Curso *-- "1" Progreso
+
 CatalogoUsuarios *-- "0..*" Usuario
 CatalogoCursos *-- "0..*" Curso
 
-Usuario "1" -right- "*" Curso : crea
+Usuario "1" -right- "*" Curso : crea >
 Usuario "1" -left- "1" Estadisticas : tiene
 
 CatalogoCursos o-right- CargadorCursos : usa
+
+Curso "1" -down- "1..*" Bloque
+
+Bloque "1" -- "1..*" Pregunta
+
+Pregunta <|-- PreguntaTest
+Pregunta <|-- PreguntaHuecos
+Pregunta <|-- PreguntaTraduccion
 
 @enduml
