@@ -1,8 +1,15 @@
 @startuml LearningApp
 
-skinparam defaultFontName Helvetica
-skinparam nodePadding 200
-skinparam classAttributeIconSize 0
+skinparam DefaultFontName Helvetica
+skinparam classBackgroundColor PaleGoldenrod
+skinparam classBorderColor Black
+skinparam classBorderThickness 1
+skinparam classFontStyle bold
+skinparam noteBackgroundColor Yellow
+skinparam shadowing true
+skinparam roundCorner 15
+skinparam nodesep 50
+skinparam ranksep 50
 
 class LearningApp {
     + login()
