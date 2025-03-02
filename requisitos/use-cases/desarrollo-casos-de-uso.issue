@@ -1,0 +1,52 @@
+# Caso de Uso: Realizar ejercicio
+
+## Descripción
+El usuario responde a las preguntas o ejercicios de un curso en progreso.
+
+## Actores
+Usuario.
+
+## Precondiciones
+- El usuario debe haber seleccionado un curso.
+- Debe haber preguntas disponibles en el curso.
+
+## Flujo principal
+1. La aplicación muestra una pregunta o ejercicio.
+2. El usuario responde la pregunta o interactúa con la pantalla de aprendizaje.
+3. La aplicación valida la respuesta y proporciona retroalimentación.
+4. La aplicación guarda el progreso del usuario.
+5. La aplicación carga la siguiente pregunta o ejercicio según la estrategia de aprendizaje seleccionada.
+
+## Flujo alternativo
+*No especificado*
+
+## Postcondiciones
+- Se actualiza el progreso del usuario en el curso.
+- Se registran estadísticas.
+
+---
+
+# Caso de Uso: Guardar estado del curso
+
+## Descripción
+Permite al usuario guardar su progreso en un curso para poder retomarlo más tarde desde el mismo punto.
+
+## Actores
+Usuario
+
+## Precondiciones
+- El usuario debe haber iniciado un curso.
+- Debe haber respondido al menos una pregunta o interactuado con el contenido.
+
+## Flujo principal
+1. El usuario está realizando un curso y decide salir o pausar la sesión.
+2. La aplicación guarda el estado actual del curso.
+3. La aplicación muestra un mensaje de confirmación indicando que el progreso se ha guardado.
+4. El usuario puede cerrar la aplicación o volver al menú principal.
+
+## Flujo alternativo
+*No especificado*
+
+## Postcondiciones
+- La próxima vez que el usuario acceda al curso, podrá continuar desde donde lo dejó.
+- Se mantiene la estrategia de aprendizaje y las estadísticas de progreso.
