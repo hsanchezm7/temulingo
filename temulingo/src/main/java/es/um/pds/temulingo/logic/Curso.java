@@ -2,34 +2,50 @@ package es.um.pds.temulingo.logic;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+
 
 @Entity
 @Table(name = "CURSO")
-public class Curso {
+public class Curso implements Serializable {
+
+    public enum EstrategiaAprendizaje {
+        SECUENCIAL, REPETICION_ESPACIADA, ALEATORIA;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private Long id;
 
-    @Column(name="TITULO")
+    @Column(name = "TITULO")
     private String titulo;
 
-    @Column(name="DESCRIPCION")
+    @Column(name = "DESCRIPCION")
     private String descripcion;
 
     @Temporal(TemporalType.DATE)
-    @Column(name="FECHA_CREACION")
+    @Column(name = "FECHA_CREACION")
     private LocalDate fechaCreacion;
 
-    public Curso() {}
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ESTRAT_APRENDIZAJE")
+    private EstrategiaAprendizaje estrategiaAprendizaje;
 
-    public Curso(Long id, String titulo, String descripcion, LocalDate fechaCreacion) {
+    @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Bloque> bloques;
+
+    public Curso() {
+    }
+
+    public Curso(Long id, String titulo, String descripcion, LocalDate fechaCreacion, List<Bloque> bloques) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fechaCreacion = fechaCreacion;
+        this.bloques = bloques;
     }
 
     public Long getId() {
@@ -62,5 +78,25 @@ public class Curso {
 
     public void setFechaCreacion(LocalDate fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public List<Bloque> getBloques() {
+        return bloques;
+    }
+
+    public void setBloques(List<Bloque> bloques) {
+        this.bloques = bloques;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Curso curso = (Curso) o;
+        return Objects.equals(id, curso.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
