@@ -1,4 +1,4 @@
-package es.um.pds.temulingo.dao.jpa;
+package es.um.pds.temulingo.dao.impl;
 
 import es.um.pds.temulingo.dao.base.Dao;
 import jakarta.persistence.EntityManager;
@@ -7,20 +7,22 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class JpaDao<T> implements Dao<T> {
+public abstract class DaoImpl<T> implements Dao<T> {
 
-    private EntityManagerFactory emf = null;
+    private EntityManagerFactory emf;
 
     private final Class<T> entityClass;
 
     private static final String PUname = "temulingo-persistence-unit";
 
-    protected JpaDao(Class<T> entityClass) {
+    protected DaoImpl() {
         emf = Persistence.createEntityManagerFactory(PUname);
-        this.entityClass = entityClass;
+
+        entityClass = getEntityClass();
     }
 
     @Override
@@ -39,15 +41,30 @@ public abstract class JpaDao<T> implements Dao<T> {
     }
 
     @Override
+    public void edit(T obj) {
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            em.merge(obj);
+            em.getTransaction().commit();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    @Override
     public Optional<T> get(long id) {
         EntityManager em = null;
         try {
-            em = getEntityManager(); // Obtener el EntityManager
-            T entity = em.find(entityClass, id); // Buscar la entidad por su ID
-            return Optional.ofNullable(entity); // Si es null, retorna Optional.empty()
+            em = getEntityManager();
+            T entity = em.find(entityClass, id);
+            return Optional.ofNullable(entity);
         } finally {
             if (em != null) {
-                em.close(); // Cerrar el EntityManager
+                em.close();
             }
         }
     }
@@ -68,9 +85,13 @@ public abstract class JpaDao<T> implements Dao<T> {
         }
     }
 
-
-
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
+    }
+
+    protected Class<T> getEntityClass() {
+        ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
+        Class<T> entityClass = (Class<T>) type.getActualTypeArguments()[0];
+        return entityClass;
     }
 }

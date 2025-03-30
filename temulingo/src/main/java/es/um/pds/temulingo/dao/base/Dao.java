@@ -5,6 +5,8 @@ import java.util.Optional;
 
 public interface Dao<T> {
 
+    void edit(T obj);
+
     Optional<T> get(long id);
 
     List<T> getAll();

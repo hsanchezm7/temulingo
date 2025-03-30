@@ -1,14 +1,18 @@
 package es.um.pds.temulingo.dao.factory;
 
 import es.um.pds.temulingo.dao.base.Dao;
+import es.um.pds.temulingo.logic.Bloque;
 import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.logic.Usuario;
 
 public abstract class FactoriaDao {
     public static FactoriaDao getDaoFactory() {
-        return new JpaFactoriaDao();
+        return new FactoriaDaoImpl();
     }
 
     public abstract Dao<Usuario> getJpaUsuarioDao();
+
     public abstract Dao<Curso> getJpaCursoDao();
+
+    public abstract Dao<Bloque> getJpaBloqueDao();
 }
