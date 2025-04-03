@@ -6,15 +6,33 @@ import es.um.pds.temulingo.dao.factory.FactoriaDao;
 import es.um.pds.temulingo.logic.Bloque;
 import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.logic.Usuario;
+import es.um.pds.temulingo.vista.VentanaMain;
 
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.UIManager;
+
+
 public class App {
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Hello World!");
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+            VentanaMain ventanaPrincipal = new VentanaMain();
+            ventanaPrincipal.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Thread.sleep(100000000);
+
+        VentanaMain main = new VentanaMain();
+        main.setVisible(true);
 
         H2EmbeddedServer.start();
         FactoriaDao factoriaDao = FactoriaDao.getDaoFactory();
