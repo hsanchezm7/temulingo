@@ -10,17 +10,17 @@ import es.um.pds.temulingo.logic.Usuario;
 
 public class FactoriaDaoImpl extends FactoriaDao {
     @Override
-    public Dao<Usuario> getJpaUsuarioDao() {
+    public Dao<Usuario> getUsuarioDao() {
         return UsuarioDaoImpl.getInstance();
     }
 
     @Override
-    public Dao<Curso> getJpaCursoDao() {
+    public Dao<Curso> getCursoDao() {
         return CursoDaoImpl.getInstance();
     }
 
     @Override
-    public Dao<Bloque> getJpaBloqueDao() {
+    public Dao<Bloque> getBloqueDao() {
         return BloqueDaoImpl.getInstance();
     }
 }

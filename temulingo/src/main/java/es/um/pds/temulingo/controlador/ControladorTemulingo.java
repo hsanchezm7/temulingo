@@ -43,25 +43,6 @@ public class ControladorTemulingo {
         return instance;
     }
 
-    private void inicializarAdaptadores() {
-        factoriaDao = FactoriaDao.getDaoFactory();
-
-        usuarioDao = factoriaDao.getJpaUsuarioDao();
-        cursoDao = factoriaDao.getJpaCursoDao();
-        bloqueDao = factoriaDao.getJpaBloqueDao();
-
-    }
-
-    private void cargarUsuarios() {
-        List<Usuario> usuariosBD = usuarioDao.getAll();
-
-        this.usuarios = new HashMap<>();
-
-        for (Usuario usuario : usuariosBD) {
-            this.usuarios.put(usuario.getId(), usuario);
-        }
-    }
-
     private void cargarCursos() {
         this.cursos = new ArrayList<>(cursoDao.getAll());
     }
@@ -89,4 +70,28 @@ public class ControladorTemulingo {
     public void setCursos(List<Curso> cursos) {
         this.cursos = cursos;
     }
+
+    private void inicializarAdaptadores() {
+        factoriaDao = FactoriaDao.getDaoFactory();
+
+        usuarioDao = factoriaDao.getUsuarioDao();
+        cursoDao = factoriaDao.getCursoDao();
+        bloqueDao = factoriaDao.getBloqueDao();
+
+    }
+
+    private void cargarUsuarios() {
+        List<Usuario> usuariosBD = usuarioDao.getAll();
+
+        this.usuarios = new HashMap<>();
+
+        for (Usuario usuario : usuariosBD) {
+            this.usuarios.put(usuario.getId(), usuario);
+        }
+    }
+
+    public void iniciarSesion(String nombre, String email) {
+        
+    }
+
 }

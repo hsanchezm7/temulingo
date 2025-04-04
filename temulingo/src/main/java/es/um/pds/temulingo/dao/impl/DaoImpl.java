@@ -1,5 +1,6 @@
 package es.um.pds.temulingo.dao.impl;
 
+import es.um.pds.temulingo.config.ConfiguracionTemulingo;
 import es.um.pds.temulingo.dao.base.Dao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -13,14 +14,14 @@ import java.util.Optional;
 
 public abstract class DaoImpl<T> implements Dao<T> {
 
-    private EntityManagerFactory emf;
+    private final EntityManagerFactory emf;
 
     private final Class<T> entityClass;
 
-    private static final String PUname = "temulingo-persistence-unit";
+    private static final String persistenceUnitName = ConfiguracionTemulingo.PERSISTENCE_UNIT_NAME;
 
     protected DaoImpl() {
-        emf = Persistence.createEntityManagerFactory(PUname);
+        emf = Persistence.createEntityManagerFactory(persistenceUnitName);
 
         entityClass = getEntityClass();
     }

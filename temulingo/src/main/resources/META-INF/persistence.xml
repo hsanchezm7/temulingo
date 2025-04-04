@@ -5,6 +5,8 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>es.um.pds.temulingo.logic.Usuario</class>
         <class>es.um.pds.temulingo.logic.Curso</class>
+        <class>es.um.pds.temulingo.logic.Bloque</class>
+        <class>es.um.pds.temulingo.logic.Pregunta</class>
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:./data/temulingo_bbdd"/>

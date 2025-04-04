@@ -10,9 +10,9 @@ public abstract class FactoriaDao {
         return new FactoriaDaoImpl();
     }
 
-    public abstract Dao<Usuario> getJpaUsuarioDao();
+    public abstract Dao<Usuario> getUsuarioDao();
 
-    public abstract Dao<Curso> getJpaCursoDao();
+    public abstract Dao<Curso> getCursoDao();
 
-    public abstract Dao<Bloque> getJpaBloqueDao();
+    public abstract Dao<Bloque> getBloqueDao();
 }

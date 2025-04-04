@@ -18,6 +18,7 @@ public class VentanaMain extends JFrame {
 
     public void initComponents() {
         /* Window properties */
+        setTitle(NOMBRE_VENTANA);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         ImageIcon img = new ImageIcon("/media/logo100px.png");
@@ -35,7 +36,7 @@ public class VentanaMain extends JFrame {
         getContentPane().add(panelBotones, BorderLayout.SOUTH);
 
         pack();
-        setResizable(true);
+        setResizable(false);
         setMinimumSize(getSize());
         setLocationRelativeTo(null);
     }
@@ -53,52 +54,50 @@ public class VentanaMain extends JFrame {
     }
 
     public JPanel crearPanelPrincipal() {
-        JPanel panelPrincipal = new JPanel();
-        panelPrincipal.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panelPrincipal.setLayout(new BorderLayout(0, 0));
+        JPanel panelCentro = new JPanel();
+        panelCentro.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panelCentro.setLayout(new BorderLayout(0, 0));
 
-        JPanel panelWrapperPrincipal = new JPanel();
-        panelWrapperPrincipal.setBorder(
-                new TitledBorder(null, " Menú Principal ", TitledBorder.LEFT, TitledBorder.TOP, null, null));
-        panelPrincipal.add(panelWrapperPrincipal, BorderLayout.CENTER);
+        JPanel panelWrapper = new JPanel();
+        panelWrapper.setBorder(new TitledBorder(null, "  Menú Principal  ", TitledBorder.CENTER, TitledBorder.TOP, null, null));
+        panelCentro.add(panelWrapper, BorderLayout.CENTER);
+        panelWrapper.setLayout(new BorderLayout(0, 0));
 
-        // Usar BoxLayout para organizar los botones verticalmente
-        panelWrapperPrincipal.setLayout(new BoxLayout(panelWrapperPrincipal, BoxLayout.Y_AXIS));
+        JPanel panelContenido = new JPanel();
+        panelContenido.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panelWrapper.add(panelContenido, BorderLayout.CENTER);
 
-        // Añadir espacio al principio
-        panelWrapperPrincipal.add(Box.createRigidArea(new Dimension(0, 15)));
+        // Layout vertical para los botones
+        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
+        panelContenido.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        // Botón para Biblioteca de cursos
+        // Botón: Biblioteca de cursos
         JButton btnBiblioteca = new JButton("Biblioteca de cursos");
         btnBiblioteca.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
         btnBiblioteca.setPreferredSize(new Dimension(400, 70));
         btnBiblioteca.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnBiblioteca.setFont(new Font("Dialog", Font.PLAIN, 16));
-        btnBiblioteca.setMargin(new Insets(15, 15, 15, 15));
+        btnBiblioteca.setMargin(new Insets(10, 10, 10, 10));
         btnBiblioteca.setFocusPainted(false);
-        // btnBiblioteca.addActionListener(e -> abrirBiblioteca());
+        panelContenido.add(btnBiblioteca);
+        panelContenido.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // Espacio entre botones
-        panelWrapperPrincipal.add(btnBiblioteca);
-        panelWrapperPrincipal.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        // Botón para Añadir curso
+        // Botón: Añadir curso
         JButton btnAnadir = new JButton("Añadir curso");
         btnAnadir.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
         btnAnadir.setPreferredSize(new Dimension(400, 70));
         btnAnadir.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnAnadir.setFont(new Font("Dialog", Font.PLAIN, 16));
-        btnAnadir.setMargin(new Insets(15, 15, 15, 15));
+        btnAnadir.setMargin(new Insets(10, 10, 10, 10));
         btnAnadir.setFocusPainted(false);
-        // btnAnadir.addActionListener(e -> anadirCurso());
+        panelContenido.add(btnAnadir);
+        panelContenido.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        panelWrapperPrincipal.add(btnAnadir);
+        btnAnadir.addActionListener(e -> abrirImportarCurso());
 
-        // Añadir espacio al final
-        panelWrapperPrincipal.add(Box.createRigidArea(new Dimension(0, 15)));
-
-        return panelPrincipal;
+        return panelCentro;
     }
+
 
     public JPanel crearPanelBotones() {
         JPanel panelBotones = new JPanel();
@@ -111,22 +110,12 @@ public class VentanaMain extends JFrame {
         JButton btnSalir = new JButton("Salir");
         btnSalir.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelBtnCancel.add(btnSalir);
-        // btnCancel.addActionListener(e -> handleCancel());
-
-        // Se elimina el panel y botón de "Confirmar" que no se necesita
-        // JPanel panelBtnConfirmRegister = new JPanel();
-        // panelBotones.add(panelBtnConfirmRegister, BorderLayout.EAST);
-        // JButton btnConfirmRegister = new JButton("Confirm");
-        // btnConfirmRegister.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // panelBtnConfirmRegister.add(btnConfirmRegister);
-        // getRootPane().setDefaultButton(btnConfirmRegister);
 
         return panelBotones;
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new VentanaMain().setVisible(true);
-        });
+    private void abrirImportarCurso() {
+        DialogoImportarCurso ventanaImportar = new DialogoImportarCurso(this);
+        ventanaImportar.setVisible(true);
     }
 }

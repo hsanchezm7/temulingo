@@ -36,9 +36,9 @@ public class App {
 
         H2EmbeddedServer.start();
         FactoriaDao factoriaDao = FactoriaDao.getDaoFactory();
-        Dao<Usuario> jpaUsuarioDao = factoriaDao.getJpaUsuarioDao();
-        Dao<Curso> jpaCursoDao = factoriaDao.getJpaCursoDao();
-        Dao<Bloque> jpaBloqueDao = factoriaDao.getJpaBloqueDao();
+        Dao<Usuario> jpaUsuarioDao = factoriaDao.getUsuarioDao();
+        Dao<Curso> jpaCursoDao = factoriaDao.getCursoDao();
+        Dao<Bloque> jpaBloqueDao = factoriaDao.getBloqueDao();
 
         Usuario usuario = new Usuario();
         usuario.setNombre("Usuario");
