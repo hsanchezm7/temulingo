@@ -1,6 +1,7 @@
 package es.um.pds.temulingo.vista;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -9,11 +10,14 @@ import java.awt.Insets;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -47,7 +51,7 @@ public class VentanaMain extends JFrame {
 
 		JPanel panelBotones = crearPanelBotones();
 		getContentPane().add(panelBotones, BorderLayout.SOUTH);
-
+		
 		pack();
 		setResizable(false);
 		setMinimumSize(getSize());
@@ -57,7 +61,7 @@ public class VentanaMain extends JFrame {
 	public JPanel crearPanelLogo() {
 		JPanel panelLogo = new JPanel();
 		getContentPane().add(panelLogo, BorderLayout.NORTH);
-		panelLogo.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panelLogo.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
 		JLabel lblAppchat = new JLabel("");
 		lblAppchat.setIcon(new ImageIcon(VentanaMain.class.getResource("/media/logo100px.png")));
@@ -67,54 +71,58 @@ public class VentanaMain extends JFrame {
 	}
 
 	public JPanel crearPanelPrincipal() {
-		JPanel panelCentro = new JPanel();
-		panelCentro.setBorder(new EmptyBorder(10, 10, 10, 10));
-		panelCentro.setLayout(new BorderLayout(0, 0));
+	    JPanel panelCentro = new JPanel();
+	    panelCentro.setBorder(new EmptyBorder(10, 10, 10, 10));
+	    panelCentro.setLayout(new BorderLayout(0, 0));
 
-		JPanel panelWrapper = new JPanel();
-		panelWrapper.setBorder(
-				new TitledBorder(null, "  Menú Principal  ", TitledBorder.CENTER, TitledBorder.TOP, null, null));
-		panelCentro.add(panelWrapper, BorderLayout.CENTER);
-		panelWrapper.setLayout(new BorderLayout(0, 0));
+	    JPanel panelWrapper = new JPanel();
+	    panelWrapper.setBorder(
+	        new TitledBorder(null, "  Menú  ", TitledBorder.CENTER, TitledBorder.TOP, null, null));
+	    panelCentro.add(panelWrapper, BorderLayout.CENTER);
+	    panelWrapper.setLayout(new BorderLayout(0, 0));
 
-		JPanel panelContenido = new JPanel();
-		panelContenido.setBorder(new EmptyBorder(10, 10, 10, 10));
-		panelWrapper.add(panelContenido, BorderLayout.CENTER);
+	    // 🔼 Subpanel Norte: Botones horizontales
+	    JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+	    Dimension tamBoton = new Dimension(150, 50);
 
-		// Layout vertical para los botones
-		panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
-		panelContenido.add(Box.createRigidArea(new Dimension(0, 15)));
+	    JButton btnAgregar = new JButton("Agregar");
+	    btnAgregar.setPreferredSize(tamBoton);
+	    btnAgregar.setIcon(new ImageIcon(getClass().getResource("/media/stats_32px.png")));
+	    btnAgregar.setIconTextGap(15);
 
-		// Botón: Biblioteca de cursos
-		JButton btnBiblioteca = new JButton("Biblioteca de cursos");
-		btnBiblioteca.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
-		btnBiblioteca.setPreferredSize(new Dimension(400, 70));
-		btnBiblioteca.setAlignmentX(Component.CENTER_ALIGNMENT);
-		btnBiblioteca.setFont(new Font("Dialog", Font.PLAIN, 16));
-		btnBiblioteca.setMargin(new Insets(10, 10, 10, 10));
-		btnBiblioteca.setFocusPainted(false);
-		panelContenido.add(btnBiblioteca);
-		panelContenido.add(Box.createRigidArea(new Dimension(0, 20)));
+	    JButton btnActualizar = new JButton("Importar");
+	    btnActualizar.setIcon(new ImageIcon(getClass().getResource("/media/add_32px.png")));
+	    btnActualizar.setPreferredSize(tamBoton);
+	    btnActualizar.setIconTextGap(15);
 
-		// Botón: Añadir curso
-		JButton btnAnadir = new JButton("Añadir curso");
-		btnAnadir.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
-		btnAnadir.setPreferredSize(new Dimension(400, 70));
-		btnAnadir.setAlignmentX(Component.CENTER_ALIGNMENT);
-		btnAnadir.setFont(new Font("Dialog", Font.PLAIN, 16));
-		btnAnadir.setMargin(new Insets(10, 10, 10, 10));
-		btnAnadir.setFocusPainted(false);
-		panelContenido.add(btnAnadir);
-		panelContenido.add(Box.createRigidArea(new Dimension(0, 15)));
+	    panelBotones.add(btnAgregar);
+	    panelBotones.add(btnActualizar);
+	    panelWrapper.add(panelBotones, BorderLayout.NORTH);
 
-		btnAnadir.addActionListener(e -> abrirImportarCurso());
+	    // 🔽 Subpanel Central: Lista de cursos
+	    JPanel panelLista = new JPanel(new BorderLayout());
+	    panelLista.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-		return panelCentro;
+	    DefaultListModel<String> modeloCursos = new DefaultListModel<>();
+	    modeloCursos.addElement("Curso de Java");
+	    modeloCursos.addElement("Curso de Spring Boot");
+	    modeloCursos.addElement("Curso de Git");
+	    modeloCursos.addElement("Curso de Bases de Datos");
+
+	    JList<String> listaCursos = new JList<>(modeloCursos);
+	    listaCursos.setVisibleRowCount(8);
+	    JScrollPane scrollCursos = new JScrollPane(listaCursos);
+
+	    panelLista.add(scrollCursos, BorderLayout.CENTER);
+	    panelWrapper.add(panelLista, BorderLayout.CENTER);
+
+	    return panelCentro;
 	}
+
 
 	public JPanel crearPanelBotones() {
 		JPanel panelBotones = new JPanel();
-		panelBotones.setBorder(new EmptyBorder(0, 10, 10, 10));
+		panelBotones.setBorder(new EmptyBorder(10, 10, 10, 10));
 		panelBotones.setLayout(new BorderLayout(0, 0));
 
 		JPanel panelBtnCancel = new JPanel();
@@ -123,6 +131,14 @@ public class VentanaMain extends JFrame {
 		JButton btnSalir = new JButton("Salir");
 		btnSalir.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panelBtnCancel.add(btnSalir);
+		
+		JPanel panelBtnIniciar = new JPanel();
+		panelBotones.add(panelBtnIniciar, BorderLayout.EAST);
+		
+		// TODO: Añadir listener bloqueo/desbloqueo
+		JButton btnIniciar = new JButton("Iniciar");
+		btnIniciar.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panelBtnIniciar.add(btnIniciar);
 
 		return panelBotones;
 	}

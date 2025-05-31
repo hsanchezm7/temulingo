@@ -1,7 +1,13 @@
 package es.um.pds.temulingo;
 
-import es.um.pds.temulingo.vista.VentanaLogin;
-import es.um.pds.temulingo.vista.VentanaRegistro;
+import java.awt.Color;
+
+import javax.swing.UIManager;
+
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
+
+import es.um.pds.temulingo.vista.VentanaMain;
 
 /**
  * Clase que he hecho para ver como se ven las ventanas de Login y Registro
@@ -12,7 +18,7 @@ public class AppPruebaVentanas {
 		// sistema operativo del usuario
 		// y lo adapta a la aplicacion)
 		try {
-			javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel(new FlatIntelliJLaf());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -22,11 +28,9 @@ public class AppPruebaVentanas {
 			@Override
 			public void run() {
 				// Crear la ventana de login primero (pero no se muestra)
-				VentanaLogin ventanaLogin = new VentanaLogin();
+				VentanaMain ventanaMain = new VentanaMain();
 
-				// Crear la ventana de registro y mostrarla
-				VentanaRegistro ventanaRegistro = new VentanaRegistro(ventanaLogin);
-				ventanaRegistro.setVisible(true);
+				ventanaMain.setVisible(true);
 			}
 		});
 	}
