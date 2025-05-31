@@ -7,10 +7,11 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("HUECOS")
 public class PreguntaHuecos extends Pregunta {
 
-    //@ElementCollection
-    //@CollectionTable(name = "ITEM_PREGUNTA", joinColumns = @JoinColumn(name = "ID"))
-    //@Column(name = "ITEMS")
-    //private List<String> items;
+	// @ElementCollection
+	// @CollectionTable(name = "ITEM_PREGUNTA", joinColumns = @JoinColumn(name =
+	// "ID"))
+	// @Column(name = "ITEMS")
+	// private List<String> items;
 
-    private String solucion;
+	private String solucion;
 }

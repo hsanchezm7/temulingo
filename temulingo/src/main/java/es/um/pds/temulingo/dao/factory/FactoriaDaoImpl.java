@@ -9,18 +9,18 @@ import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.logic.Usuario;
 
 public class FactoriaDaoImpl extends FactoriaDao {
-    @Override
-    public Dao<Usuario> getUsuarioDao() {
-        return UsuarioDaoImpl.getInstance();
-    }
+	@Override
+	public Dao<Usuario> getUsuarioDao() {
+		return UsuarioDaoImpl.getInstance();
+	}
 
-    @Override
-    public Dao<Curso> getCursoDao() {
-        return CursoDaoImpl.getInstance();
-    }
+	@Override
+	public Dao<Curso> getCursoDao() {
+		return CursoDaoImpl.getInstance();
+	}
 
-    @Override
-    public Dao<Bloque> getBloqueDao() {
-        return BloqueDaoImpl.getInstance();
-    }
+	@Override
+	public Dao<Bloque> getBloqueDao() {
+		return BloqueDaoImpl.getInstance();
+	}
 }

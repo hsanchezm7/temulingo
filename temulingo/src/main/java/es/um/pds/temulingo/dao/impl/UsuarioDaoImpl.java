@@ -5,18 +5,18 @@ import es.um.pds.temulingo.logic.Usuario;
 
 public class UsuarioDaoImpl extends DaoImpl<Usuario> implements UsuarioDao {
 
-    private static UsuarioDaoImpl instance = null;
+	private static UsuarioDaoImpl instance = null;
 
-    private UsuarioDaoImpl() {
-        super();
-    }
+	private UsuarioDaoImpl() {
+		super();
+	}
 
-    public static UsuarioDaoImpl getInstance() {
-        if (instance == null) {
-            instance = new UsuarioDaoImpl();
-        }
+	public static UsuarioDaoImpl getInstance() {
+		if (instance == null) {
+			instance = new UsuarioDaoImpl();
+		}
 
-        return instance;
-    }
+		return instance;
+	}
 
 }

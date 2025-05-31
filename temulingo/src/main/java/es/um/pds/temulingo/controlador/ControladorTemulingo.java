@@ -1,5 +1,9 @@
 package es.um.pds.temulingo.controlador;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import es.um.pds.temulingo.dao.base.Dao;
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
@@ -7,91 +11,86 @@ import es.um.pds.temulingo.logic.Bloque;
 import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.logic.Usuario;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class ControladorTemulingo {
 
-    private static ControladorTemulingo instance = null;
+	private static ControladorTemulingo instance = null;
 
-    private Usuario usuarioActual;
+	private Usuario usuarioActual;
 
-    private FactoriaDao factoriaDao;
-    private Dao<Usuario> usuarioDao;
-    private Dao<Curso> cursoDao;
-    private Dao<Bloque> bloqueDao;
+	private FactoriaDao factoriaDao;
+	private Dao<Usuario> usuarioDao;
+	private Dao<Curso> cursoDao;
+	private Dao<Bloque> bloqueDao;
 
-    private HashMap<Long, Usuario> usuarios;
+	private HashMap<Long, Usuario> usuarios;
 
-    private List<Curso> cursos;
+	private List<Curso> cursos;
 
-    private ControladorTemulingo() {
-        inicializarAdaptadores();
-        cargarUsuarios();
-        cargarCursos();
+	private ControladorTemulingo() {
+		inicializarAdaptadores();
+		cargarUsuarios();
+		cargarCursos();
 
-        this.usuarioActual = null;
-    }
+		this.usuarioActual = null;
+	}
 
-    public static ControladorTemulingo getInstance() {
-        if (instance == null) {
-            instance = new ControladorTemulingo();
-        }
+	public static ControladorTemulingo getInstance() {
+		if (instance == null) {
+			instance = new ControladorTemulingo();
+		}
 
-        return instance;
-    }
+		return instance;
+	}
 
-    private void cargarCursos() {
-        this.cursos = new ArrayList<>(cursoDao.getAll());
-    }
+	private void cargarCursos() {
+		this.cursos = new ArrayList<>(cursoDao.getAll());
+	}
 
-    public Usuario getUsuarioActual() {
-        return usuarioActual;
-    }
+	public Usuario getUsuarioActual() {
+		return usuarioActual;
+	}
 
-    public void setUsuarioActual(Usuario usuarioActual) {
-        this.usuarioActual = usuarioActual;
-    }
+	public void setUsuarioActual(Usuario usuarioActual) {
+		this.usuarioActual = usuarioActual;
+	}
 
-    public Map<Long, Usuario> getUsuarios() {
-        return usuarios;
-    }
+	public Map<Long, Usuario> getUsuarios() {
+		return usuarios;
+	}
 
-    public void setUsuarios(Map<Long, Usuario> usuarios) {
-        this.usuarios = (HashMap<Long, Usuario>) usuarios;
-    }
+	public void setUsuarios(Map<Long, Usuario> usuarios) {
+		this.usuarios = (HashMap<Long, Usuario>) usuarios;
+	}
 
-    public List<Curso> getCursos() {
-        return cursos;
-    }
+	public List<Curso> getCursos() {
+		return cursos;
+	}
 
-    public void setCursos(List<Curso> cursos) {
-        this.cursos = cursos;
-    }
+	public void setCursos(List<Curso> cursos) {
+		this.cursos = cursos;
+	}
 
-    private void inicializarAdaptadores() {
-        factoriaDao = FactoriaDao.getDaoFactory();
+	private void inicializarAdaptadores() {
+		factoriaDao = FactoriaDao.getDaoFactory();
 
-        usuarioDao = factoriaDao.getUsuarioDao();
-        cursoDao = factoriaDao.getCursoDao();
-        bloqueDao = factoriaDao.getBloqueDao();
+		usuarioDao = factoriaDao.getUsuarioDao();
+		cursoDao = factoriaDao.getCursoDao();
+		bloqueDao = factoriaDao.getBloqueDao();
 
-    }
+	}
 
-    private void cargarUsuarios() {
-        List<Usuario> usuariosBD = usuarioDao.getAll();
+	private void cargarUsuarios() {
+		List<Usuario> usuariosBD = usuarioDao.getAll();
 
-        this.usuarios = new HashMap<>();
+		this.usuarios = new HashMap<>();
 
-        for (Usuario usuario : usuariosBD) {
-            this.usuarios.put(usuario.getId(), usuario);
-        }
-    }
+		for (Usuario usuario : usuariosBD) {
+			this.usuarios.put(usuario.getId(), usuario);
+		}
+	}
 
-    public void iniciarSesion(String nombre, String email) {
-        
-    }
+	public void iniciarSesion(String nombre, String email) {
+
+	}
 
 }

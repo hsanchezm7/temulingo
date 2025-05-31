@@ -1,80 +1,89 @@
 package es.um.pds.temulingo.logic;
 
-import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "USUARIO")
 public class Usuario implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "NOMBRE")
-    private String nombre;
+	@Column(name = "NOMBRE")
+	private String nombre;
 
-    @Column(name = "EMAIL", unique = true)
-    private String email;
+	@Column(name = "EMAIL", unique = true)
+	private String email;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "FECHA_NACIM")
-    private LocalDate fechaNacim;
+	@Temporal(TemporalType.DATE)
+	@Column(name = "FECHA_NACIM")
+	private LocalDate fechaNacim;
 
-    public Usuario() {
-    }
+	public Usuario() {
+	}
 
-    public Usuario(Long id, String nombre, String email, LocalDate fechaNacim) {
-        this.id = id;
-        this.nombre = nombre;
-        this.email = email;
-        this.fechaNacim = fechaNacim;
-    }
+	public Usuario(Long id, String nombre, String email, LocalDate fechaNacim) {
+		this.id = id;
+		this.nombre = nombre;
+		this.email = email;
+		this.fechaNacim = fechaNacim;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getNombre() {
-        return nombre;
-    }
+	public String getNombre() {
+		return nombre;
+	}
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public LocalDate getFechaNacim() {
-        return fechaNacim;
-    }
+	public LocalDate getFechaNacim() {
+		return fechaNacim;
+	}
 
-    public void setFechaNacim(LocalDate fechaNacim) {
-        this.fechaNacim = fechaNacim;
-    }
+	public void setFechaNacim(LocalDate fechaNacim) {
+		this.fechaNacim = fechaNacim;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Usuario usuario = (Usuario) o;
-        return Objects.equals(id, usuario.id) && Objects.equals(email, usuario.email);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Usuario usuario = (Usuario) o;
+		return Objects.equals(id, usuario.id) && Objects.equals(email, usuario.email);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, email);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, email);
+	}
 }

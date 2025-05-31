@@ -1,102 +1,115 @@
 package es.um.pds.temulingo.logic;
 
-import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "CURSO")
 public class Curso implements Serializable {
 
-    public enum EstrategiaAprendizaje {
-        SECUENCIAL, REPETICION_ESPACIADA, ALEATORIA;
-    }
+	public enum EstrategiaAprendizaje {
+		SECUENCIAL, REPETICION_ESPACIADA, ALEATORIA;
+	}
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "TITULO")
-    private String titulo;
+	@Column(name = "TITULO")
+	private String titulo;
 
-    @Column(name = "DESCRIPCION")
-    private String descripcion;
+	@Column(name = "DESCRIPCION")
+	private String descripcion;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "FECHA_CREACION")
-    private LocalDate fechaCreacion;
+	@Temporal(TemporalType.DATE)
+	@Column(name = "FECHA_CREACION")
+	private LocalDate fechaCreacion;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ESTRAT_APRENDIZAJE")
-    private EstrategiaAprendizaje estrategiaAprendizaje;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "ESTRAT_APRENDIZAJE")
+	private EstrategiaAprendizaje estrategiaAprendizaje;
 
-    @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Bloque> bloques;
+	@OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<Bloque> bloques;
 
-    public Curso() {
-    }
+	public Curso() {
+	}
 
-    public Curso(Long id, String titulo, String descripcion, LocalDate fechaCreacion, List<Bloque> bloques) {
-        this.id = id;
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.fechaCreacion = fechaCreacion;
-        this.bloques = bloques;
-    }
+	public Curso(Long id, String titulo, String descripcion, LocalDate fechaCreacion, List<Bloque> bloques) {
+		this.id = id;
+		this.titulo = titulo;
+		this.descripcion = descripcion;
+		this.fechaCreacion = fechaCreacion;
+		this.bloques = bloques;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getTitulo() {
-        return titulo;
-    }
+	public String getTitulo() {
+		return titulo;
+	}
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+	public String getDescripcion() {
+		return descripcion;
+	}
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
 
-    public LocalDate getFechaCreacion() {
-        return fechaCreacion;
-    }
+	public LocalDate getFechaCreacion() {
+		return fechaCreacion;
+	}
 
-    public void setFechaCreacion(LocalDate fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
+	public void setFechaCreacion(LocalDate fechaCreacion) {
+		this.fechaCreacion = fechaCreacion;
+	}
 
-    public List<Bloque> getBloques() {
-        return bloques;
-    }
+	public List<Bloque> getBloques() {
+		return bloques;
+	}
 
-    public void setBloques(List<Bloque> bloques) {
-        this.bloques = bloques;
-    }
+	public void setBloques(List<Bloque> bloques) {
+		this.bloques = bloques;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Curso curso = (Curso) o;
-        return Objects.equals(id, curso.id);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Curso curso = (Curso) o;
+		return Objects.equals(id, curso.id);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(id);
+	}
 }

@@ -6,13 +6,13 @@ import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.logic.Usuario;
 
 public abstract class FactoriaDao {
-    public static FactoriaDao getDaoFactory() {
-        return new FactoriaDaoImpl();
-    }
+	public static FactoriaDao getDaoFactory() {
+		return new FactoriaDaoImpl();
+	}
 
-    public abstract Dao<Usuario> getUsuarioDao();
+	public abstract Dao<Usuario> getUsuarioDao();
 
-    public abstract Dao<Curso> getCursoDao();
+	public abstract Dao<Curso> getCursoDao();
 
-    public abstract Dao<Bloque> getBloqueDao();
+	public abstract Dao<Bloque> getBloqueDao();
 }

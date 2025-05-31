@@ -1,18 +1,22 @@
 package es.um.pds.temulingo.vista;
 
-import es.um.pds.temulingo.config.ConfiguracionTemulingo;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.io.File;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.io.File;
+import es.um.pds.temulingo.config.ConfiguracionTemulingo;
 
 public class DialogoImportarCurso extends JDialog {
 
@@ -104,7 +108,8 @@ public class DialogoImportarCurso extends JDialog {
 		// Evento para botón
 		btnSeleccionar.addActionListener(e -> {
 			JFileChooser fileChooser = new JFileChooser();
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos YAML y JSON (*.yaml, *.json)", "yml", "yaml", "json");
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos YAML y JSON (*.yaml, *.json)", "yml",
+					"yaml", "json");
 			fileChooser.setFileFilter(filter);
 
 			int returnValue = fileChooser.showOpenDialog(null);
@@ -132,6 +137,5 @@ public class DialogoImportarCurso extends JDialog {
 
 		return buttonPane;
 	}
-
 
 }

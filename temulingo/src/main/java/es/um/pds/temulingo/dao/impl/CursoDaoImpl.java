@@ -5,17 +5,17 @@ import es.um.pds.temulingo.logic.Curso;
 
 public class CursoDaoImpl extends DaoImpl<Curso> implements CursoDao {
 
-    private static CursoDaoImpl instance = null;
+	private static CursoDaoImpl instance = null;
 
-    private CursoDaoImpl() {
-        super();
-    }
+	private CursoDaoImpl() {
+		super();
+	}
 
-    public static CursoDaoImpl getInstance() {
-        if (instance == null) {
-            instance = new CursoDaoImpl();
-        }
+	public static CursoDaoImpl getInstance() {
+		if (instance == null) {
+			instance = new CursoDaoImpl();
+		}
 
-        return instance;
-    }
+		return instance;
+	}
 }

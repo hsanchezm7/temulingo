@@ -4,19 +4,18 @@ import es.um.pds.temulingo.dao.base.BloqueDao;
 import es.um.pds.temulingo.logic.Bloque;
 
 public class BloqueDaoImpl extends DaoImpl<Bloque> implements BloqueDao {
-    private static BloqueDaoImpl instance = null;
+	private static BloqueDaoImpl instance = null;
 
-    private BloqueDaoImpl() {
-        super();
-    }
+	private BloqueDaoImpl() {
+		super();
+	}
 
-    public static BloqueDaoImpl getInstance() {
-        if (instance == null) {
-            instance = new BloqueDaoImpl();
-        }
+	public static BloqueDaoImpl getInstance() {
+		if (instance == null) {
+			instance = new BloqueDaoImpl();
+		}
 
-        return instance;
-    }
-
+		return instance;
+	}
 
 }
