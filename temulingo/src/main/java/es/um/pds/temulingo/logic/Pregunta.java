@@ -18,18 +18,12 @@ import jakarta.persistence.ManyToOne;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "PREGUNTA")
-@JsonTypeInfo(
-	    use = JsonTypeInfo.Id.NAME,
-	    include = JsonTypeInfo.As.PROPERTY,
-	    property = "tipo"
-	)
-	@JsonSubTypes({
-	    @JsonSubTypes.Type(value = PreguntaTest.class, name = "TEST"),
-	    @JsonSubTypes.Type(value = PreguntaHuecos.class, name = "HUECOS"),
-	    @JsonSubTypes.Type(value = PreguntaTraduccion.class, name = "TRADUCCION")
-	})
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "tipo")
+@JsonSubTypes({ @JsonSubTypes.Type(value = PreguntaTest.class, name = "TEST"),
+		@JsonSubTypes.Type(value = PreguntaHuecos.class, name = "HUECOS"),
+		@JsonSubTypes.Type(value = PreguntaTraduccion.class, name = "TRADUCCION") })
 public abstract class Pregunta {
-	
+
 	public enum TipoPregunta {
 		TEST, HUECOS, TRADUCCION;
 	}
@@ -77,7 +71,7 @@ public abstract class Pregunta {
 	public void setBloque(Bloque bloque) {
 		this.bloque = bloque;
 	}
-	
+
 	public abstract boolean esSolucion(String respuesta);
-	
+
 }

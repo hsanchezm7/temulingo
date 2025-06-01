@@ -14,10 +14,10 @@ public class PreguntaTest extends Pregunta {
 
 	@Column(name = "OPCIONES")
 	private List<String> opciones;
-	
+
 	@Column(name = "SOLUCION")
 	private String solucion;
-	
+
 	public List<String> getOpciones() {
 		return opciones;
 	}
@@ -25,16 +25,15 @@ public class PreguntaTest extends Pregunta {
 	public void setOpciones(List<String> opciones) {
 		this.opciones = opciones;
 	}
-	
+
 	@JsonSetter
-    public void setSolucion(String solucion) {
-        if (solucion != null && opciones != null && !opciones.contains(solucion)) {
-            throw new IllegalArgumentException(
-                "La solución '" + solucion + "' debe estar entre las opciones disponibles: " + opciones
-            );
-        }
-        this.solucion = solucion;
-    }
+	public void setSolucion(String solucion) {
+		if (solucion != null && opciones != null && !opciones.contains(solucion)) {
+			throw new IllegalArgumentException(
+					"La solución '" + solucion + "' debe estar entre las opciones disponibles: " + opciones);
+		}
+		this.solucion = solucion;
+	}
 
 	@Override
 	public boolean esSolucion(String respuesta) {

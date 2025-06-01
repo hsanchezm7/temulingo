@@ -37,7 +37,7 @@ public class Curso implements Serializable {
 
 	@Column(name = "TITULO")
 	private String titulo;
-	
+
 	@Column(name = "AUTOR")
 	private String autor;
 
@@ -89,7 +89,7 @@ public class Curso implements Serializable {
 	public void setAutor(String autor) {
 		this.autor = autor;
 	}
-	
+
 	public String getDescripcion() {
 		return descripcion;
 	}
@@ -110,14 +110,14 @@ public class Curso implements Serializable {
 		return bloques;
 	}
 
-    @JsonSetter("bloques")
-    public void setBloques(List<Bloque> bloques) {
-        this.bloques = bloques;
-        if (bloques != null) {
-            bloques.forEach(bloque -> bloque.setCurso(this));
-        }
-    }
-	
+	@JsonSetter("bloques")
+	public void setBloques(List<Bloque> bloques) {
+		this.bloques = bloques;
+		if (bloques != null) {
+			bloques.forEach(bloque -> bloque.setCurso(this));
+		}
+	}
+
 	public EstrategiaAprendizaje getEstrategiaAprendizaje() {
 		return estrategiaAprendizaje;
 	}
@@ -139,5 +139,5 @@ public class Curso implements Serializable {
 	public int hashCode() {
 		return Objects.hashCode(id);
 	}
-	
+
 }

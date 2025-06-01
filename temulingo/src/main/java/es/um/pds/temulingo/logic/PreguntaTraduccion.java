@@ -10,7 +10,7 @@ public class PreguntaTraduccion extends Pregunta {
 
 	@Column(name = "SOLUCION")
 	private String solucion;
-	
+
 	public String getSolucion() {
 		return solucion;
 	}
@@ -24,5 +24,5 @@ public class PreguntaTraduccion extends Pregunta {
 		// TODO: Convertir a minusculas todo y remover tildes.
 		return respuesta.equals(solucion);
 	}
-	
+
 }

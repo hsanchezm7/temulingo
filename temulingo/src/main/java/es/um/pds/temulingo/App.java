@@ -19,12 +19,12 @@ public class App {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		H2EmbeddedServer.start();
-		
+
 		// Forzar inicialización del controlador
 		ControladorTemulingo.getInstance();
-		
+
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {

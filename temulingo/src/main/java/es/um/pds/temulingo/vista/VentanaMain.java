@@ -21,7 +21,6 @@ import javax.swing.border.TitledBorder;
 
 import es.um.pds.temulingo.config.ConfiguracionTemulingo;
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
-import es.um.pds.temulingo.logic.CargadorCursosJSON;
 import es.um.pds.temulingo.logic.CargadorCursosYAML;
 import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.utils.CursoCellRenderer;
@@ -59,7 +58,7 @@ public class VentanaMain extends JFrame {
 		cargarDatosMuestra();
 	}
 
-	private void cargarDatosMuestra() {		
+	private void cargarDatosMuestra() {
 		try {
 			Curso curso1 = CargadorCursosYAML.parseCourseFromResources("/libreria-cursos/curso_ingles_basico.json");
 			Curso curso2 = CargadorCursosYAML.parseCourseFromResources("/libreria-cursos/curso_aleman_basico.yaml");
@@ -127,8 +126,10 @@ public class VentanaMain extends JFrame {
 
 		btnEstadisticas = crearBotonAccion("Estadísticas", ConfiguracionTemulingo.getRutaIcono("stats.icono"),
 				tamanoBoton, "Ver estadísticas");
-		btnActualizar = crearBotonAccion("Actualizar", ConfiguracionTemulingo.getRutaIcono("update.icono"), tamanoBoton, "Actualizar cursos");
-		btnImportar = crearBotonAccion("Importar", ConfiguracionTemulingo.getRutaIcono("add.icono"), tamanoBoton, "Importar curso");
+		btnActualizar = crearBotonAccion("Actualizar", ConfiguracionTemulingo.getRutaIcono("update.icono"), tamanoBoton,
+				"Actualizar cursos");
+		btnImportar = crearBotonAccion("Importar", ConfiguracionTemulingo.getRutaIcono("add.icono"), tamanoBoton,
+				"Importar curso");
 
 		panel.add(btnEstadisticas);
 		panel.add(btnActualizar);
@@ -176,13 +177,13 @@ public class VentanaMain extends JFrame {
 	}
 
 	private JButton crearBotonAccion(String texto, String rutaIcono, Dimension tamano, String textoAlternativo) {
-	    JButton boton = new JButton(texto);
-	    ImageIcon icono = new ImageIcon(getClass().getResource(rutaIcono));
-	    boton.setIcon(icono);
-	    boton.setPreferredSize(tamano);
-	    boton.setIconTextGap(ESPACIO_ICONO_TEXTO);
-	    boton.setToolTipText(textoAlternativo);
-	    return boton;
+		JButton boton = new JButton(texto);
+		ImageIcon icono = new ImageIcon(getClass().getResource(rutaIcono));
+		boton.setIcon(icono);
+		boton.setPreferredSize(tamano);
+		boton.setIconTextGap(ESPACIO_ICONO_TEXTO);
+		boton.setToolTipText(textoAlternativo);
+		return boton;
 	}
 
 	private void configurarEventListeners() {
