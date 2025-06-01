@@ -1,0 +1,50 @@
+{
+  "titulo": "Curso de Inglés Básico",
+  "autor": "Unamuno",
+  "descripcion": "Aprende inglés desde cero con ejercicios prácticos",
+  "fechaCreacion": "2025-06-01",
+  "estrategiaAprendizaje": "REPETICION_ESPACIADA",
+  "bloques": [
+    {
+      "nombre": "Bloque 1: Vocabulario Básico",
+      "descripcion": "Ejercicios para aprender vocabulario fundamental",
+      "preguntas": [
+        {
+          "tipo": "TEST",
+          "enunciado": "¿Cómo se dice 'manzana' en inglés?",
+          "opciones": ["apple", "banana", "orange"],
+          "solucion": "apple"
+        },
+        {
+          "tipo": "TEST",
+          "enunciado": "Selecciona la palabra correcta para 'perro'",
+          "opciones": ["dog", "cat", "bird"],
+          "solucion": "dog"
+        }
+      ]
+    },
+    {
+      "nombre": "Bloque 2: Gramática y Construcción",
+      "descripcion": "Práctica de estructuras gramaticales y traducción",
+      "preguntas": [
+        {
+          "tipo": "HUECOS",
+          "enunciado": "Completa la siguiente oración en presente simple: She _____ to work every morning by bus",
+          "solucion": "goes"
+        },
+        {
+          "tipo": "TRADUCCION",
+          "enunciado": "Traduce la siguiente palabra al inglés: gato",
+          "solucion": "cat"
+        },
+        {
+          "tipo": "TEST",
+          "enunciado": "¿Cuál es el pasado del verbo 'run'?",
+          "opciones": ["runned", "ran", "runed"],
+          "solucion": "ran"
+        }
+      ]
+    }
+  ]
+}
+

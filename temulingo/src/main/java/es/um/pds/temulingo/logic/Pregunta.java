@@ -1,5 +1,8 @@
 package es.um.pds.temulingo.logic;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -15,7 +18,15 @@ import jakarta.persistence.ManyToOne;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "PREGUNTA")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "tipo")
+@JsonSubTypes({ @JsonSubTypes.Type(value = PreguntaTest.class, name = "TEST"),
+		@JsonSubTypes.Type(value = PreguntaHuecos.class, name = "HUECOS"),
+		@JsonSubTypes.Type(value = PreguntaTraduccion.class, name = "TRADUCCION") })
 public abstract class Pregunta {
+
+	public enum TipoPregunta {
+		TEST, HUECOS, TRADUCCION;
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +35,7 @@ public abstract class Pregunta {
 	@Column(name = "ENUNCIADO")
 	private String enunciado;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BLOQUE_ID")
 	private Bloque bloque;
 
@@ -60,4 +71,7 @@ public abstract class Pregunta {
 	public void setBloque(Bloque bloque) {
 		this.bloque = bloque;
 	}
+
+	public abstract boolean esSolucion(String respuesta);
+
 }

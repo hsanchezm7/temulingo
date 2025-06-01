@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,6 +25,8 @@ import jakarta.persistence.TemporalType;
 @Table(name = "CURSO")
 public class Curso implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	public enum EstrategiaAprendizaje {
 		SECUENCIAL, REPETICION_ESPACIADA, ALEATORIA;
 	}
@@ -33,6 +37,9 @@ public class Curso implements Serializable {
 
 	@Column(name = "TITULO")
 	private String titulo;
+
+	@Column(name = "AUTOR")
+	private String autor;
 
 	@Column(name = "DESCRIPCION")
 	private String descripcion;
@@ -75,6 +82,14 @@ public class Curso implements Serializable {
 		this.titulo = titulo;
 	}
 
+	public String getAutor() {
+		return autor;
+	}
+
+	public void setAutor(String autor) {
+		this.autor = autor;
+	}
+
 	public String getDescripcion() {
 		return descripcion;
 	}
@@ -95,8 +110,20 @@ public class Curso implements Serializable {
 		return bloques;
 	}
 
+	@JsonSetter("bloques")
 	public void setBloques(List<Bloque> bloques) {
 		this.bloques = bloques;
+		if (bloques != null) {
+			bloques.forEach(bloque -> bloque.setCurso(this));
+		}
+	}
+
+	public EstrategiaAprendizaje getEstrategiaAprendizaje() {
+		return estrategiaAprendizaje;
+	}
+
+	public void setEstrategiaAprendizaje(EstrategiaAprendizaje estrategiaAprendizaje) {
+		this.estrategiaAprendizaje = estrategiaAprendizaje;
 	}
 
 	@Override
@@ -112,4 +139,5 @@ public class Curso implements Serializable {
 	public int hashCode() {
 		return Objects.hashCode(id);
 	}
+
 }

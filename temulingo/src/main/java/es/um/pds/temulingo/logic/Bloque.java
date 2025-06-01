@@ -7,8 +7,6 @@ import java.util.Objects;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,9 +20,7 @@ import jakarta.persistence.Table;
 @Table(name = "BLOQUE")
 public class Bloque implements Serializable {
 
-	public enum TipoEjercicio {
-		TEST, HUECOS, TRADUCCION;
-	}
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,23 +36,17 @@ public class Bloque implements Serializable {
 	@JoinColumn(name = "CURSO_ID")
 	private Curso curso;
 
-	@OneToMany(mappedBy = "bloque", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "bloque", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Pregunta> preguntas;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "TIPO_EJERCICIO")
-	private TipoEjercicio tipo;
 
 	public Bloque() {
 	}
 
-	public Bloque(Long id, String nombre, String descripcion, Curso curso, TipoEjercicio tipo,
-			List<Pregunta> preguntas) {
+	public Bloque(Long id, String nombre, String descripcion, Curso curso, List<Pregunta> preguntas) {
 		this.id = id;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.curso = curso;
-		this.tipo = tipo;
 		this.preguntas = preguntas;
 	}
 
@@ -92,20 +82,15 @@ public class Bloque implements Serializable {
 		this.curso = curso;
 	}
 
-	public TipoEjercicio getTipo() {
-		return tipo;
-	}
-
-	public void setTipo(TipoEjercicio tipo) {
-		this.tipo = tipo;
-	}
-
 	public List<Pregunta> getPreguntas() {
 		return preguntas;
 	}
 
 	public void setPreguntas(List<Pregunta> preguntas) {
 		this.preguntas = preguntas;
+		if (preguntas != null) {
+			preguntas.forEach(pregunta -> pregunta.setBloque(this));
+		}
 	}
 
 	@Override

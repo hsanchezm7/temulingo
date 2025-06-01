@@ -1,0 +1,44 @@
+titulo: "Curso de Alemán Básico"
+autor: "Goethe"
+descripcion: "Aprende alemán desde cero con ejercicios prácticos"
+fechaCreacion: "2025-06-01"
+estrategiaAprendizaje: "REPETICION_ESPACIADA"
+
+bloques:
+  - nombre: "Bloque 1: Vocabulario Básico"
+    descripcion: "Ejercicios para aprender vocabulario fundamental"
+    preguntas:
+      - tipo: "TEST"
+        enunciado: "¿Cómo se dice 'manzana' en alemán?"
+        opciones:
+          - "der Apfel"
+          - "die Banane"
+          - "die Orange"
+        solucion: "der Apfel"
+      
+      - tipo: "TEST"
+        enunciado: "Selecciona la palabra correcta para 'perro'"
+        opciones:
+          - "der Hund"
+          - "die Katze"
+          - "der Vogel"
+        solucion: "der Hund"
+
+  - nombre: "Bloque 2: Gramática y Construcción"
+    descripcion: "Práctica de estructuras gramaticales y traducción"
+    preguntas:
+      - tipo: "HUECOS"
+        enunciado: "Completa la siguiente oración en presente: Sie _____ jeden Morgen mit dem Bus zur Arbeit"
+        solucion: "geht"
+      
+      - tipo: "TRADUCCION"
+        enunciado: "Traduce la siguiente palabra al alemán: gato"
+        solucion: "die Katze"
+      
+      - tipo: "TEST"
+        enunciado: "¿Cuál es el Perfekt del verbo 'laufen' (correr)?"
+        opciones:
+          - "bin gelaufen"
+          - "habe gelaufen"
+          - "ist gelaufen"
+        solucion: "bin gelaufen"

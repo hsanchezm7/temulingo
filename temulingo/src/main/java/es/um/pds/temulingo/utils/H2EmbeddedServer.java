@@ -1,4 +1,4 @@
-package es.um.pds.temulingo;
+package es.um.pds.temulingo.utils;
 
 import java.sql.SQLException;
 

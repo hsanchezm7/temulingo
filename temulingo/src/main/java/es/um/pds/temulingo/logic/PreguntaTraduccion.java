@@ -1,5 +1,6 @@
 package es.um.pds.temulingo.logic;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
@@ -7,11 +8,21 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("TRADUCCION")
 public class PreguntaTraduccion extends Pregunta {
 
-	// @ElementCollection
-	// @CollectionTable(name = "ITEM_PREGUNTA", joinColumns = @JoinColumn(name =
-	// "ID"))
-	// @Column(name = "ITEMS")
-	// private List<String> items;
-
+	@Column(name = "SOLUCION")
 	private String solucion;
+
+	public String getSolucion() {
+		return solucion;
+	}
+
+	public void setSolucion(String solucion) {
+		this.solucion = solucion;
+	}
+
+	@Override
+	public boolean esSolucion(String respuesta) {
+		// TODO: Convertir a minusculas todo y remover tildes.
+		return respuesta.equals(solucion);
+	}
+
 }
