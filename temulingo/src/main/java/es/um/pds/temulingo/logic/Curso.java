@@ -35,6 +35,9 @@ public class Curso implements Serializable {
 
 	@Column(name = "TITULO")
 	private String titulo;
+	
+	@Column(name = "AUTOR")
+	private String autor;
 
 	@Column(name = "DESCRIPCION")
 	private String descripcion;
@@ -77,6 +80,14 @@ public class Curso implements Serializable {
 		this.titulo = titulo;
 	}
 
+	public String getAutor() {
+		return autor;
+	}
+
+	public void setAutor(String autor) {
+		this.autor = autor;
+	}
+	
 	public String getDescripcion() {
 		return descripcion;
 	}
@@ -122,6 +133,5 @@ public class Curso implements Serializable {
 	public int hashCode() {
 		return Objects.hashCode(id);
 	}
-
 	
 }

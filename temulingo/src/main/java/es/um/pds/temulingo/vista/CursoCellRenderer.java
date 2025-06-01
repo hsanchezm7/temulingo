@@ -115,7 +115,7 @@ public class CursoCellRenderer extends JPanel implements ListCellRenderer<Curso>
 
 		lblImagen.setIcon(iconoCurso);
 		lblTitulo.setText(curso.getTitulo() != null ? curso.getTitulo() : "Sin título");
-		lblAutor.setText("Autor: " + (curso.getId() != null ? curso.getId() : "Desconocido"));
+		lblAutor.setText("Autor: " + (curso.getAutor() != null ? curso.getAutor() : "Desconocido"));
 		txtDescripcion.setText(curso.getDescripcion() != null ? curso.getDescripcion() : "Sin descripción");
 
 		Color backgroundColor;
