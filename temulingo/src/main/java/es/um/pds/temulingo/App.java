@@ -54,7 +54,7 @@ public class App {
 		curso.setTitulo("Curso");
 		curso.setDescripcion("Curso");
 		curso.setFechaCreacion(LocalDate.now());
-		curso.setBloques(bloques);
+		// curso.setBloques(bloques);
 
 		jpaCursoDao.save(curso);
 
@@ -71,7 +71,7 @@ public class App {
 		jpaUsuarioDao.save(usuario);
 		jpaUsuarioDao.save(usuario2);
 
-		curso.setBloques(bloques);
+		// curso.setBloques(bloques);
 		jpaCursoDao.edit(curso);
 
 		ControladorTemulingo controlador = ControladorTemulingo.getInstance();

@@ -20,8 +20,9 @@ import es.um.pds.temulingo.config.ConfiguracionTemulingo;
 
 public class DialogoImportarCurso extends JDialog {
 
-	private static final String FUNCION = "Importar curso";
+	private static final long serialVersionUID = 1L;
 
+	private static final String FUNCION = "Importar curso";
 	private static final String NOMBRE_VENTANA = ConfiguracionTemulingo.NOMBRE_APP + " - " + FUNCION;
 
 	private JTextField textField;
@@ -88,7 +89,7 @@ public class DialogoImportarCurso extends JDialog {
 		gbl_panelContenido.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		panelContenido.setLayout(gbl_panelContenido);
 
-		JButton btnSeleccionar = new JButton("Seleccionar Curso");
+		JButton btnSeleccionar = new JButton("Seleccionar curso");
 		GridBagConstraints gbc_btnSeleccionar = new GridBagConstraints();
 		gbc_btnSeleccionar.insets = new Insets(0, 0, 5, 0);
 		gbc_btnSeleccionar.gridx = 1;

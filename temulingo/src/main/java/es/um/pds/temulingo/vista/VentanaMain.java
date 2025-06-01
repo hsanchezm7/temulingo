@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.io.IOException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -32,12 +33,13 @@ public class VentanaMain extends JFrame {
 	private static final int ALTO_BOTON = 50;
 	private static final int ESPACIO_ICONO_TEXTO = 15;
 	private static final int FILAS_VISIBLES_LISTA = 5;
-	private static final int ANCHO_SCROLL_PANE = 600;
+	private static final int ANCHO_SCROLL_PANE = 500;
 	private static final int ALTO_SCROLL_PANE = 300;
 
 	private DefaultListModel<Curso> modelo;
 	private JList<Curso> listaCursos;
 	private JButton btnEstadisticas;
+	private JButton btnActualizar;
 	private JButton btnImportar;
 	private JButton btnIniciar;
 	private JButton btnSalir;
@@ -53,18 +55,13 @@ public class VentanaMain extends JFrame {
 		cargarDatosMuestra();
 	}
 
-	private void cargarDatosMuestra() {
-		Curso curso1 = new Curso();
-		curso1.setTitulo("Curso de Inglés Básico");
-		curso1.setDescripcion(
-				"Aprende los fundamentos del idioma inglés con ejercicios interactivos y práctica constante.");
-
-		Curso curso2 = new Curso();
-		curso2.setTitulo("Curso de Francés Intermedio");
-		curso2.setDescripcion("Mejora tu nivel de francés con conversaciones avanzadas y gramática compleja.");
-
-		modelo.addElement(curso1);
-		modelo.addElement(curso2);
+	private void cargarDatosMuestra() {		
+		try {
+			Curso curso3 = CargadorCursosJSON.parseCourseFromResources("/libreria-cursos/curso_ingles_basico.json");
+			modelo.addElement(curso3);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void inicializarComponentes() {
@@ -120,11 +117,13 @@ public class VentanaMain extends JFrame {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, MARGEN, MARGEN));
 		Dimension tamanoBoton = new Dimension(ANCHO_BOTON, ALTO_BOTON);
 
-		btnEstadisticas = crearBotonEstilizado("Estadísticas", ConfiguracionTemulingo.getRutaIcono("stats.icono"),
-				tamanoBoton);
-		btnImportar = crearBotonEstilizado("Importar", ConfiguracionTemulingo.getRutaIcono("add.icono"), tamanoBoton);
+		btnEstadisticas = crearBotonAccion("Estadísticas", ConfiguracionTemulingo.getRutaIcono("stats.icono"),
+				tamanoBoton, "Ver estadísticas");
+		btnActualizar = crearBotonAccion("Actualizar", ConfiguracionTemulingo.getRutaIcono("update.icono"), tamanoBoton, "Actualizar cursos");
+		btnImportar = crearBotonAccion("Importar", ConfiguracionTemulingo.getRutaIcono("add.icono"), tamanoBoton, "Importar curso");
 
 		panel.add(btnEstadisticas);
+		panel.add(btnActualizar);
 		panel.add(btnImportar);
 
 		return panel;
@@ -168,13 +167,14 @@ public class VentanaMain extends JFrame {
 		return panel;
 	}
 
-	private JButton crearBotonEstilizado(String texto, String rutaIcono, Dimension tamano) {
-		JButton boton = new JButton(texto);
-		ImageIcon icono = new ImageIcon(getClass().getResource(rutaIcono));
-		boton.setIcon(icono);
-		boton.setPreferredSize(tamano);
-		boton.setIconTextGap(ESPACIO_ICONO_TEXTO);
-		return boton;
+	private JButton crearBotonAccion(String texto, String rutaIcono, Dimension tamano, String textoAlternativo) {
+	    JButton boton = new JButton(texto);
+	    ImageIcon icono = new ImageIcon(getClass().getResource(rutaIcono));
+	    boton.setIcon(icono);
+	    boton.setPreferredSize(tamano);
+	    boton.setIconTextGap(ESPACIO_ICONO_TEXTO);
+	    boton.setToolTipText(textoAlternativo);
+	    return boton;
 	}
 
 	private void configurarEventListeners() {

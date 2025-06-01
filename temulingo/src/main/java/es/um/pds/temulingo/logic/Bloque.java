@@ -22,6 +22,8 @@ import jakarta.persistence.Table;
 @Table(name = "BLOQUE")
 public class Bloque implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	public enum TipoEjercicio {
 		TEST, HUECOS, TRADUCCION;
 	}

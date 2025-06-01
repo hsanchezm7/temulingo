@@ -23,6 +23,8 @@ import jakarta.persistence.TemporalType;
 @Table(name = "CURSO")
 public class Curso implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	public enum EstrategiaAprendizaje {
 		SECUENCIAL, REPETICION_ESPACIADA, ALEATORIA;
 	}
@@ -98,6 +100,14 @@ public class Curso implements Serializable {
 	public void setBloques(List<Bloque> bloques) {
 		this.bloques = bloques;
 	}
+	
+	public EstrategiaAprendizaje getEstrategiaAprendizaje() {
+		return estrategiaAprendizaje;
+	}
+
+	public void setEstrategiaAprendizaje(EstrategiaAprendizaje estrategiaAprendizaje) {
+		this.estrategiaAprendizaje = estrategiaAprendizaje;
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -112,4 +122,6 @@ public class Curso implements Serializable {
 	public int hashCode() {
 		return Objects.hashCode(id);
 	}
+
+	
 }

@@ -1,0 +1,18 @@
+{
+  "titulo": "Curso de Inglés Básico",
+  "descripcion": "Aprende inglés desde cero con ejercicios prácticos",
+  "fechaCreacion": "2025-06-01",
+  "estrategiaAprendizaje": "REPETICION_ESPACIADA",
+  "bloques": [
+    {
+      "nombre": "Bloque 1: Vocabulario Básico",
+      "descripcion": "Ejercicios para aprender vocabulario fundamental",
+	  "tipo": "TEST"
+    },
+    {
+      "nombre": "Bloque 2: Gramática",
+      "descripcion": "Práctica de tiempos verbales"
+    }
+  ]
+}
+
