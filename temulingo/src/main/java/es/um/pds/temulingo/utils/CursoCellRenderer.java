@@ -1,4 +1,4 @@
-package es.um.pds.temulingo.vista;
+package es.um.pds.temulingo.utils;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

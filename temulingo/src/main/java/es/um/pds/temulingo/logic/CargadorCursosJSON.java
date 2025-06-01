@@ -1,4 +1,4 @@
-package es.um.pds.temulingo.vista;
+package es.um.pds.temulingo.logic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,8 +8,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
-import es.um.pds.temulingo.logic.Curso;
 
 public class CargadorCursosJSON {
 	    public static Curso parseCourseFromResources(String resourcePath) throws IOException {

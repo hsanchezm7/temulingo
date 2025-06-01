@@ -20,7 +20,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import es.um.pds.temulingo.config.ConfiguracionTemulingo;
+import es.um.pds.temulingo.logic.CargadorCursosJSON;
 import es.um.pds.temulingo.logic.Curso;
+import es.um.pds.temulingo.utils.CursoCellRenderer;
 
 public class VentanaMain extends JFrame {
 	private static final long serialVersionUID = 1L;
