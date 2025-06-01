@@ -20,6 +20,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import es.um.pds.temulingo.config.ConfiguracionTemulingo;
+import es.um.pds.temulingo.controlador.ControladorTemulingo;
 import es.um.pds.temulingo.logic.CargadorCursosJSON;
 import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.utils.CursoCellRenderer;
@@ -60,6 +61,7 @@ public class VentanaMain extends JFrame {
 	private void cargarDatosMuestra() {		
 		try {
 			Curso curso3 = CargadorCursosJSON.parseCourseFromResources("/libreria-cursos/curso_ingles_basico.json");
+			ControladorTemulingo.getInstance().guardarCurso(curso3);
 			modelo.addElement(curso3);
 		} catch (IOException e) {
 			e.printStackTrace();

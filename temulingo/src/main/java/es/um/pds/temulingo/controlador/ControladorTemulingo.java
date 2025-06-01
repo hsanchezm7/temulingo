@@ -76,7 +76,6 @@ public class ControladorTemulingo {
 		usuarioDao = factoriaDao.getUsuarioDao();
 		cursoDao = factoriaDao.getCursoDao();
 		bloqueDao = factoriaDao.getBloqueDao();
-
 	}
 
 	private void cargarUsuarios() {
@@ -91,6 +90,12 @@ public class ControladorTemulingo {
 
 	public void iniciarSesion(String nombre, String email) {
 
+	}
+	
+	public void guardarCurso(Curso curso) {
+		if (curso != null) {
+			cursoDao.save(curso);
+		}
 	}
 
 }
