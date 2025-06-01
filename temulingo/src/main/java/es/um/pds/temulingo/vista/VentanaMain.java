@@ -1,15 +1,10 @@
 package es.um.pds.temulingo.vista;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Insets;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -18,133 +13,192 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import es.um.pds.temulingo.config.ConfiguracionTemulingo;
+import es.um.pds.temulingo.logic.Curso;
 
 public class VentanaMain extends JFrame {
-	private static final String FUNCION = "Inicio";
+	private static final long serialVersionUID = 1L;
 
+	private static final String FUNCION = "Inicio";
 	private static final String NOMBRE_VENTANA = ConfiguracionTemulingo.NOMBRE_APP + " - " + FUNCION;
 
+	private static final int MARGEN = 10;
+	private static final int ANCHO_BOTON = 170;
+	private static final int ALTO_BOTON = 50;
+	private static final int ESPACIO_ICONO_TEXTO = 15;
+	private static final int FILAS_VISIBLES_LISTA = 5;
+	private static final int ANCHO_SCROLL_PANE = 600;
+	private static final int ALTO_SCROLL_PANE = 300;
+
+	private DefaultListModel<Curso> modelo;
+	private JList<Curso> listaCursos;
+	private JButton btnEstadisticas;
+	private JButton btnImportar;
+	private JButton btnIniciar;
+	private JButton btnSalir;
+
 	public VentanaMain() {
-		initComponents();
+		inicializarModelo();
+		inicializarComponentes();
+		configurarEventListeners();
 	}
 
-	public void initComponents() {
-		/* Window properties */
+	private void inicializarModelo() {
+		modelo = new DefaultListModel<>();
+		cargarDatosMuestra();
+	}
+
+	private void cargarDatosMuestra() {
+		Curso curso1 = new Curso();
+		curso1.setTitulo("Curso de Inglés Básico");
+		curso1.setDescripcion(
+				"Aprende los fundamentos del idioma inglés con ejercicios interactivos y práctica constante.");
+
+		Curso curso2 = new Curso();
+		curso2.setTitulo("Curso de Francés Intermedio");
+		curso2.setDescripcion("Mejora tu nivel de francés con conversaciones avanzadas y gramática compleja.");
+
+		modelo.addElement(curso1);
+		modelo.addElement(curso2);
+	}
+
+	private void inicializarComponentes() {
 		setTitle(NOMBRE_VENTANA);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		setLayout(new BorderLayout());
 
-		ImageIcon img = new ImageIcon("/media/logo100px.png");
-		setIconImage(img.getImage());
+		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("logo.icono");
+		ImageIcon iconoLogo = new ImageIcon(getClass().getResource(rutaIconoLogo));
+		setIconImage(iconoLogo.getImage());
 
-		getContentPane().setLayout(new BorderLayout(0, 0));
+		configurarLayout();
 
-		JPanel panelLogo = crearPanelLogo();
-		getContentPane().add(panelLogo, BorderLayout.NORTH);
-
-		JPanel panelCentro = crearPanelPrincipal();
-		getContentPane().add(panelCentro, BorderLayout.CENTER);
-
-		JPanel panelBotones = crearPanelBotones();
-		getContentPane().add(panelBotones, BorderLayout.SOUTH);
-		
 		pack();
 		setResizable(false);
 		setMinimumSize(getSize());
 		setLocationRelativeTo(null);
 	}
 
-	public JPanel crearPanelLogo() {
-		JPanel panelLogo = new JPanel();
-		getContentPane().add(panelLogo, BorderLayout.NORTH);
-		panelLogo.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-
-		JLabel lblAppchat = new JLabel("");
-		lblAppchat.setIcon(new ImageIcon(VentanaMain.class.getResource("/media/logo100px.png")));
-		panelLogo.add(lblAppchat);
-
-		return panelLogo;
+	private void configurarLayout() {
+		add(crearPanelLogo(), BorderLayout.NORTH);
+		add(crearPanelPrincipal(), BorderLayout.CENTER);
+		add(crearPanelBotones(), BorderLayout.SOUTH);
 	}
 
-	public JPanel crearPanelPrincipal() {
-	    JPanel panelCentro = new JPanel();
-	    panelCentro.setBorder(new EmptyBorder(10, 10, 10, 10));
-	    panelCentro.setLayout(new BorderLayout(0, 0));
+	private JPanel crearPanelLogo() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, MARGEN, MARGEN));
 
-	    JPanel panelWrapper = new JPanel();
-	    panelWrapper.setBorder(
-	        new TitledBorder(null, "  Menú  ", TitledBorder.CENTER, TitledBorder.TOP, null, null));
-	    panelCentro.add(panelWrapper, BorderLayout.CENTER);
-	    panelWrapper.setLayout(new BorderLayout(0, 0));
+		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("logo.icono");
+		ImageIcon iconoLogo = new ImageIcon(getClass().getResource(rutaIconoLogo));
 
-	    // 🔼 Subpanel Norte: Botones horizontales
-	    JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-	    Dimension tamBoton = new Dimension(150, 50);
+		JLabel lblLogo = new JLabel(iconoLogo);
+		panel.add(lblLogo);
 
-	    JButton btnAgregar = new JButton("Agregar");
-	    btnAgregar.setPreferredSize(tamBoton);
-	    btnAgregar.setIcon(new ImageIcon(getClass().getResource("/media/stats_32px.png")));
-	    btnAgregar.setIconTextGap(15);
-
-	    JButton btnActualizar = new JButton("Importar");
-	    btnActualizar.setIcon(new ImageIcon(getClass().getResource("/media/add_32px.png")));
-	    btnActualizar.setPreferredSize(tamBoton);
-	    btnActualizar.setIconTextGap(15);
-
-	    panelBotones.add(btnAgregar);
-	    panelBotones.add(btnActualizar);
-	    panelWrapper.add(panelBotones, BorderLayout.NORTH);
-
-	    // 🔽 Subpanel Central: Lista de cursos
-	    JPanel panelLista = new JPanel(new BorderLayout());
-	    panelLista.setBorder(new EmptyBorder(10, 10, 10, 10));
-
-	    DefaultListModel<String> modeloCursos = new DefaultListModel<>();
-	    modeloCursos.addElement("Curso de Java");
-	    modeloCursos.addElement("Curso de Spring Boot");
-	    modeloCursos.addElement("Curso de Git");
-	    modeloCursos.addElement("Curso de Bases de Datos");
-
-	    JList<String> listaCursos = new JList<>(modeloCursos);
-	    listaCursos.setVisibleRowCount(8);
-	    JScrollPane scrollCursos = new JScrollPane(listaCursos);
-
-	    panelLista.add(scrollCursos, BorderLayout.CENTER);
-	    panelWrapper.add(panelLista, BorderLayout.CENTER);
-
-	    return panelCentro;
+		return panel;
 	}
 
+	private JPanel crearPanelPrincipal() {
+		JPanel panelPrincipal = new JPanel(new BorderLayout());
+		panelPrincipal.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
 
-	public JPanel crearPanelBotones() {
-		JPanel panelBotones = new JPanel();
-		panelBotones.setBorder(new EmptyBorder(10, 10, 10, 10));
-		panelBotones.setLayout(new BorderLayout(0, 0));
+		JPanel panelWrapper = new JPanel(new BorderLayout());
+		panelWrapper.setBorder(new TitledBorder(null, "  Menú  ", TitledBorder.CENTER, TitledBorder.TOP));
 
-		JPanel panelBtnCancel = new JPanel();
-		panelBotones.add(panelBtnCancel, BorderLayout.WEST);
+		panelWrapper.add(crearPanelBotonesAccion(), BorderLayout.NORTH);
+		panelWrapper.add(crearPanelListaCursos(), BorderLayout.CENTER);
 
-		JButton btnSalir = new JButton("Salir");
+		panelPrincipal.add(panelWrapper, BorderLayout.CENTER);
+		return panelPrincipal;
+	}
+
+	private JPanel crearPanelBotonesAccion() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, MARGEN, MARGEN));
+		Dimension tamanoBoton = new Dimension(ANCHO_BOTON, ALTO_BOTON);
+
+		btnEstadisticas = crearBotonEstilizado("Estadísticas", ConfiguracionTemulingo.getRutaIcono("stats.icono"),
+				tamanoBoton);
+		btnImportar = crearBotonEstilizado("Importar", ConfiguracionTemulingo.getRutaIcono("add.icono"), tamanoBoton);
+
+		panel.add(btnEstadisticas);
+		panel.add(btnImportar);
+
+		return panel;
+	}
+
+	private JPanel crearPanelListaCursos() {
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
+
+		listaCursos = new JList<>(modelo);
+		listaCursos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listaCursos.setCellRenderer(new CursoCellRenderer());
+
+		listaCursos.setVisibleRowCount(FILAS_VISIBLES_LISTA);
+
+		JScrollPane scrollPane = new JScrollPane(listaCursos);
+		scrollPane.setPreferredSize(new Dimension(ANCHO_SCROLL_PANE, ALTO_SCROLL_PANE));
+
+		panel.add(scrollPane, BorderLayout.CENTER);
+
+		return panel;
+	}
+
+	private JPanel crearPanelBotones() {
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
+
+		JPanel panelIzquierdo = new JPanel();
+		btnSalir = new JButton("Salir");
 		btnSalir.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panelBtnCancel.add(btnSalir);
-		
-		JPanel panelBtnIniciar = new JPanel();
-		panelBotones.add(panelBtnIniciar, BorderLayout.EAST);
-		
-		// TODO: Añadir listener bloqueo/desbloqueo
-		JButton btnIniciar = new JButton("Iniciar");
-		btnIniciar.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panelBtnIniciar.add(btnIniciar);
+		panelIzquierdo.add(btnSalir);
 
-		return panelBotones;
+		JPanel panelDerecho = new JPanel();
+		btnIniciar = new JButton("Iniciar");
+		btnIniciar.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panelDerecho.add(btnIniciar);
+
+		panel.add(panelIzquierdo, BorderLayout.WEST);
+		panel.add(panelDerecho, BorderLayout.EAST);
+
+		return panel;
+	}
+
+	private JButton crearBotonEstilizado(String texto, String rutaIcono, Dimension tamano) {
+		JButton boton = new JButton(texto);
+		ImageIcon icono = new ImageIcon(getClass().getResource(rutaIcono));
+		boton.setIcon(icono);
+		boton.setPreferredSize(tamano);
+		boton.setIconTextGap(ESPACIO_ICONO_TEXTO);
+		return boton;
+	}
+
+	private void configurarEventListeners() {
+		btnImportar.addActionListener(e -> abrirImportarCurso());
+		btnSalir.addActionListener(e -> System.exit(0));
+		// TODO: Añadir listener para btnIniciar y btnAgregar
 	}
 
 	private void abrirImportarCurso() {
 		DialogoImportarCurso ventanaImportar = new DialogoImportarCurso(this);
 		ventanaImportar.setVisible(true);
+	}
+
+	public void agregarCurso(Curso curso) {
+		if (curso != null) {
+			modelo.addElement(curso);
+		}
+	}
+
+	public Curso obtenerCursoSeleccionado() {
+		return listaCursos.getSelectedValue();
+	}
+
+	public void limpiarSeleccion() {
+		listaCursos.clearSelection();
 	}
 }

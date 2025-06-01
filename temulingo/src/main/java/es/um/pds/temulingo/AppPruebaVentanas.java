@@ -1,11 +1,8 @@
 package es.um.pds.temulingo;
 
-import java.awt.Color;
-
 import javax.swing.UIManager;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
 
 import es.um.pds.temulingo.vista.VentanaMain;
 
