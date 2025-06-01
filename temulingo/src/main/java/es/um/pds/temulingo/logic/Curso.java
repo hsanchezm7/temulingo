@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -108,9 +110,13 @@ public class Curso implements Serializable {
 		return bloques;
 	}
 
-	public void setBloques(List<Bloque> bloques) {
-		this.bloques = bloques;
-	}
+    @JsonSetter("bloques")
+    public void setBloques(List<Bloque> bloques) {
+        this.bloques = bloques;
+        if (bloques != null) {
+            bloques.forEach(bloque -> bloque.setCurso(this));
+        }
+    }
 	
 	public EstrategiaAprendizaje getEstrategiaAprendizaje() {
 		return estrategiaAprendizaje;
