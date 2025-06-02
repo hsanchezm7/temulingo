@@ -1,22 +1,26 @@
 package es.um.pds.temulingo.vista;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.Frame;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import es.um.pds.temulingo.config.ConfiguracionTemulingo;
+import es.um.pds.temulingo.controlador.ControladorTemulingo;
 
 public class DialogoImportarCurso extends JDialog {
 
@@ -25,20 +29,26 @@ public class DialogoImportarCurso extends JDialog {
 	private static final String FUNCION = "Importar curso";
 	private static final String NOMBRE_VENTANA = ConfiguracionTemulingo.NOMBRE_APP + " - " + FUNCION;
 
-	private JTextField textField;
+	private static final String DEFAULT_DIRECTORIO = "user.home";
 
-	private final JFrame owner;
+	private static final int ANCHO_DIALOGO = 300;
+	private static final int ALTO_DIALOGO = 180;
 
-	public DialogoImportarCurso(JFrame parent) {
-		super(parent, NOMBRE_VENTANA, true); // Bloquea la ventana padre hasta que esta se cierre
+	private JTextField txtFicheroSel;
+
+	private final Frame owner;
+
+	private File ficheroSel;
+
+	public DialogoImportarCurso(Frame parent) {
+		super(parent, NOMBRE_VENTANA, true);
 
 		this.owner = parent;
 
-		initComponents();
+		inicializarComponentes();
 	}
 
-	private void initComponents() {
-
+	private void inicializarComponentes() {
 		getContentPane().setLayout(new BorderLayout());
 
 		JPanel panelCentro = crearPanelSeleccionCurso();
@@ -48,95 +58,109 @@ public class DialogoImportarCurso extends JDialog {
 		getContentPane().add(panelBotones, BorderLayout.SOUTH);
 
 		pack();
-		setBounds(200, 200, 250, 150);
+		setSize(ANCHO_DIALOGO, ALTO_DIALOGO);
 		setResizable(false);
-		setMinimumSize(getSize());
 		setLocationRelativeTo(owner);
-
 	}
 
 	private JPanel crearPanelSeleccionCurso() {
-		JPanel contentPanel = new JPanel();
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		JPanel panelPrincipal = new JPanel(new BorderLayout());
+		panelPrincipal.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-		GridBagLayout gbl_contentPanel = new GridBagLayout();
-		gbl_contentPanel.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-		gbl_contentPanel.rowHeights = new int[] { 0, 0, 74, 0, 0, 0 };
-		gbl_contentPanel.columnWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		gbl_contentPanel.rowWeights = new double[] { 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
-		contentPanel.setLayout(gbl_contentPanel);
+		JLabel lblTitulo = new JLabel("Seleccionar archivo de curso:", SwingConstants.CENTER);
+		panelPrincipal.add(lblTitulo, BorderLayout.NORTH);
 
-		// Panel contenedor interno
-		JPanel panelInterno = new JPanel();
-		panelInterno.setLayout(new BorderLayout(0, 0));
+		JPanel panelArchivo = new JPanel(new BorderLayout(5, 5));
+		panelArchivo.setBorder(new EmptyBorder(10, 0, 0, 0));
 
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.insets = new Insets(0, 0, 5, 5);
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.gridx = 3;
-		gbc_panel.gridy = 2;
-		contentPanel.add(panelInterno, gbc_panel);
+		txtFicheroSel = new JTextField();
+		txtFicheroSel.setEditable(false);
+		txtFicheroSel.setBackground(Color.WHITE);
+		txtFicheroSel.setToolTipText("Ruta del archivo seleccionado");
 
-		// Panel con el botón y el campo de texto
-		JPanel panelContenido = new JPanel();
-		panelInterno.add(panelContenido, BorderLayout.CENTER);
+		JButton btnSeleccionar = new JButton("Examinar");
+		btnSeleccionar.setPreferredSize(new Dimension(100, txtFicheroSel.getPreferredSize().height));
 
-		GridBagLayout gbl_panelContenido = new GridBagLayout();
-		gbl_panelContenido.columnWidths = new int[] { 0, 0, 0 };
-		gbl_panelContenido.rowHeights = new int[] { 0, 0, 0, 0 };
-		gbl_panelContenido.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
-		gbl_panelContenido.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		panelContenido.setLayout(gbl_panelContenido);
+		btnSeleccionar.addActionListener(e -> seleccionarArchivo());
 
-		JButton btnSeleccionar = new JButton("Seleccionar curso");
-		GridBagConstraints gbc_btnSeleccionar = new GridBagConstraints();
-		gbc_btnSeleccionar.insets = new Insets(0, 0, 5, 0);
-		gbc_btnSeleccionar.gridx = 1;
-		gbc_btnSeleccionar.gridy = 0;
-		panelContenido.add(btnSeleccionar, gbc_btnSeleccionar);
+		panelArchivo.add(txtFicheroSel, BorderLayout.CENTER);
+		panelArchivo.add(btnSeleccionar, BorderLayout.EAST);
 
-		textField = new JTextField();
-		textField.setEditable(false);
-		textField.setColumns(10);
+		panelPrincipal.add(panelArchivo, BorderLayout.CENTER);
 
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 2;
-		panelContenido.add(textField, gbc_textField);
-
-		// Evento para botón
-		btnSeleccionar.addActionListener(e -> {
-			JFileChooser fileChooser = new JFileChooser();
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos YAML y JSON (*.yaml, *.json)", "yml",
-					"yaml", "json");
-			fileChooser.setFileFilter(filter);
-
-			int returnValue = fileChooser.showOpenDialog(null);
-			if (returnValue == JFileChooser.APPROVE_OPTION) {
-				File selectedFile = fileChooser.getSelectedFile();
-				textField.setText(selectedFile.getAbsolutePath());
-			}
-		});
-
-		return contentPanel;
+		return panelPrincipal;
 	}
 
 	private JPanel crearPanelBotones() {
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		panelBotones.setBorder(new EmptyBorder(0, 15, 15, 15));
 
-		JButton okButton = new JButton("Subir");
-		okButton.setActionCommand("OK");
-		buttonPane.add(okButton);
-		getRootPane().setDefaultButton(okButton);
+		JButton btnImportar = new JButton("Importar");
+		btnImportar.setPreferredSize(new Dimension(100, 30));
+		btnImportar.addActionListener(e -> gestionarSubida(ficheroSel));
+		panelBotones.add(btnImportar);
+		getRootPane().setDefaultButton(btnImportar);
 
-		JButton cancelButton = new JButton("Cancelar");
-		cancelButton.setActionCommand("Cancel");
-		cancelButton.addActionListener(e -> dispose());
-		buttonPane.add(cancelButton);
+		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.setPreferredSize(new Dimension(100, 30));
+		btnCancelar.addActionListener(e -> dispose());
+		panelBotones.add(btnCancelar);
 
-		return buttonPane;
+		return panelBotones;
+	}
+
+	private void gestionarSubida(File fichero) {
+		System.out.println("Gestionando la subida del fichero" + fichero.getName());
+		try {
+			ControladorTemulingo.getInstance().importarCursoDesdeFichero(fichero);
+			JOptionPane.showMessageDialog(this, "Curso importado correctamente.", "Éxito",
+					JOptionPane.INFORMATION_MESSAGE);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "Error al importar el curso: " + e.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void seleccionarArchivo() {
+		JFileChooser fileChooser = new JFileChooser();
+
+		FileNameExtensionFilter yamlFilter = new FileNameExtensionFilter("Archivos YAML (*.yaml, *.yml)", "yml",
+				"yaml");
+		FileNameExtensionFilter jsonFilter = new FileNameExtensionFilter("Archivos JSON (*.json)", "json");
+		FileNameExtensionFilter allFilter = new FileNameExtensionFilter(
+				"Todos los archivos soportados (*.yaml, *.yml, *.json)", "yml", "yaml", "json");
+
+		fileChooser.addChoosableFileFilter(allFilter);
+		fileChooser.addChoosableFileFilter(yamlFilter);
+		fileChooser.addChoosableFileFilter(jsonFilter);
+		fileChooser.setFileFilter(allFilter);
+
+		fileChooser.setDialogTitle("Seleccionar archivo de curso");
+		fileChooser.setCurrentDirectory(new File(System.getProperty(DEFAULT_DIRECTORIO)));
+
+		int resultado = fileChooser.showOpenDialog(this);
+		if (resultado == JFileChooser.APPROVE_OPTION) {
+			File archivoSeleccionado = fileChooser.getSelectedFile();
+
+			if (esArchivoValido(archivoSeleccionado)) {
+				txtFicheroSel.setText(archivoSeleccionado.getAbsolutePath());
+				txtFicheroSel.setCaretPosition(txtFicheroSel.getText().length());
+
+				ficheroSel = archivoSeleccionado;
+			} else {
+				JOptionPane.showMessageDialog(this, "Por favor seleccione un archivo YAML (.yaml, .yml) o JSON (.json)",
+						"Tipo de archivo no válido", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+	}
+
+	private boolean esArchivoValido(File archivo) {
+		if (archivo == null || !archivo.exists() || !archivo.isFile()) {
+			return false;
+		}
+
+		String nombre = archivo.getName().toLowerCase();
+		return nombre.endsWith(".json") || nombre.endsWith(".yaml") || nombre.endsWith(".yml");
 	}
 
 }
