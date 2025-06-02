@@ -157,8 +157,8 @@ public class VentanaMain extends JFrame {
 	}
 
 	private JPanel crearPanelBotones() {
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
+		JPanel panelBotones = new JPanel(new BorderLayout());
+		panelBotones.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
 
 		JPanel panelIzquierdo = new JPanel();
 		btnSalir = new JButton("Salir");
@@ -170,10 +170,10 @@ public class VentanaMain extends JFrame {
 		btnIniciar.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panelDerecho.add(btnIniciar);
 
-		panel.add(panelIzquierdo, BorderLayout.WEST);
-		panel.add(panelDerecho, BorderLayout.EAST);
+		panelBotones.add(panelIzquierdo, BorderLayout.WEST);
+		panelBotones.add(panelDerecho, BorderLayout.EAST);
 
-		return panel;
+		return panelBotones;
 	}
 
 	private JButton crearBotonAccion(String texto, String rutaIcono, Dimension tamano, String textoAlternativo) {

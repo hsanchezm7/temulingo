@@ -20,6 +20,10 @@ public class App {
 			e.printStackTrace();
 		}
 
+		// Consola web H2 para el acceso a la BBDD: http://localhost:8082
+		// url: jdbc:h2:./data/temulingo_bbdd
+		// user: sa
+		// password:
 		H2EmbeddedServer.start();
 
 		// Forzar inicialización del controlador
