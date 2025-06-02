@@ -6,7 +6,7 @@ import org.h2.tools.Server;
 
 public class H2EmbeddedServer {
 	private static final String DEFAULT_PORT = "8082";
-	
+
 	private static Server webServer;
 
 	public static void start() {

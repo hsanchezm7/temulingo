@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.io.IOException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -21,7 +20,6 @@ import javax.swing.border.TitledBorder;
 
 import es.um.pds.temulingo.config.ConfiguracionTemulingo;
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
-import es.um.pds.temulingo.logic.CargadorCursosYAML;
 import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.utils.CursoCellRenderer;
 
@@ -48,27 +46,18 @@ public class VentanaMain extends JFrame {
 	private JButton btnSalir;
 
 	public VentanaMain() {
-		inicializarModelo();
+		cargarModelo();
 		inicializarComponentes();
 		configurarEventListeners();
 	}
 
-	private void inicializarModelo() {
+	private void cargarModelo() {
 		modelo = new DefaultListModel<>();
-		cargarDatosMuestra();
+		cargarCursos();
 	}
 
-	private void cargarDatosMuestra() {
-		try {
-			Curso curso1 = CargadorCursosYAML.parseCourseFromResources("/libreria-cursos/curso_ingles_basico.json");
-			Curso curso2 = CargadorCursosYAML.parseCourseFromResources("/libreria-cursos/curso_aleman_basico.yaml");
-			ControladorTemulingo.getInstance().guardarCurso(curso1);
-			ControladorTemulingo.getInstance().guardarCurso(curso2);
-			modelo.addElement(curso1);
-			modelo.addElement(curso2);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	private void cargarCursos() {
+		ControladorTemulingo.getInstance().getAllCursos().stream().forEach(c -> modelo.addElement(c));
 	}
 
 	private void inicializarComponentes() {
@@ -141,6 +130,9 @@ public class VentanaMain extends JFrame {
 	private JPanel crearPanelListaCursos() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
+
+		// TODO: mostrar un JLabel: 'no hay ningún curso en la librería' en caso de que
+		// no haya cursos
 
 		listaCursos = new JList<>(modelo);
 		listaCursos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

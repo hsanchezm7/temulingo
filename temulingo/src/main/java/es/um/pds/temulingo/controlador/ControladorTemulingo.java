@@ -1,14 +1,14 @@
 package es.um.pds.temulingo.controlador;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import es.um.pds.temulingo.dao.base.Dao;
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
-import es.um.pds.temulingo.logic.Bloque;
+import es.um.pds.temulingo.logic.CargadorCursos;
 import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.logic.RepositorioCursos;
 import es.um.pds.temulingo.logic.Usuario;
@@ -18,7 +18,7 @@ public class ControladorTemulingo {
 	private static ControladorTemulingo instance = null;
 
 	private Usuario usuarioActual;
-	
+
 	private RepositorioCursos repoCursos;
 
 	private FactoriaDao factoriaDao;
@@ -26,13 +26,11 @@ public class ControladorTemulingo {
 
 	private HashMap<Long, Usuario> usuarios;
 
-	private List<Curso> cursos;
-
 	private ControladorTemulingo() {
 		inicializarAdaptadores();
-		
+
 		this.repoCursos = RepositorioCursos.getInstance();
-		
+
 		cargarUsuarios();
 
 		this.usuarioActual = null;
@@ -45,7 +43,7 @@ public class ControladorTemulingo {
 
 		return instance;
 	}
-	
+
 	public Usuario getUsuarioActual() {
 		return usuarioActual;
 	}
@@ -60,14 +58,6 @@ public class ControladorTemulingo {
 
 	public void setUsuarios(Map<Long, Usuario> usuarios) {
 		this.usuarios = (HashMap<Long, Usuario>) usuarios;
-	}
-
-	public List<Curso> getCursos() {
-		return cursos;
-	}
-
-	public void setCursos(List<Curso> cursos) {
-		this.cursos = cursos;
 	}
 
 	private void inicializarAdaptadores() {
@@ -94,6 +84,16 @@ public class ControladorTemulingo {
 		if (curso != null) {
 			repoCursos.guardarCurso(curso);
 		}
+	}
+
+	public void importarCursoDesdeFichero(File fichero) throws IOException {
+		Curso curso = CargadorCursos.parsearDesdeFichero(fichero, Curso.class, CargadorCursos.Formato.YAML);
+
+		repoCursos.guardarCurso(curso);
+	}
+
+	public List<Curso> getAllCursos() {
+		return repoCursos.obtenerTodosLosCursos();
 	}
 
 }
