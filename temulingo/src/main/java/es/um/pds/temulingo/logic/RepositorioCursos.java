@@ -16,8 +16,6 @@ public class RepositorioCursos {
 
 	private final Dao<Curso> cursoDao;
 
-	// private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-
 	private RepositorioCursos() {
 		this.cursoDao = FactoriaDao.getDaoFactory().getCursoDao();
 
