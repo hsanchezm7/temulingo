@@ -1,0 +1,24 @@
+# Casos de uso
+
+## 1. Registro de usuario
+**Descripción:** Un nuevo usuario se registra en el sistema proporcionando sus datos personales para crear una cuenta y eligiéndo el tipo de usuario que es, creador o estudiante.
+**Actor principal:** Usuario no registrado. 
+**Precondición:** El usuario no debe tener una cuenta existente con los mismos datos.
+**Postcondición:** Se crea una nueva cuenta de usuario en el sistema y éste puede acceder a la aplicación.
+**Flujo principal:** 
+  1. El usuario accede a la pantalla de registro
+  2. El sistema muestra el formulario de registro
+  3. El usuario introduce sus datos
+  4. El usuario elige su rol(estudiante o creador).
+  5. El sistema valida los datos introducidos
+  6. El sistema crea la cuenta del usuario
+  7. El sistema redirige al usuario a la pantalla de inicio de sesión
+**Flujo alternativo:**
+  5a. Falta algún dato
+    1. El sistema muestra el error 
+  5b. Dato introducido erróneo
+    1. El sistema muestra el error
+
+---
+
+##2. Inicio de sesión
