@@ -2,6 +2,7 @@ package es.um.pds.temulingo.logic;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,7 +54,7 @@ public class Curso implements Serializable {
 	private EstrategiaAprendizaje estrategiaAprendizaje;
 
 	@OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<Bloque> bloques;
+	private List<Bloque> bloques = new LinkedList<>();
 
 	public Curso() {
 	}
@@ -113,6 +114,8 @@ public class Curso implements Serializable {
 	@JsonSetter("bloques")
 	public void setBloques(List<Bloque> bloques) {
 		this.bloques = bloques;
+		
+		// Asegurar bidireccionalidad
 		if (bloques != null) {
 			bloques.forEach(bloque -> bloque.setCurso(this));
 		}

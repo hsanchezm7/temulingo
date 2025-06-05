@@ -1,6 +1,7 @@
 package es.um.pds.temulingo.logic;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,8 +37,8 @@ public class Bloque implements Serializable {
 	@JoinColumn(name = "CURSO_ID")
 	private Curso curso;
 
-	@OneToMany(mappedBy = "bloque", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Pregunta> preguntas;
+	@OneToMany(mappedBy = "bloque", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<Pregunta> preguntas  = new LinkedList<>();
 
 	public Bloque() {
 	}
@@ -88,6 +89,8 @@ public class Bloque implements Serializable {
 
 	public void setPreguntas(List<Pregunta> preguntas) {
 		this.preguntas = preguntas;
+		
+		// Asegurar bidireccionalidad
 		if (preguntas != null) {
 			preguntas.forEach(pregunta -> pregunta.setBloque(this));
 		}
