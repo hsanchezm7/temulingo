@@ -29,6 +29,10 @@ public class Progreso {
     @JoinColumn(name = "CURSO_ID")
     private Curso curso;
 	
+	// ¿Sería mejor inicializar el mapa con todas las respuestas en blanco,
+	// por ejemplo, ocn un string vacío? Así no habría que acceder al objeto 
+	// curso?
+	// Desventaja: sería difícil saber cual sería la siguiente pregunta
 	@ElementCollection
     @CollectionTable(
         name = "RESPUESTAS_PREGUNTAS",
@@ -44,6 +48,30 @@ public class Progreso {
     public Progreso(Curso curso) {
     	this.curso = curso;
     }
+    
+    public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Curso getCurso() {
+		return curso;
+	}
+
+	public void setCurso(Curso curso) {
+		this.curso = curso;
+	}
+
+	public Map<Pregunta, String> getRespuestas() {
+		return respuestas;
+	}
+
+	public void setRespuestas(Map<Pregunta, String> respuestas) {
+		this.respuestas = respuestas;
+	}
 
 	public boolean resolverPregunta(Pregunta pregunta, String respuesta) {
 		respuestas.put(pregunta, respuesta);
@@ -70,6 +98,26 @@ public class Progreso {
     public boolean cursoCompletado() {
         return getSiguientePregunta() == null;
     }
+    
+    public int getNumeroTotalPreguntas() {
+        return curso.getBloques().stream()
+                    .mapToInt(b -> b .getPreguntas().size())
+                    .sum();
+    }
+
+    public int getNumeroRespuestasCorrectas() {
+        return (int) respuestas.entrySet().stream()
+                .filter(e -> e.getKey().esSolucion(e.getValue()))
+                .count();
+    }
+
+    public double getNotaTotal() {
+        int total = getNumeroTotalPreguntas();
+        if (total == 0) return 0.0;
+        
+        return (double) getNumeroRespuestasCorrectas() / total;
+    }
+
 
     @Override
 	public boolean equals(Object o) {
