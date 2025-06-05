@@ -48,6 +48,11 @@ public class Progreso {
 	public boolean resolverPregunta(Pregunta pregunta, String respuesta) {
 		respuestas.put(pregunta, respuesta);
 		
+		// Actualiza la instancia persistente
+		// TODO: quizás esta operación se debería hacer desde un 
+		// repositorio de Usuarios o de Progresos de cursos.
+		FactoriaDao.getDaoFactory().getProgresoDao().edit(this);
+		
 		return pregunta.esSolucion(respuesta);
 	}
 	
