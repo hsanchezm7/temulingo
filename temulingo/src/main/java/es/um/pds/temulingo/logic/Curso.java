@@ -114,7 +114,7 @@ public class Curso implements Serializable {
 	@JsonSetter("bloques")
 	public void setBloques(List<Bloque> bloques) {
 		this.bloques = bloques;
-		
+
 		// Asegurar bidireccionalidad
 		if (bloques != null) {
 			bloques.forEach(bloque -> bloque.setCurso(this));

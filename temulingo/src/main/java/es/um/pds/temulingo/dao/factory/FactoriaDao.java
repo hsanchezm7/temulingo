@@ -17,7 +17,7 @@ public abstract class FactoriaDao {
 	public abstract Dao<Curso> getCursoDao();
 
 	public abstract Dao<Bloque> getBloqueDao();
-	
+
 	public abstract Dao<Pregunta> getPreguntaDao();
 
 	public abstract Dao<Progreso> getProgresoDao();

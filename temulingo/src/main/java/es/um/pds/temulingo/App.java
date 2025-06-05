@@ -6,7 +6,6 @@ import javax.swing.UIManager;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
-import es.um.pds.temulingo.logic.Pregunta;
 import es.um.pds.temulingo.utils.H2EmbeddedServer;
 import es.um.pds.temulingo.vista.VentanaMain;
 
@@ -29,7 +28,7 @@ public class App {
 
 		// Forzar inicialización del controlador
 		ControladorTemulingo controlador = ControladorTemulingo.getInstance();
-		
+
 //		// Iniciar curso
 //        controlador.iniciarCursoTest();
 //        System.out.println("Curso iniciado...\n");

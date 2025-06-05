@@ -23,9 +23,9 @@ public class ControladorTemulingo {
 	private Usuario usuarioActual;
 
 	private RepositorioCursos repoCursos;
-	
+
 	private Progreso cursoActual;
-	
+
 	// Si se opta por implementar usuarios, esta lista
 	// debería ser una propiedad de la clase Usuario
 	private List<Progreso> progresos = new ArrayList<>();
@@ -68,7 +68,7 @@ public class ControladorTemulingo {
 	}
 
 	public void setUsuarios(Map<Long, Usuario> usuarios) {
-		this.usuarios = (HashMap<Long, Usuario>) usuarios;
+		this.usuarios = usuarios;
 	}
 
 	private void inicializarAdaptadores() {
@@ -115,27 +115,27 @@ public class ControladorTemulingo {
 	public void setCursoActual(Progreso cursoActual) {
 		this.cursoActual = cursoActual;
 	}
-	
+
 	public void iniciarCurso(Curso curso) {
 		Progreso cursoNuevo = new Progreso(curso);
-		
+
 		progresoDao.save(cursoNuevo);
-		
+
 		progresos.add(cursoNuevo);
 		setCursoActual(cursoNuevo);
 	}
-	
+
 	public Pregunta getSiguientePregunta() {
 		return cursoActual.getSiguientePregunta();
 	}
-	
+
 	public boolean resolverPregunta(Pregunta pregunta, String respuesta) {
 		return cursoActual.resolverPregunta(pregunta, respuesta);
 	}
-	
+
 	public boolean esCursoActualCompletado() {
-        return getSiguientePregunta() == null;
-    }
+		return getSiguientePregunta() == null;
+	}
 
 	public void iniciarCursoTest() {
 		iniciarCurso(repoCursos.obtenerTodosLosCursos().get(0));
