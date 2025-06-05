@@ -6,6 +6,7 @@ import javax.swing.UIManager;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
+import es.um.pds.temulingo.logic.Pregunta;
 import es.um.pds.temulingo.utils.H2EmbeddedServer;
 import es.um.pds.temulingo.vista.VentanaMain;
 
@@ -27,7 +28,23 @@ public class App {
 		H2EmbeddedServer.start();
 
 		// Forzar inicialización del controlador
-		ControladorTemulingo.getInstance();
+		ControladorTemulingo controlador = ControladorTemulingo.getInstance();
+		
+//		// Iniciar curso
+//        controlador.iniciarCursoTest();
+//        System.out.println("Curso iniciado...\n");
+//
+//        // Loop de preguntas
+//        while (!controlador.esCursoActualCompletado()) {
+//            Pregunta pregunta = controlador.getSiguientePregunta();
+//            System.out.println("Pregunta: " + pregunta.getEnunciado());
+//
+//            String respuesta = "test";
+//            boolean correcta = controlador.resolverPregunta(pregunta, respuesta);
+//            System.out.println("Respuesta dada: \"" + respuesta + "\" - ¿Correcta?: " + correcta + "\n");
+//        }
+//
+//        System.out.println("✅ Curso completado.");
 
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override

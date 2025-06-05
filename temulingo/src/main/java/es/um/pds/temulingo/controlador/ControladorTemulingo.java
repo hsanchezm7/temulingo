@@ -2,6 +2,7 @@ package es.um.pds.temulingo.controlador;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,8 @@ import es.um.pds.temulingo.dao.base.Dao;
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
 import es.um.pds.temulingo.logic.CargadorCursos;
 import es.um.pds.temulingo.logic.Curso;
+import es.um.pds.temulingo.logic.Pregunta;
+import es.um.pds.temulingo.logic.Progreso;
 import es.um.pds.temulingo.logic.RepositorioCursos;
 import es.um.pds.temulingo.logic.Usuario;
 
@@ -20,16 +23,24 @@ public class ControladorTemulingo {
 	private Usuario usuarioActual;
 
 	private RepositorioCursos repoCursos;
+	
+	private Progreso cursoActual;
+	
+	// Si se opta por implementar usuarios, esta lista
+	// debería ser una propiedad de la clase Usuario
+	private List<Progreso> progresos = new ArrayList<>();
 
 	private FactoriaDao factoriaDao;
 	private Dao<Usuario> usuarioDao;
+	private Dao<Progreso> progresoDao;
 
-	private HashMap<Long, Usuario> usuarios;
+	private Map<Long, Usuario> usuarios = new HashMap<>();
 
 	private ControladorTemulingo() {
 		inicializarAdaptadores();
 
 		this.repoCursos = RepositorioCursos.getInstance();
+		this.progresos = progresoDao.getAll();
 
 		cargarUsuarios();
 
@@ -64,6 +75,7 @@ public class ControladorTemulingo {
 		factoriaDao = FactoriaDao.getDaoFactory();
 
 		usuarioDao = factoriaDao.getUsuarioDao();
+		progresoDao = factoriaDao.getProgresoDao();
 	}
 
 	private void cargarUsuarios() {
@@ -94,6 +106,39 @@ public class ControladorTemulingo {
 
 	public List<Curso> getAllCursos() {
 		return repoCursos.obtenerTodosLosCursos();
+	}
+
+	public Progreso getCursoActual() {
+		return cursoActual;
+	}
+
+	public void setCursoActual(Progreso cursoActual) {
+		this.cursoActual = cursoActual;
+	}
+	
+	public void iniciarCurso(Curso curso) {
+		Progreso cursoNuevo = new Progreso(curso);
+		
+		progresoDao.save(cursoNuevo);
+		
+		progresos.add(cursoNuevo);
+		setCursoActual(cursoNuevo);
+	}
+	
+	public Pregunta getSiguientePregunta() {
+		return cursoActual.getSiguientePregunta();
+	}
+	
+	public boolean resolverPregunta(Pregunta pregunta, String respuesta) {
+		return cursoActual.resolverPregunta(pregunta, respuesta);
+	}
+	
+	public boolean esCursoActualCompletado() {
+        return getSiguientePregunta() == null;
+    }
+
+	public void iniciarCursoTest() {
+		iniciarCurso(repoCursos.obtenerTodosLosCursos().get(0));
 	}
 
 }
