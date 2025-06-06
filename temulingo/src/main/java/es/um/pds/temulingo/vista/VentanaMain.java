@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -180,6 +181,7 @@ public class VentanaMain extends JFrame {
 
 	private void configurarEventListeners() {
 		btnImportar.addActionListener(e -> abrirImportarCurso());
+		btnIniciar.addActionListener(e -> iniciarCurso());
 		btnSalir.addActionListener(e -> System.exit(0));
 		// TODO: Añadir listener para btnIniciar y btnAgregar
 	}
@@ -189,6 +191,21 @@ public class VentanaMain extends JFrame {
 		ventanaImportar.setVisible(true);
 	}
 
+	private void iniciarCurso() {
+		Curso cursoSeleccionado = obtenerCursoSeleccionado();
+	    
+	    // Verificar que hay un curso seleccionado
+	    if (cursoSeleccionado == null) {
+	        JOptionPane.showMessageDialog(this, 
+	            "Por favor, selecciona un curso de la lista.", 
+	            "Ningún curso seleccionado", 
+	            JOptionPane.WARNING_MESSAGE);
+	        return;
+	    }
+		
+		VentanaRealizarCurso ventanaIniciar = new VentanaRealizarCurso(cursoSeleccionado);
+		ventanaIniciar.setVisible(true);
+	}
 	public void agregarCurso(Curso curso) {
 		if (curso != null) {
 			modelo.addElement(curso);
