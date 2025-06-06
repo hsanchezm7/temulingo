@@ -61,7 +61,11 @@ public abstract class Pregunta {
 	}
 
 	public void setEnunciado(String enunciado) {
-		this.enunciado = enunciado;
+		System.out.println("=== SETTER ENUNCIADO ===");
+        System.out.println("Enunciado recibido: '" + enunciado + "'");
+        this.enunciado = enunciado;
+        System.out.println("Enunciado establecido: '" + this.enunciado + "'");
+        System.out.println("========================");
 	}
 
 	public Bloque getBloque() {
@@ -71,6 +75,8 @@ public abstract class Pregunta {
 	public void setBloque(Bloque bloque) {
 		this.bloque = bloque;
 	}
+	
+    public abstract String getSolucion();
 
 	public abstract boolean esSolucion(String respuesta);
 
