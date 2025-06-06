@@ -142,5 +142,12 @@ public class Curso implements Serializable {
 	public int hashCode() {
 		return Objects.hashCode(id);
 	}
+	
+	public int getTotalPreguntas() {
+	    // Contar total de preguntas en todos los bloques
+	    return bloques.stream()
+	        .mapToInt(bloque -> bloque.getPreguntas().size())
+	        .sum();
+	}
 
 }

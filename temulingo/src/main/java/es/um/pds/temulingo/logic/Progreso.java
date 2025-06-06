@@ -1,14 +1,19 @@
 package es.um.pds.temulingo.logic;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,37 +21,55 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "PROGRESO")
 public class Progreso {
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@OneToOne
-	@JoinColumn(name = "CURSO_ID")
-	private Curso curso;
-
+    @JoinColumn(name = "CURSO_ID")
+    private Curso curso;
+	
 	// ¿Sería mejor inicializar el mapa con todas las respuestas en blanco,
-	// por ejemplo, ocn un string vacío? Así no habría que acceder al objeto
+	// por ejemplo, ocn un string vacío? Así no habría que acceder al objeto 
 	// curso?
 	// Desventaja: sería difícil saber cual sería la siguiente pregunta
-	@ElementCollection
-	@CollectionTable(name = "RESPUESTAS_PREGUNTAS", joinColumns = @JoinColumn(name = "PROGRESO_ID"))
-	@MapKeyJoinColumn(name = "PREGUNTA_ID")
-	@Column(name = "RESPUESTA")
-	private Map<Pregunta, String> respuestas = new HashMap<>();
+	@ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "RESPUESTAS_PREGUNTAS",
+        joinColumns = @JoinColumn(name = "PROGRESO_ID")
+    )
+    @MapKeyJoinColumn(name = "PREGUNTA_ID")
+    @Column(name = "RESPUESTA")
+    private Map<Pregunta, String> respuestas = new HashMap<>();
+	
+	// Lista para mantener el orden de las preguntas según la estrategia
+	@Transient
+    private List<Pregunta> preguntasOrdenadas = new ArrayList<>();
+	@Transient
+    private int indicePreguntaActual = 0;
 
 	public Progreso() {
-	}
-
-	public Progreso(Curso curso) {
-		this.curso = curso;
-	}
-
-	public Long getId() {
+    }
+	
+    public Progreso(Curso curso) {
+    	this.curso = curso;
+    }
+    
+    private void inicializarPreguntasOrdenadas() {
+        preguntasOrdenadas.clear();
+        for (Bloque bloque : curso.getBloques()) {
+            preguntasOrdenadas.addAll(bloque.getPreguntas());
+        }
+        indicePreguntaActual = 0;
+    }
+    
+    public Long getId() {
 		return id;
 	}
 
@@ -72,48 +95,75 @@ public class Progreso {
 
 	public boolean resolverPregunta(Pregunta pregunta, String respuesta) {
 		respuestas.put(pregunta, respuesta);
-
+		
+		// Avanzar al siguiente índice
+		indicePreguntaActual++;
+		
 		// Actualiza la instancia persistente
-		// TODO: quizás esta operación se debería hacer desde un
+		// TODO: quizás esta operación se debería hacer desde un 
 		// repositorio de Usuarios o de Progresos de cursos.
 		FactoriaDao.getDaoFactory().getProgresoDao().edit(this);
-
+		
 		return pregunta.esSolucion(respuesta);
 	}
-
+	
 	public Pregunta getSiguientePregunta() {
-		for (Bloque bloque : curso.getBloques()) {
-			for (Pregunta pregunta : bloque.getPreguntas()) {
-				if (!respuestas.containsKey(pregunta)) {
-					return pregunta;
-				}
-			}
-		}
-		return null;
-	}
+        /*for (Bloque bloque : curso.getBloques()) {
+            for (Pregunta pregunta : bloque.getPreguntas()) {
+                if (!respuestas.containsKey(pregunta)) {
+                    return pregunta;
+                }
+            }
+        }
+        return null;*/
+		// Si no hay preguntas ordenadas, inicializar
+        if (preguntasOrdenadas.isEmpty()) {
+            inicializarPreguntasOrdenadas();
+        }
+        
+        // Buscar la siguiente pregunta no respondida en el orden establecido
+        for (int i = 0; i < preguntasOrdenadas.size(); i++) {
+            Pregunta pregunta = preguntasOrdenadas.get(i);
+            if (!respuestas.containsKey(pregunta)) {
+                return pregunta;
+            }
+        }
+        return null;
+    }
 
-	public boolean cursoCompletado() {
-		return getSiguientePregunta() == null;
-	}
+    public boolean cursoCompletado() {
+        return getSiguientePregunta() == null;
+    }
+    
+    public int getNumeroTotalPreguntas() {
+        return curso.getBloques().stream()
+                    .mapToInt(b -> b .getPreguntas().size())
+                    .sum();
+    }
 
-	public int getNumeroTotalPreguntas() {
-		return curso.getBloques().stream().mapToInt(b -> b.getPreguntas().size()).sum();
-	}
+    public int getNumeroRespuestasCorrectas() {
+        return (int) respuestas.entrySet().stream()
+                .filter(e -> e.getKey().esSolucion(e.getValue()))
+                .count();
+    }
 
-	public int getNumeroRespuestasCorrectas() {
-		return (int) respuestas.entrySet().stream().filter(e -> e.getKey().esSolucion(e.getValue())).count();
-	}
+    public double getNotaTotal() {
+        int total = getNumeroTotalPreguntas();
+        if (total == 0) return 0.0;
+        
+        return (double) getNumeroRespuestasCorrectas() / total;
+    }
 
-	public double getNotaTotal() {
-		int total = getNumeroTotalPreguntas();
-		if (total == 0) {
-			return 0.0;
-		}
+    public int getPreguntasRespondidas() {
+        return respuestas.size();
+    }
 
-		return (double) getNumeroRespuestasCorrectas() / total;
-	}
+    public double getProgresoPorcentaje() {
+        if (getNumeroTotalPreguntas() == 0) return 0.0;
+        return (double) getPreguntasRespondidas() / getNumeroTotalPreguntas() * 100;
+    }
 
-	@Override
+    @Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
@@ -121,10 +171,64 @@ public class Progreso {
 		Progreso progreso = (Progreso) o;
 		return Objects.equals(id, progreso.id);
 	}
-
-	@Override
+    
+    @Override
 	public int hashCode() {
 		return Objects.hashCode(id);
 	}
+    
+    public void reiniciarConEstrategia(Curso.EstrategiaAprendizaje estrategia) {
+    	// Reiniciar el progreso
+        this.respuestas.clear();
+        this.indicePreguntaActual = 0;
+        
+        // Preparar las preguntas según la estrategia
+        prepararPreguntasSegunEstrategia(estrategia);
+    }
+    
+    private void prepararPreguntasSegunEstrategia(Curso.EstrategiaAprendizaje estrategia) {
+        // Obtener todas las preguntas del curso
+        List<Pregunta> todasLasPreguntas = new ArrayList<>();
+        for (Bloque bloque : curso.getBloques()) {
+            todasLasPreguntas.addAll(bloque.getPreguntas());
+        }
+        
+        switch (estrategia) {
+            case SECUENCIAL:
+                // Las preguntas ya están en orden secuencial
+            	preguntasOrdenadas = new ArrayList<>(todasLasPreguntas);
+                break;
+                
+            case ALEATORIA:
+                // Mezclar las preguntas aleatoriamente
+            	preguntasOrdenadas = new ArrayList<>(todasLasPreguntas);
+            	Collections.shuffle(preguntasOrdenadas, new Random()); // CORREGIDO: era todasLasPreguntas
+                break;
+                
+            case REPETICION_ESPACIADA:
+                // Para la repetición espaciada, podríamos implementar un algoritmo más complejo
+                // Por ahora, mezclamos con un seed fijo para que sea reproducible
+                preguntasOrdenadas = new ArrayList<>(todasLasPreguntas);
+                Collections.shuffle(preguntasOrdenadas, new Random(42)); // CORREGIDO: era todasLasPreguntas
+                break;
+        }
+        
+        // Actualizar el orden de las preguntas en los bloques
+        //actualizarOrdenPreguntas(todasLasPreguntas);
+    }
+
+   /* private void actualizarOrdenPreguntas(List<Pregunta> preguntasOrdenadas) {
+        // Limpiar preguntas de todos los bloques
+        for (Bloque bloque : curso.getBloques()) {
+            bloque.getPreguntas().clear();
+        }
+        
+        // Redistribuir las preguntas ordenadas
+        // Por simplicidad, las ponemos todas en el primer bloque
+        if (!curso.getBloques().isEmpty()) {
+            curso.getBloques().get(0).getPreguntas().addAll(preguntasOrdenadas);
+        }
+    }*/
+
 
 }

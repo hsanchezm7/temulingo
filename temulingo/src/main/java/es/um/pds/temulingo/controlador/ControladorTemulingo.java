@@ -9,9 +9,11 @@ import java.util.Map;
 
 import es.um.pds.temulingo.dao.base.Dao;
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
+import es.um.pds.temulingo.logic.Bloque;
 import es.um.pds.temulingo.logic.CargadorCursos;
 import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.logic.Pregunta;
+import es.um.pds.temulingo.logic.PreguntaTest;
 import es.um.pds.temulingo.logic.Progreso;
 import es.um.pds.temulingo.logic.RepositorioCursos;
 import es.um.pds.temulingo.logic.Usuario;
@@ -68,7 +70,7 @@ public class ControladorTemulingo {
 	}
 
 	public void setUsuarios(Map<Long, Usuario> usuarios) {
-		this.usuarios = usuarios;
+		this.usuarios = (HashMap<Long, Usuario>) usuarios;
 	}
 
 	private void inicializarAdaptadores() {
@@ -117,12 +119,31 @@ public class ControladorTemulingo {
 	}
 
 	public void iniciarCurso(Curso curso) {
-		Progreso cursoNuevo = new Progreso(curso);
+		// Buscar si ya existe un progreso para este curso
+		Progreso progresoExistente = buscarProgresoPorCurso(curso);
 
-		progresoDao.save(cursoNuevo);
+		if (progresoExistente != null) {
+			// Si ya existe, usar el progreso existente
+			setCursoActual(progresoExistente);
+			System.out.println("Continuando curso existente: " + curso.getTitulo());
+		} else {
+			// Si no existe, crear uno nuevo
+			Progreso cursoNuevo = new Progreso(curso);
+			progresoDao.save(cursoNuevo);
+			progresos.add(cursoNuevo);
+			setCursoActual(cursoNuevo);
+			System.out.println("Iniciando nuevo curso: " + curso.getTitulo());
+		}
+	}
 
-		progresos.add(cursoNuevo);
-		setCursoActual(cursoNuevo);
+	/**
+	 * Busca un progreso existente para un curso específico.
+	 * 
+	 * @param curso El curso para el cual buscar el progreso
+	 * @return El progreso encontrado, o null si no existe
+	 */
+	private Progreso buscarProgresoPorCurso(Curso curso) {
+		return progresos.stream().filter(p -> p.getCurso().equals(curso)).findFirst().orElse(null);
 	}
 
 	public Pregunta getSiguientePregunta() {
@@ -139,6 +160,121 @@ public class ControladorTemulingo {
 
 	public void iniciarCursoTest() {
 		iniciarCurso(repoCursos.obtenerTodosLosCursos().get(0));
+	}
+
+	// ========================================
+	// MÉTODOS DE DEBUG Y VALIDACIÓN
+	// ========================================
+
+	/**
+	 * Establece la estrategia de aprendizaje para el curso actual. Reinicia el
+	 * progreso del curso con la nueva estrategia.
+	 * 
+	 * @param estrategia La nueva estrategia de aprendizaje a aplicar
+	 */
+	public void setEstrategiaAprendizaje(Curso.EstrategiaAprendizaje estrategia) {
+		if (cursoActual == null) {
+			System.out.println("ERROR: No se puede establecer estrategia - no hay curso actual");
+			return;
+		}
+
+		System.out.println("=== ESTABLECIENDO ESTRATEGIA ===");
+		System.out.println("Estrategia: " + estrategia);
+
+		// Actualizar la estrategia en el curso
+		cursoActual.getCurso().setEstrategiaAprendizaje(estrategia);
+
+		// Validar el estado del curso antes de continuar
+		validarCursoActual();
+
+		// Reiniciar el progreso con la nueva estrategia
+		cursoActual.reiniciarConEstrategia(estrategia);
+
+		// Persistir los cambios en la base de datos
+		progresoDao.edit(cursoActual);
+
+		// También actualizar el curso en la base de datos
+		Dao<Curso> cursoDao = factoriaDao.getCursoDao();
+		cursoDao.edit(cursoActual.getCurso());
+
+		System.out.println("Estrategia de aprendizaje establecida: " + estrategia);
+		System.out.println("===============================");
+	}
+
+	/**
+	 * Obtiene la estrategia de aprendizaje actual del curso.
+	 * 
+	 * @return La estrategia de aprendizaje actual, o null si no hay curso activo
+	 */
+	public Curso.EstrategiaAprendizaje getEstrategiaAprendizajeActual() {
+		if (cursoActual != null && cursoActual.getCurso() != null) {
+			return cursoActual.getCurso().getEstrategiaAprendizaje();
+		}
+		return null;
+	}
+
+	/**
+	 * Método de debug que valida y muestra información detallada del curso actual.
+	 * Útil para depuración y verificación del estado del curso.
+	 */
+	public void validarCursoActual() {
+		if (cursoActual == null) {
+			System.out.println("ERROR: No hay curso actual");
+			return;
+		}
+
+		Curso curso = cursoActual.getCurso();
+		System.out.println("=== VALIDACIÓN CURSO ACTUAL ===");
+		System.out.println("Título: " + curso.getTitulo());
+		System.out.println("Bloques: " + (curso.getBloques() != null ? curso.getBloques().size() : 0));
+
+		if (curso.getBloques() != null) {
+			for (int i = 0; i < curso.getBloques().size(); i++) {
+				Bloque bloque = curso.getBloques().get(i);
+				System.out.println("Bloque " + i + ": " + bloque.getNombre());
+				System.out
+						.println("  Preguntas: " + (bloque.getPreguntas() != null ? bloque.getPreguntas().size() : 0));
+
+				if (bloque.getPreguntas() != null) {
+					validarPreguntasDelBloque(bloque.getPreguntas());
+				}
+			}
+		}
+
+		System.out.println("==============================");
+	}
+
+	/**
+	 * Método auxiliar para validar las preguntas de un bloque específico.
+	 * 
+	 * @param preguntas Lista de preguntas a validar
+	 */
+	private void validarPreguntasDelBloque(List<Pregunta> preguntas) {
+		for (int j = 0; j < preguntas.size(); j++) {
+			Pregunta pregunta = preguntas.get(j);
+			System.out.println("    Pregunta " + j + ": " + pregunta.getClass().getSimpleName());
+			System.out.println("    Enunciado: " + pregunta.getEnunciado());
+			System.out.println("    Solución: " + pregunta.getSolucion());
+
+			// Validación específica para preguntas tipo test
+			if (pregunta instanceof PreguntaTest) {
+				validarPreguntaTest((PreguntaTest) pregunta);
+			}
+		}
+	}
+
+	/**
+	 * Validación específica para preguntas de tipo test.
+	 * 
+	 * @param preguntaTest La pregunta de tipo test a validar
+	 */
+	private void validarPreguntaTest(PreguntaTest preguntaTest) {
+		System.out.println("    Opciones: " + preguntaTest.getOpciones());
+		System.out.println(
+				"    Número opciones: " + (preguntaTest.getOpciones() != null ? preguntaTest.getOpciones().size() : 0));
+
+		// Llamar al método debug específico de la pregunta
+		preguntaTest.debug();
 	}
 
 }

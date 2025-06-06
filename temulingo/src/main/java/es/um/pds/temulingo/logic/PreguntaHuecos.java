@@ -10,6 +10,15 @@ public class PreguntaHuecos extends Pregunta {
 
 	@Column(name = "SOLUCION")
 	private String solucion;
+	
+	public PreguntaHuecos() {
+        super();
+    }
+    
+    public PreguntaHuecos(Long id, String enunciado, Bloque bloque, String solucion) {
+        super(id, enunciado, bloque);
+        this.solucion = solucion;
+    }
 
 	public void setSolucion(String solucion) {
 		this.solucion = solucion;
@@ -18,11 +27,19 @@ public class PreguntaHuecos extends Pregunta {
 	public String getSolucion() {
 		return solucion;
 	}
+	
 
 	@Override
 	public boolean esSolucion(String respuesta) {
-		// TODO: Convertir a minusculas todo y remover tildes.
-		return respuesta.equals(solucion);
+		if (respuesta == null || solucion == null) {
+            return false;
+        }
+        
+        // Normalizar respuestas
+        String respuestaNormalizada = respuesta.trim().toLowerCase();
+        String solucionNormalizada = solucion.trim().toLowerCase();
+        
+        return respuestaNormalizada.equals(solucionNormalizada);
 	}
 
 }

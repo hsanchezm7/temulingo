@@ -10,6 +10,15 @@ public class PreguntaTraduccion extends Pregunta {
 
 	@Column(name = "SOLUCION")
 	private String solucion;
+	
+	public PreguntaTraduccion() {
+        super();
+    }
+    
+    public PreguntaTraduccion(Long id, String enunciado, Bloque bloque, String solucion) {
+        super(id, enunciado, bloque);
+        this.solucion = solucion;
+    }
 
 	public String getSolucion() {
 		return solucion;
@@ -21,8 +30,15 @@ public class PreguntaTraduccion extends Pregunta {
 
 	@Override
 	public boolean esSolucion(String respuesta) {
-		// TODO: Convertir a minusculas todo y remover tildes.
-		return respuesta.equals(solucion);
+		if (respuesta == null || solucion == null) {
+            return false;
+        }
+        
+        // Normalizar respuestas
+        String respuestaNormalizada = respuesta.trim().toLowerCase();
+        String solucionNormalizada = solucion.trim().toLowerCase();
+        
+        return respuestaNormalizada.equals(solucionNormalizada);
 	}
 
 }
