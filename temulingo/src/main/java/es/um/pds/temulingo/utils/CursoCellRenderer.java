@@ -15,6 +15,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
@@ -38,19 +39,23 @@ public class CursoCellRenderer extends JPanel implements ListCellRenderer<Curso>
 	private JLabel lblAutor;
 	private JTextArea txtDescripcion;
 	private JPanel panelTexto;
+	private JPanel panelContenido;
 
 	private static ImageIcon iconoCurso;
 
 	public CursoCellRenderer() {
 		inicializarComponentes();
-
 		cargarIconoCurso();
 	}
 
 	private void inicializarComponentes() {
-		setLayout(new BorderLayout(MARGEN, MARGEN));
-		setBorder(BorderFactory.createEmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
+		setLayout(new BorderLayout());
 		setOpaque(true);
+
+		// Panel principal de contenido
+		panelContenido = new JPanel(new BorderLayout(MARGEN, MARGEN));
+		panelContenido.setBorder(BorderFactory.createEmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
+		panelContenido.setOpaque(false);
 
 		// Imagen del curso
 		lblImagen = new JLabel();
@@ -92,8 +97,10 @@ public class CursoCellRenderer extends JPanel implements ListCellRenderer<Curso>
 		panelTexto.add(Box.createVerticalStrut(MARGEN_VERTICAL * 2));
 		panelTexto.add(txtDescripcion);
 
-		add(lblImagen, BorderLayout.WEST);
-		add(panelTexto, BorderLayout.CENTER);
+		panelContenido.add(lblImagen, BorderLayout.WEST);
+		panelContenido.add(panelTexto, BorderLayout.CENTER);
+
+		add(panelContenido, BorderLayout.CENTER);
 	}
 
 	private void cargarIconoCurso() {
@@ -134,6 +141,7 @@ public class CursoCellRenderer extends JPanel implements ListCellRenderer<Curso>
 
 		// Aplicar colores a todos los componentes
 		setBackground(backgroundColor);
+		panelContenido.setBackground(backgroundColor);
 		panelTexto.setBackground(backgroundColor);
 
 		lblTitulo.setForeground(foregroundColor);
@@ -141,16 +149,19 @@ public class CursoCellRenderer extends JPanel implements ListCellRenderer<Curso>
 		txtDescripcion.setForeground(foregroundColor);
 		txtDescripcion.setBackground(backgroundColor);
 
-		// Efecto visual para el foco
-		if (cellHasFocus) {
-			setBorder(BorderFactory.createCompoundBorder(
-					BorderFactory.createLineBorder(list.getSelectionBackground().darker(), 1),
-					BorderFactory.createEmptyBorder(MARGEN - 1, MARGEN - 1, MARGEN - 1, MARGEN - 1)));
-		} else {
-			setBorder(BorderFactory.createEmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
+		// Agregar separador en la parte inferior (excepto para el último elemento)
+		// Primero remover cualquier separador existente
+		if (getComponentCount() > 1) {
+			remove(1);
+		}
+		
+		if (index < list.getModel().getSize() - 1) {
+			JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+			separator.setForeground(Color.LIGHT_GRAY);
+			separator.setBackground(Color.LIGHT_GRAY);
+			add(separator, BorderLayout.SOUTH);
 		}
 
 		return this;
 	}
-
 }

@@ -27,7 +27,7 @@ public class DialogoImportarCurso extends JDialog {
 	private static final long serialVersionUID = 1L;
 
 	private static final String FUNCION = "Importar curso";
-	private static final String NOMBRE_VENTANA = ConfiguracionTemulingo.NOMBRE_APP + " - " + FUNCION;
+	private static final String NOMBRE_VENTANA = ConfiguracionTemulingo.NOMBRE + " - " + FUNCION;
 
 	private static final String DEFAULT_DIRECTORIO = "user.home";
 

@@ -1,9 +1,11 @@
 package es.um.pds.temulingo.vista;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -15,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -28,7 +31,7 @@ public class VentanaMain extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private static final String FUNCION = "Inicio";
-	private static final String NOMBRE_VENTANA = ConfiguracionTemulingo.NOMBRE_APP + " - " + FUNCION;
+	private static final String NOMBRE_VENTANA = ConfiguracionTemulingo.NOMBRE + " - " + FUNCION;
 
 	private static final int MARGEN = 10;
 	private static final int ANCHO_BOTON = 170;
@@ -36,16 +39,17 @@ public class VentanaMain extends JFrame {
 	private static final int ESPACIO_ICONO_TEXTO = 15;
 	private static final int FILAS_VISIBLES_LISTA = 5;
 	private static final int ANCHO_SCROLL_PANE = 500;
-	private static final int ALTO_SCROLL_PANE = 300;
 
-	private DefaultListModel<Curso> modelo;
+	private DefaultListModel<Curso> modelo = new DefaultListModel<>();
 	private JList<Curso> listaCursos;
 	private JButton btnEstadisticas;
 	private JButton btnActualizar;
 	private JButton btnImportar;
 	private JButton btnIniciar;
 	private JButton btnSalir;
-
+	private JPanel panelListaCursos;
+	private JPanel panelWrapper;
+	
 	public VentanaMain() {
 		cargarModelo();
 		inicializarComponentes();
@@ -54,17 +58,14 @@ public class VentanaMain extends JFrame {
 
 	private void cargarModelo() {
 		modelo = new DefaultListModel<>();
-		cargarCursos();
-	}
-
-	private void cargarCursos() {
-		ControladorTemulingo.getInstance().getAllCursos().stream().forEach(c -> modelo.addElement(c));
+		modelo.addAll(ControladorTemulingo.getInstance().getAllCursos());
 	}
 
 	private void inicializarComponentes() {
 		setTitle(NOMBRE_VENTANA);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
+		setJMenuBar(new BarraMenu(this));
 
 		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("logo.icono");
 		ImageIcon iconoLogo = new ImageIcon(getClass().getResource(rutaIconoLogo));
@@ -100,11 +101,13 @@ public class VentanaMain extends JFrame {
 		JPanel panelPrincipal = new JPanel(new BorderLayout());
 		panelPrincipal.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
 
-		JPanel panelWrapper = new JPanel(new BorderLayout());
+		panelWrapper = new JPanel(new BorderLayout());
 		panelWrapper.setBorder(new TitledBorder(null, "  Menú  ", TitledBorder.CENTER, TitledBorder.TOP));
 
 		panelWrapper.add(crearPanelBotonesAccion(), BorderLayout.NORTH);
-		panelWrapper.add(crearPanelListaCursos(), BorderLayout.CENTER);
+		
+		panelListaCursos = crearPanelListaCursos();
+		panelWrapper.add(panelListaCursos, BorderLayout.CENTER);
 
 		panelPrincipal.add(panelWrapper, BorderLayout.CENTER);
 		return panelPrincipal;
@@ -116,6 +119,7 @@ public class VentanaMain extends JFrame {
 
 		btnEstadisticas = crearBotonAccion("Estadísticas", ConfiguracionTemulingo.getRutaIcono("stats.icono"),
 				tamanoBoton, "Ver estadísticas");
+
 		btnActualizar = crearBotonAccion("Actualizar", ConfiguracionTemulingo.getRutaIcono("update.icono"), tamanoBoton,
 				"Actualizar cursos");
 		btnImportar = crearBotonAccion("Importar", ConfiguracionTemulingo.getRutaIcono("add.icono"), tamanoBoton,
@@ -129,24 +133,30 @@ public class VentanaMain extends JFrame {
 	}
 
 	private JPanel crearPanelListaCursos() {
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
+	    JPanel panel = new JPanel(new BorderLayout());
+	    panel.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
 
-		// TODO: mostrar un JLabel: 'no hay ningún curso en la librería' en caso de que
-		// no haya cursos
+	    if (modelo.getSize() == 0) {
+	        JLabel labelVacio = new JLabel("No hay ningún curso en la librería");
+	        labelVacio.setHorizontalAlignment(SwingConstants.CENTER);
+	        labelVacio.setFont(labelVacio.getFont().deriveFont(Font.ITALIC));
+	        labelVacio.setForeground(Color.GRAY);
+	        panel.add(labelVacio, BorderLayout.CENTER);
+	    } else {
+	        listaCursos = new JList<>(modelo);
+	        listaCursos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	        listaCursos.setCellRenderer(new CursoCellRenderer());
+	        
+	        int filasVisibles = Math.min(modelo.getSize(), FILAS_VISIBLES_LISTA);
+	        listaCursos.setVisibleRowCount(filasVisibles);
 
-		listaCursos = new JList<>(modelo);
-		listaCursos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		listaCursos.setCellRenderer(new CursoCellRenderer());
+	        JScrollPane scrollPane = new JScrollPane(listaCursos);
+	        scrollPane.setPreferredSize(new Dimension(ANCHO_SCROLL_PANE, scrollPane.getPreferredSize().height - modelo.getSize()));
 
-		listaCursos.setVisibleRowCount(FILAS_VISIBLES_LISTA);
+	        panel.add(scrollPane, BorderLayout.CENTER);
+	    }
 
-		JScrollPane scrollPane = new JScrollPane(listaCursos);
-		scrollPane.setPreferredSize(new Dimension(ANCHO_SCROLL_PANE, ALTO_SCROLL_PANE));
-
-		panel.add(scrollPane, BorderLayout.CENTER);
-
-		return panel;
+	    return panel;
 	}
 
 	private JPanel crearPanelBotones() {
@@ -161,6 +171,7 @@ public class VentanaMain extends JFrame {
 		JPanel panelDerecho = new JPanel();
 		btnIniciar = new JButton("Iniciar");
 		btnIniciar.setAlignmentX(Component.CENTER_ALIGNMENT);
+		getRootPane().setDefaultButton(btnIniciar);
 		panelDerecho.add(btnIniciar);
 
 		panelBotones.add(panelIzquierdo, BorderLayout.WEST);
@@ -180,15 +191,41 @@ public class VentanaMain extends JFrame {
 	}
 
 	private void configurarEventListeners() {
+		btnEstadisticas.addActionListener(e -> abrirEstadisticas());
+		btnActualizar.addActionListener(e -> actualizarListaCursos());
 		btnImportar.addActionListener(e -> abrirImportarCurso());
+		
+		btnSalir.addActionListener(e -> gestionarSalida());
 		btnIniciar.addActionListener(e -> iniciarCurso());
-		btnSalir.addActionListener(e -> System.exit(0));
-		// TODO: Añadir listener para btnIniciar y btnAgregar
 	}
 
 	private void abrirImportarCurso() {
 		DialogoImportarCurso ventanaImportar = new DialogoImportarCurso(this);
 		ventanaImportar.setVisible(true);
+		
+		actualizarListaCursos();
+	}
+	
+	private void abrirEstadisticas() {
+		// TODO: Implementar ventana de estadísticas
+		JOptionPane.showMessageDialog(this, "Funcionalidad de estadísticas en desarrollo", 
+				"Información", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	public void actualizarListaCursos() {
+		modelo.clear();
+		modelo.addAll(ControladorTemulingo.getInstance().getAllCursos());
+		
+		// Recrear y actualizar la vista del panel de cursos
+		panelWrapper.remove(panelListaCursos);
+		panelListaCursos = crearPanelListaCursos();
+		panelWrapper.add(panelListaCursos, BorderLayout.CENTER);
+		
+		panelWrapper.revalidate();
+		panelWrapper.repaint();
+		
+		pack();
+		setLocationRelativeTo(null);
 	}
 
 	private void iniciarCurso() {
@@ -206,17 +243,21 @@ public class VentanaMain extends JFrame {
 		VentanaRealizarCurso ventanaIniciar = new VentanaRealizarCurso(cursoSeleccionado);
 		ventanaIniciar.setVisible(true);
 	}
-	public void agregarCurso(Curso curso) {
-		if (curso != null) {
-			modelo.addElement(curso);
-		}
-	}
-
+	
 	public Curso obtenerCursoSeleccionado() {
 		return listaCursos.getSelectedValue();
 	}
 
 	public void limpiarSeleccion() {
 		listaCursos.clearSelection();
+	}
+	
+	private void gestionarSalida() {
+		int respuesta = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas salir?", "Confirmar salida",
+				JOptionPane.YES_NO_OPTION);
+
+		if (respuesta == JOptionPane.YES_OPTION) {
+			System.exit(0);
+		}
 	}
 }
