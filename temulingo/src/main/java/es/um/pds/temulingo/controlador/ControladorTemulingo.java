@@ -2,21 +2,11 @@ package es.um.pds.temulingo.controlador;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import es.um.pds.temulingo.dao.base.Dao;
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
-import es.um.pds.temulingo.logic.Bloque;
-import es.um.pds.temulingo.logic.CargadorCursos;
-import es.um.pds.temulingo.logic.Curso;
-import es.um.pds.temulingo.logic.Pregunta;
-import es.um.pds.temulingo.logic.PreguntaTest;
-import es.um.pds.temulingo.logic.Progreso;
-import es.um.pds.temulingo.logic.RepositorioCursos;
-import es.um.pds.temulingo.logic.Usuario;
+import es.um.pds.temulingo.logic.*;
 
 public class ControladorTemulingo {
 
@@ -275,6 +265,29 @@ public class ControladorTemulingo {
 
 		// Llamar al método debug específico de la pregunta
 		preguntaTest.debug();
+	}
+
+	public Estadistica generarEstadisticas() {
+		// En el caso de usar un repositorio de usuarios, se podría mover la lógica
+		// a dicha clase
+		int cursosCompletados = (int) progresos.stream()
+				.filter(Progreso::esCursoCompletado)
+				.count();
+
+		int preguntasRespondidas = progresos.stream()
+				.mapToInt(Progreso::getNumRespuestas)
+				.sum();
+
+		int preguntasAcertadas = progresos.stream()
+				.mapToInt(Progreso::getNumRespuestasCorrectas)
+				.sum();
+
+		Estadistica estadisticas = new Estadistica();
+		estadisticas.setCursosCompletados(cursosCompletados);
+		estadisticas.setPreguntasRespondidas(preguntasRespondidas);
+		estadisticas.setPreguntasAcertadas(preguntasAcertadas);
+
+		return estadisticas;
 	}
 
 }

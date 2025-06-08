@@ -12,6 +12,8 @@ import es.um.pds.temulingo.logic.PreguntaHuecos;
 import es.um.pds.temulingo.logic.PreguntaTraduccion;
 import es.um.pds.temulingo.logic.Curso.EstrategiaAprendizaje;
 
+// TODO: En alguna parte de la vista, poner la el numero de pregunta actual y el numero totales de preguntas, o usar un JProgressBar
+
 /**
  * Ventana principal para realizar un curso de Temulingo.
  * Permite al usuario seleccionar una estrategia de aprendizaje,

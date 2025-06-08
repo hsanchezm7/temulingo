@@ -25,6 +25,7 @@ import javax.swing.border.TitledBorder;
 import es.um.pds.temulingo.config.ConfiguracionTemulingo;
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
 import es.um.pds.temulingo.logic.Curso;
+import es.um.pds.temulingo.logic.Estadistica;
 import es.um.pds.temulingo.utils.CursoCellRenderer;
 
 public class VentanaMain extends JFrame {
@@ -207,9 +208,9 @@ public class VentanaMain extends JFrame {
 	}
 	
 	private void abrirEstadisticas() {
-		// TODO: Implementar ventana de estadísticas
-		JOptionPane.showMessageDialog(this, "Funcionalidad de estadísticas en desarrollo", 
-				"Información", JOptionPane.INFORMATION_MESSAGE);
+		Estadistica estadisticas = ControladorTemulingo.getInstance().generarEstadisticas();
+		DialogoEstadisticas ventanaEstadisticas = new DialogoEstadisticas(this, estadisticas);
+		ventanaEstadisticas.setVisible(true);
 	}
 	
 	public void actualizarListaCursos() {
