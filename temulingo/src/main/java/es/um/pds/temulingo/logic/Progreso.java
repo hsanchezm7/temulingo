@@ -131,36 +131,37 @@ public class Progreso {
         return null;
     }
 
-    public boolean cursoCompletado() {
+    public boolean esCursoCompletado() {
         return getSiguientePregunta() == null;
     }
     
-    public int getNumeroTotalPreguntas() {
+    public int getNumTotalPreguntas() {
+        // TODO: mover lógica a Curso, para no violar patrón experto
         return curso.getBloques().stream()
                     .mapToInt(b -> b .getPreguntas().size())
                     .sum();
     }
 
-    public int getNumeroRespuestasCorrectas() {
+    public int getNumRespuestasCorrectas() {
         return (int) respuestas.entrySet().stream()
                 .filter(e -> e.getKey().esSolucion(e.getValue()))
                 .count();
     }
 
     public double getNotaTotal() {
-        int total = getNumeroTotalPreguntas();
+        int total = getNumTotalPreguntas();
         if (total == 0) return 0.0;
         
-        return (double) getNumeroRespuestasCorrectas() / total;
+        return (double) getNumRespuestasCorrectas() / total;
     }
 
-    public int getPreguntasRespondidas() {
+    public int getNumRespuestas() {
         return respuestas.size();
     }
 
     public double getProgresoPorcentaje() {
-        if (getNumeroTotalPreguntas() == 0) return 0.0;
-        return (double) getPreguntasRespondidas() / getNumeroTotalPreguntas() * 100;
+        if (getNumTotalPreguntas() == 0) return 0.0;
+        return (double) getNumRespuestas() / getNumTotalPreguntas() * 100;
     }
 
     @Override
