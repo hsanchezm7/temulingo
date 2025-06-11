@@ -17,6 +17,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -55,6 +57,10 @@ public class Curso implements Serializable {
 
 	@OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Bloque> bloques = new LinkedList<>();
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "USUARIO_ID")
+	private Usuario usuario;
 
 	public Curso() {
 	}
@@ -129,6 +135,14 @@ public class Curso implements Serializable {
 		this.estrategiaAprendizaje = estrategiaAprendizaje;
 	}
 
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass()) {
@@ -142,12 +156,10 @@ public class Curso implements Serializable {
 	public int hashCode() {
 		return Objects.hashCode(id);
 	}
-	
+
 	public int getTotalPreguntas() {
-	    // Contar total de preguntas en todos los bloques
-	    return bloques.stream()
-	        .mapToInt(bloque -> bloque.getPreguntas().size())
-	        .sum();
+		// Contar total de preguntas en todos los bloques
+		return bloques.stream().mapToInt(bloque -> bloque.getPreguntas().size()).sum();
 	}
 
 }

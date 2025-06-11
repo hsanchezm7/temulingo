@@ -2,41 +2,44 @@ package es.um.pds.temulingo.controlador;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 import es.um.pds.temulingo.dao.base.Dao;
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
-import es.um.pds.temulingo.logic.*;
+import es.um.pds.temulingo.logic.Bloque;
+import es.um.pds.temulingo.logic.CargadorCursos;
+import es.um.pds.temulingo.logic.Curso;
+import es.um.pds.temulingo.logic.Estadistica;
+import es.um.pds.temulingo.logic.Pregunta;
+import es.um.pds.temulingo.logic.PreguntaTest;
+import es.um.pds.temulingo.logic.Progreso;
+import es.um.pds.temulingo.logic.RepositorioCursos;
+import es.um.pds.temulingo.logic.RepositorioUsuarios;
+import es.um.pds.temulingo.logic.Usuario;
 
 public class ControladorTemulingo {
 
 	private static ControladorTemulingo instance = null;
 
 	private Usuario usuarioActual;
-
-	private RepositorioCursos repoCursos;
-
 	private Progreso cursoActual;
 
-	// Si se opta por implementar usuarios, esta lista
-	// debería ser una propiedad de la clase Usuario
-	private List<Progreso> progresos = new ArrayList<>();
+	private RepositorioUsuarios repoUsuarios;
+	private RepositorioCursos repoCursos;
 
 	private FactoriaDao factoriaDao;
-	private Dao<Usuario> usuarioDao;
 	private Dao<Progreso> progresoDao;
-
-	private Map<Long, Usuario> usuarios = new HashMap<>();
 
 	private ControladorTemulingo() {
 		inicializarAdaptadores();
 
+		this.repoUsuarios = RepositorioUsuarios.getInstance();
 		this.repoCursos = RepositorioCursos.getInstance();
-		this.progresos = progresoDao.getAll();
-
-		cargarUsuarios();
 
 		this.usuarioActual = null;
+		this.cursoActual = null;
 	}
 
 	public static ControladorTemulingo getInstance() {
@@ -55,49 +58,102 @@ public class ControladorTemulingo {
 		this.usuarioActual = usuarioActual;
 	}
 
-	public Map<Long, Usuario> getUsuarios() {
-		return usuarios;
-	}
-
-	public void setUsuarios(Map<Long, Usuario> usuarios) {
-		this.usuarios = (HashMap<Long, Usuario>) usuarios;
-	}
-
 	private void inicializarAdaptadores() {
 		factoriaDao = FactoriaDao.getDaoFactory();
 
-		usuarioDao = factoriaDao.getUsuarioDao();
 		progresoDao = factoriaDao.getProgresoDao();
 	}
 
-	private void cargarUsuarios() {
-		List<Usuario> usuariosBD = usuarioDao.getAll();
-
-		this.usuarios = new HashMap<>();
-
-		for (Usuario usuario : usuariosBD) {
-			this.usuarios.put(usuario.getId(), usuario);
+	public boolean registrarUsuario(String nombre, String email, String username, String password,
+			LocalDate fechaNacim) {
+		if (nombre == null || email == null || username == null || password == null || fechaNacim == null) {
+			return false;
+			// throw new IllegalArgumentException("Ningún campo puede ser nulo");
 		}
+
+		if (repoUsuarios.obtenerPorEmail(email).isPresent()) {
+			return false;
+			// throw new RegistroInvalidoException("Ya existe un usuario con este email");
+		}
+
+		if (repoUsuarios.obtenerPorUsername(username).isPresent()) {
+			return false;
+			// throw new RegistroInvalidoException("Ya existe un usuario con este nombre de
+			// usuario");
+		}
+
+		repoUsuarios.guardarUsuario(nombre, email, username, password, fechaNacim);
+
+		return true;
 	}
 
-	public void iniciarSesion(String nombre, String email) {
+	public boolean iniciarSesionConEmail(String email, String password) {
+		if (email == null || password == null) {
+			return false;
+			// throw new IllegalArgumentException("El email y la contraseña no pueden ser
+			// nulos");
+		}
 
+		Optional<Usuario> usuarioOpt = repoUsuarios.obtenerPorEmail(email);
+
+		if (usuarioOpt.isEmpty()) {
+			return false;
+			// TODO: throw new CredencialesInvalidasException("Usuario no encontrado");
+		}
+
+		Usuario usuario = usuarioOpt.get();
+
+		if (!usuario.getPassword().equals(password)) {
+			return false;
+			// TODO: throw new CredencialesInvalidasException("Contraseña incorrecta");
+		}
+
+		usuarioActual = usuario;
+
+		return true;
+	}
+
+	public boolean iniciarSesionConUsername(String username, String password) {
+		if (username == null || password == null) {
+			return false;
+			// throw new IllegalArgumentException("El nombre de usuario y la contraseña no
+			// pueden ser nulos");
+		}
+
+		Optional<Usuario> usuarioOpt = repoUsuarios.obtenerPorUsername(username);
+
+		if (usuarioOpt.isEmpty()) {
+			return false;
+			// TODO: throw new CredencialesInvalidasException("Usuario no encontrado");
+		}
+
+		Usuario usuario = usuarioOpt.get();
+
+		if (!usuario.getPassword().equals(password)) {
+			return false;
+			// TODO: throw new CredencialesInvalidasException("Contraseña incorrecta");
+		}
+
+		usuarioActual = usuario;
+
+		return true;
 	}
 
 	public void guardarCurso(Curso curso) {
 		if (curso != null) {
-			repoCursos.guardarCurso(curso);
+			usuarioActual.addCurso(curso);
+			repoUsuarios.actualizarUsuario(usuarioActual);
 		}
 	}
 
 	public void importarCursoDesdeFichero(File fichero) throws IOException {
 		Curso curso = CargadorCursos.parsearDesdeFichero(fichero, Curso.class, CargadorCursos.Formato.YAML);
 
-		repoCursos.guardarCurso(curso);
+		guardarCurso(curso);
 	}
 
 	public List<Curso> getAllCursos() {
-		return repoCursos.obtenerTodosLosCursos();
+		return usuarioActual.getCursos();
 	}
 
 	public Progreso getCursoActual() {
@@ -117,11 +173,9 @@ public class ControladorTemulingo {
 			setCursoActual(progresoExistente);
 			System.out.println("Continuando curso existente: " + curso.getTitulo());
 		} else {
-			// Si no existe, crear uno nuevo
-			Progreso cursoNuevo = new Progreso(curso);
-			progresoDao.save(cursoNuevo);
-			progresos.add(cursoNuevo);
-			setCursoActual(cursoNuevo);
+			Progreso progresoNuevo = usuarioActual.iniciarCurso(curso);
+			repoUsuarios.actualizarUsuario(usuarioActual);
+			setCursoActual(progresoNuevo);
 			System.out.println("Iniciando nuevo curso: " + curso.getTitulo());
 		}
 	}
@@ -133,7 +187,7 @@ public class ControladorTemulingo {
 	 * @return El progreso encontrado, o null si no existe
 	 */
 	private Progreso buscarProgresoPorCurso(Curso curso) {
-		return progresos.stream().filter(p -> p.getCurso().equals(curso)).findFirst().orElse(null);
+		return usuarioActual.getProgresos().stream().filter(p -> p.getCurso().equals(curso)).findFirst().orElse(null);
 	}
 
 	public Pregunta getSiguientePregunta() {
@@ -263,24 +317,15 @@ public class ControladorTemulingo {
 		System.out.println(
 				"    Número opciones: " + (preguntaTest.getOpciones() != null ? preguntaTest.getOpciones().size() : 0));
 
-		// Llamar al método debug específico de la pregunta
 		preguntaTest.debug();
 	}
 
 	public Estadistica generarEstadisticas() {
-		// En el caso de usar un repositorio de usuarios, se podría mover la lógica
-		// a dicha clase
-		int cursosCompletados = (int) progresos.stream()
-				.filter(Progreso::esCursoCompletado)
-				.count();
+		List<Progreso> progresos = usuarioActual.getProgresos();
 
-		int preguntasRespondidas = progresos.stream()
-				.mapToInt(Progreso::getNumRespuestas)
-				.sum();
-
-		int preguntasAcertadas = progresos.stream()
-				.mapToInt(Progreso::getNumRespuestasCorrectas)
-				.sum();
+		int cursosCompletados = (int) progresos.stream().filter(Progreso::esCursoCompletado).count();
+		int preguntasRespondidas = progresos.stream().mapToInt(Progreso::getNumRespuestas).sum();
+		int preguntasAcertadas = progresos.stream().mapToInt(Progreso::getNumRespuestasCorrectas).sum();
 
 		Estadistica estadisticas = new Estadistica();
 		estadisticas.setCursosCompletados(cursosCompletados);
