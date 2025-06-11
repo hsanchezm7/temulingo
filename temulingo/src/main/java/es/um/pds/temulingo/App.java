@@ -1,15 +1,20 @@
 package es.um.pds.temulingo;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+
 import javax.swing.SwingUtilities;
 
 import es.um.pds.temulingo.config.ConfiguracionUI;
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
 import es.um.pds.temulingo.utils.H2EmbeddedServer;
+import es.um.pds.temulingo.vista.VentanaLogin;
 import es.um.pds.temulingo.vista.VentanaMain;
 
 public class App {
 
-	public static void main(String[] args) throws InterruptedException {		
+	public static void main(String[] args) throws InterruptedException, IOException {
 		ConfiguracionUI.inicializar();
 
 		// Consola web H2 para el acceso a la BBDD: http://localhost:8082
@@ -21,6 +26,24 @@ public class App {
 
 		// Forzar inicialización del controlador
 		ControladorTemulingo controlador = ControladorTemulingo.getInstance();
+
+		// Intento de login
+		controlador.registrarUsuario("Juan Pérez", "juan@example.com", "juanp", "123456", LocalDate.of(1990, 5, 20));
+
+		try {
+			boolean loginExitoso = controlador.iniciarSesionConEmail("juan@example.com", "123456");
+			System.out.println("¿Login exitoso?: " + loginExitoso);
+		} catch (Exception e) {
+			System.out.println("Error al iniciar sesión: " + e.getMessage());
+		}
+
+		// Ruta del archivo
+		String ruta = "src/main/resources/libreria-cursos/curso_aleman_basico.yaml";
+
+		// Crear objeto File con la ruta
+		File archivo = new File(ruta);
+
+		controlador.importarCursoDesdeFichero(archivo);
 
 //		// Iniciar curso
 //        controlador.iniciarCursoTest();
@@ -41,8 +64,10 @@ public class App {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				VentanaMain ventanaMain = new VentanaMain();
-				ventanaMain.setVisible(true);
+				/*VentanaMain ventanaMain = new VentanaMain();
+				ventanaMain.setVisible(true);*/
+				VentanaLogin ventanaLogin = new VentanaLogin();
+                ventanaLogin.setVisible(true);
 			}
 		});
 	}

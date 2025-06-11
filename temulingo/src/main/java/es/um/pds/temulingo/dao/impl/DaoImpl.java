@@ -86,10 +86,28 @@ public abstract class DaoImpl<T> implements Dao<T> {
 		}
 	}
 
+	@Override
+	public void delete(T obj) {
+		EntityManager em = null;
+		try {
+			em = getEntityManager();
+			em.getTransaction().begin();
+			if (obj != null) {
+				em.remove(obj);
+			}
+			em.getTransaction().commit();
+		} finally {
+			if (em != null) {
+				em.close();
+			}
+		}
+	}
+
 	public EntityManager getEntityManager() {
 		return emf.createEntityManager();
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Class<T> getEntityClass() {
 		ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
 		Class<T> entityClass = (Class<T>) type.getActualTypeArguments()[0];
