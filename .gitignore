@@ -87,3 +87,8 @@ buildNumber.properties
 .mvn/
 .data/
 *.iml
+
+
+# macOS
+.DS_Store
+**/.DS_Store
