@@ -165,16 +165,32 @@ public class ControladorTemulingo {
 	}
 
 	public void iniciarCurso(Curso curso) {
-		// Buscar si ya existe un progreso para este curso
-		Progreso progresoExistente = buscarProgresoPorCurso(curso);
-
+		// Persistir curso si es nuevo
+	    if (curso.getId() == null) {
+	        factoriaDao.getCursoDao().save(curso);
+	    }
+	 // Obtener curso gestionado por la BD
+		Curso cursoGestionado = factoriaDao.getCursoDao().get(curso.getId())
+				.orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+		
+		// Buscar progreso existente
+	    Progreso progresoExistente = usuarioActual.getProgresos().stream()
+	        .filter(p -> p.getCurso().equals(cursoGestionado))
+	        .findFirst()
+	        .orElse(null);
+	    
+	    
 		if (progresoExistente != null) {
-			// Si ya existe, usar el progreso existente
 			setCursoActual(progresoExistente);
 			System.out.println("Continuando curso existente: " + curso.getTitulo());
 		} else {
-			Progreso progresoNuevo = usuarioActual.iniciarCurso(curso);
-			repoUsuarios.actualizarUsuario(usuarioActual);
+			Progreso progresoNuevo = new Progreso();
+			progresoNuevo.setCurso(cursoGestionado); // Usa el curso gestionado
+	        progresoNuevo.setUsuario(usuarioActual);
+	        
+	        
+	        usuarioActual.getProgresos().add(progresoNuevo);
+			progresoDao.save(progresoNuevo);
 			setCursoActual(progresoNuevo);
 			System.out.println("Iniciando nuevo curso: " + curso.getTitulo());
 		}
@@ -186,9 +202,9 @@ public class ControladorTemulingo {
 	 * @param curso El curso para el cual buscar el progreso
 	 * @return El progreso encontrado, o null si no existe
 	 */
-	private Progreso buscarProgresoPorCurso(Curso curso) {
+	/*private Progreso buscarProgresoPorCurso(Curso curso) {
 		return usuarioActual.getProgresos().stream().filter(p -> p.getCurso().equals(curso)).findFirst().orElse(null);
-	}
+	}*/ 
 
 	public Pregunta getSiguientePregunta() {
 		return cursoActual.getSiguientePregunta();
@@ -334,5 +350,4 @@ public class ControladorTemulingo {
 
 		return estadisticas;
 	}
-
 }

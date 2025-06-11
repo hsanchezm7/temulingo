@@ -11,6 +11,7 @@ import java.util.Random;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -34,7 +35,7 @@ public class Progreso {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToOne
+	@ManyToOne 
 	@JoinColumn(name = "CURSO_ID")
 	private Curso curso;
 

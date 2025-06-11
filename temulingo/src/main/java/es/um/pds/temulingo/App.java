@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 import es.um.pds.temulingo.config.ConfiguracionUI;
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
 import es.um.pds.temulingo.utils.H2EmbeddedServer;
+import es.um.pds.temulingo.vista.VentanaLogin;
 import es.um.pds.temulingo.vista.VentanaMain;
 
 public class App {
@@ -37,7 +38,7 @@ public class App {
 		}
 
 		// Ruta del archivo
-		String ruta = "/home/hugo/repo/learning-app/temulingo/src/main/resources/libreria-cursos/curso_aleman_basico.yaml";
+		String ruta = "src/main/resources/libreria-cursos/curso_aleman_basico.yaml";
 
 		// Crear objeto File con la ruta
 		File archivo = new File(ruta);
@@ -63,8 +64,10 @@ public class App {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				VentanaMain ventanaMain = new VentanaMain();
-				ventanaMain.setVisible(true);
+				/*VentanaMain ventanaMain = new VentanaMain();
+				ventanaMain.setVisible(true);*/
+				VentanaLogin ventanaLogin = new VentanaLogin();
+                ventanaLogin.setVisible(true);
 			}
 		});
 	}

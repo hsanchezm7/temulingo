@@ -137,13 +137,17 @@ public class Usuario implements Serializable {
 	}
 
 	public void addProgreso(Progreso progreso) {
-		progresos.add(progreso);
+		if (this.progresos == null) {
+			this.progresos = new ArrayList<>();
+		}
+		this.progresos.add(progreso);
+		progreso.setUsuario(this); // Asegura la bidireccionalidad
 	}
 
 	public Progreso iniciarCurso(Curso curso) {
 		Progreso cursoNuevo = new Progreso();
 		cursoNuevo.setCurso(curso);
-
+		cursoNuevo.setUsuario(this);
 		progresos.add(cursoNuevo);
 
 		return cursoNuevo;
