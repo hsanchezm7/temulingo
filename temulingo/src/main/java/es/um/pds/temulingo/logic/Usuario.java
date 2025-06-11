@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -137,13 +138,11 @@ public class Usuario implements Serializable {
 	}
 
 	public void addProgreso(Progreso progreso) {
-		if (this.progresos == null) {
-			this.progresos = new ArrayList<>();
-		}
-		this.progresos.add(progreso);
+		progresos.add(progreso);
 		progreso.setUsuario(this); // Asegura la bidireccionalidad
 	}
 
+	// TODO: simplificar para usar el método de arriba
 	public Progreso iniciarCurso(Curso curso) {
 		Progreso cursoNuevo = new Progreso();
 		cursoNuevo.setCurso(curso);
@@ -151,6 +150,18 @@ public class Usuario implements Serializable {
 		progresos.add(cursoNuevo);
 
 		return cursoNuevo;
+	}
+
+	public List<Progreso> getCursosCompletados() {
+		return progresos.stream().filter(Progreso::esCursoCompletado).collect(Collectors.toList());
+	}
+
+	public int getTotalPreguntasRespondidas() {
+		return progresos.stream().mapToInt(Progreso::getNumRespuestas).sum();
+	}
+
+	public int getTotalPreguntasAcertadas() {
+		return progresos.stream().mapToInt(Progreso::getNumRespuestasCorrectas).sum();
 	}
 
 	@Override
