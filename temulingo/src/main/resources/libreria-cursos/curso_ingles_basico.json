@@ -20,6 +20,30 @@
           "enunciado": "Selecciona la palabra correcta para 'perro'",
           "opciones": ["dog", "cat", "bird"],
           "solucion": "dog"
+        },
+        {
+          "tipo": "TEST",
+          "enunciado": "¿Cómo se dice 'libro' en inglés?",
+          "opciones": ["book", "table", "chair"],
+          "solucion": "book"
+        },
+        {
+          "tipo": "TEST",
+          "enunciado": "Selecciona la traducción de 'casa'",
+          "opciones": ["house", "car", "tree"],
+          "solucion": "house"
+        },
+        {
+          "tipo": "TEST",
+          "enunciado": "¿Cómo se dice 'agua' en inglés?",
+          "opciones": ["water", "fire", "earth"],
+          "solucion": "water"
+        },
+        {
+          "tipo": "TEST",
+          "enunciado": "Selecciona la palabra correcta para 'coche'",
+          "opciones": ["car", "bus", "train"],
+          "solucion": "car"
         }
       ]
     },
@@ -42,9 +66,65 @@
           "enunciado": "¿Cuál es el pasado del verbo 'run'?",
           "opciones": ["runned", "ran", "runed"],
           "solucion": "ran"
+        },
+        {
+          "tipo": "HUECOS",
+          "enunciado": "Completa: I _____ a student",
+          "solucion": "am"
+        },
+        {
+          "tipo": "TEST",
+          "enunciado": "¿Cuál es el plural de 'child'?",
+          "opciones": ["childs", "children", "childes"],
+          "solucion": "children"
+        },
+        {
+          "tipo": "TRADUCCION",
+          "enunciado": "Traduce: mesa",
+          "solucion": "table"
+        },
+        {
+          "tipo": "HUECOS",
+          "enunciado": "Completa: They _____ playing football",
+          "solucion": "are"
+        }
+      ]
+    },
+    {
+      "nombre": "Bloque 3: Números y Colores",
+      "descripcion": "Aprende números y colores en inglés",
+      "preguntas": [
+        {
+          "tipo": "TEST",
+          "enunciado": "¿Cómo se dice 'rojo' en inglés?",
+          "opciones": ["red", "blue", "green"],
+          "solucion": "red"
+        },
+        {
+          "tipo": "TEST",
+          "enunciado": "¿Cuál es el número 'cinco' en inglés?",
+          "opciones": ["four", "five", "six"],
+          "solucion": "five"
+        },
+        {
+          "tipo": "TEST",
+          "enunciado": "Selecciona 'azul' en inglés",
+          "opciones": ["black", "blue", "brown"],
+          "solucion": "blue"
+        },
+        {
+          "tipo": "TEST",
+          "enunciado": "¿Cómo se dice 'diez' en inglés?",
+          "opciones": ["ten", "nine", "eleven"],
+          "solucion": "ten"
+        },
+        {
+          "tipo": "TEST",
+          "enunciado": "Selecciona 'amarillo' en inglés",
+          "opciones": ["yellow", "purple", "pink"],
+          "solucion": "yellow"
         }
       ]
     }
   ]
 }
-
