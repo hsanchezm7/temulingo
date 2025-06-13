@@ -3,6 +3,7 @@ package es.um.pds.temulingo.logic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,7 +36,7 @@ public class Progreso {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne 
+	@ManyToOne
 	@JoinColumn(name = "CURSO_ID")
 	private Curso curso;
 
@@ -60,6 +61,15 @@ public class Progreso {
 	@Transient
 	private int indicePreguntaActual = 0;
 
+	@Transient
+	private Map<Bloque, List<Pregunta>> preguntasPorBloque = new LinkedHashMap<>();
+	@Transient
+	private List<Bloque> bloquesOrdenados = new ArrayList<>();
+	@Transient
+	private int indiceBloqueActual = 0;
+	@Transient
+	private int indicePreguntaActualEnBloque = 0;
+
 	public Progreso() {
 	}
 
@@ -68,6 +78,64 @@ public class Progreso {
 		this.curso = curso;
 		this.usuario = usuario;
 	}
+	
+	// MÉTODO CLAVE: Inicializa las estructuras según la estrategia
+		private void inicializarEstructurasEstrategia() {
+			if (curso == null || curso.getEstrategiaAprendizaje() == null) {
+				// Fallback a estrategia secuencial si no hay estrategia definida
+				inicializarPreguntasSecuencial();
+				return;
+			}
+
+			EstrategiaAprendizajeStrategy estrategiaImpl = EstrategiaFactory.crear(curso.getEstrategiaAprendizaje());
+			this.preguntasPorBloque = estrategiaImpl.prepararPreguntas(curso.getBloques());
+			this.bloquesOrdenados = new ArrayList<>(preguntasPorBloque.keySet());
+			
+			// Calcular los índices correctos basándose en las respuestas ya dadas
+			recalcularIndices();
+		}
+		
+		private void inicializarPreguntasSecuencial() {
+			preguntasPorBloque.clear();
+			bloquesOrdenados.clear();
+			
+			for (Bloque bloque : curso.getBloques()) {
+				preguntasPorBloque.put(bloque, new ArrayList<>(bloque.getPreguntas()));
+				bloquesOrdenados.add(bloque);
+			}
+			
+			recalcularIndices();
+		}
+		
+		// Recalcula los índices basándose en las respuestas ya dadas
+		private void recalcularIndices() {
+			int preguntasRespondidas = respuestas.size();
+			int contador = 0;
+			
+			indiceBloqueActual = 0;
+			indicePreguntaActualEnBloque = 0;
+			
+			// Encontrar la posición actual basándose en las preguntas ya respondidas
+			for (int i = 0; i < bloquesOrdenados.size(); i++) {
+				Bloque bloque = bloquesOrdenados.get(i);
+				List<Pregunta> preguntas = preguntasPorBloque.get(bloque);
+				
+				if (contador + preguntas.size() <= preguntasRespondidas) {
+					// Este bloque está completamente respondido
+					contador += preguntas.size();
+				} else {
+					// Este es el bloque actual
+					indiceBloqueActual = i;
+					indicePreguntaActualEnBloque = preguntasRespondidas - contador;
+					break;
+				}
+			}
+			
+			if (contador == preguntasRespondidas && indiceBloqueActual < bloquesOrdenados.size()) {
+				// Estamos al final de un bloque, pero hay más bloques
+				// No hacer nada, los índices ya están correctos
+			}
+		}
 
 	private void inicializarPreguntasOrdenadas() {
 		preguntasOrdenadas.clear();
@@ -91,6 +159,10 @@ public class Progreso {
 
 	public void setCurso(Curso curso) {
 		this.curso = curso;
+		// Reinicializar estructuras cuando se cambia el curso
+				if (curso != null) {
+					inicializarEstructurasEstrategia();
+				}
 	}
 
 	public Usuario getUsuario() {
@@ -107,13 +179,25 @@ public class Progreso {
 
 	public void setRespuestas(Map<Pregunta, String> respuestas) {
 		this.respuestas = respuestas;
+		
+		// Recalcular índices cuando se cambian las respuestas
+				if (curso != null) {
+					recalcularIndices();
+				}
 	}
 
 	public boolean resolverPregunta(Pregunta pregunta, String respuesta) {
 		respuestas.put(pregunta, respuesta);
 
 		// Avanzar al siguiente índice
-		indicePreguntaActual++;
+				if (indicePreguntaActualEnBloque < preguntasPorBloque.get(bloquesOrdenados.get(indiceBloqueActual)).size()) {
+					indicePreguntaActualEnBloque++;
+				}// Si hemos terminado el bloque actual, pasar al siguiente
+				if (indiceBloqueActual < bloquesOrdenados.size() && 
+						indicePreguntaActualEnBloque >= preguntasPorBloque.get(bloquesOrdenados.get(indiceBloqueActual)).size()) {
+						indiceBloqueActual++;
+						indicePreguntaActualEnBloque = 0;
+					}
 
 		// Actualiza la instancia persistente
 		// TODO: quizás esta operación se debería hacer desde un
@@ -124,24 +208,37 @@ public class Progreso {
 	}
 
 	public Pregunta getSiguientePregunta() {
-		/*
-		 * for (Bloque bloque : curso.getBloques()) { for (Pregunta pregunta :
-		 * bloque.getPreguntas()) { if (!respuestas.containsKey(pregunta)) { return
-		 * pregunta; } } } return null;
-		 */
-		// Si no hay preguntas ordenadas, inicializar
-		if (preguntasOrdenadas.isEmpty()) {
-			inicializarPreguntasOrdenadas();
-		}
+		
+		// Asegurar que las estructuras estén inicializadas
+				if (bloquesOrdenados.isEmpty() || preguntasPorBloque.isEmpty()) {
+					System.out.println("DEBUG: Inicializando estructuras de estrategia en getSiguientePregunta()");
+					inicializarEstructurasEstrategia();
+				}
 
-		// Buscar la siguiente pregunta no respondida en el orden establecido
-		for (int i = 0; i < preguntasOrdenadas.size(); i++) {
-			Pregunta pregunta = preguntasOrdenadas.get(i);
-			if (!respuestas.containsKey(pregunta)) {
-				return pregunta;
-			}
-		}
-		return null;
+				System.out.println("DEBUG: Estado actual - Bloque: " + indiceBloqueActual + ", Pregunta en bloque: " + indicePreguntaActualEnBloque);
+				System.out.println("DEBUG: Total bloques: " + bloquesOrdenados.size());
+
+				while (indiceBloqueActual < bloquesOrdenados.size()) {
+					Bloque bloque = bloquesOrdenados.get(indiceBloqueActual);
+					List<Pregunta> preguntas = preguntasPorBloque.get(bloque);
+
+					System.out.println("DEBUG: Bloque actual: " + bloque.getNombre() + ", preguntas en bloque: " + preguntas.size());
+
+					if (indicePreguntaActualEnBloque < preguntas.size()) {
+						Pregunta siguientePregunta = preguntas.get(indicePreguntaActualEnBloque);
+						
+						System.out.println("DEBUG: Devolviendo pregunta: " + siguientePregunta.getEnunciado());
+						// NO verificar si ya fue respondida - seguir el orden de la estrategia
+						return siguientePregunta;
+					} else {
+						System.out.println("DEBUG: Fin de bloque, pasando al siguiente");
+						indiceBloqueActual++;
+						indicePreguntaActualEnBloque = 0;
+					}
+				}
+				
+				System.out.println("DEBUG: No hay más preguntas - curso completado");
+				return null;
 	}
 
 	public boolean esCursoCompletado() {
@@ -192,45 +289,51 @@ public class Progreso {
 	}
 
 	public void reiniciarConEstrategia(Curso.EstrategiaAprendizaje estrategia) {
-		// Reiniciar el progreso
-		this.respuestas.clear();
-		this.indicePreguntaActual = 0;
+		// Aplicar la nueva estrategia PRIMERO
+				EstrategiaAprendizajeStrategy estrategiaImpl = EstrategiaFactory.crear(estrategia);
+				this.preguntasPorBloque = estrategiaImpl.prepararPreguntas(curso.getBloques());
+				this.bloquesOrdenados = new ArrayList<>(preguntasPorBloque.keySet());
+				
+				// Reiniciar el progreso DESPUÉS de aplicar la estrategia
+				this.respuestas.clear();
+				this.indicePreguntaActual = 0;
+				this.indiceBloqueActual = 0;
+				this.indicePreguntaActualEnBloque = 0;
+				
+				// Debug
+				System.out.println("=== PREGUNTAS ORDENADAS POR ESTRATEGIA ===");
+				for (Map.Entry<Bloque, List<Pregunta>> entry : preguntasPorBloque.entrySet()) {
+					System.out.println("Bloque: " + entry.getKey().getNombre());
+					for (Pregunta p : entry.getValue()) {
+						System.out.println(" - " + p.getEnunciado());
+					}
+				}
+				System.out.println("==========================================");
+			}
 
-		// Preparar las preguntas según la estrategia
-		prepararPreguntasSegunEstrategia(estrategia);
-	}
 
-	private void prepararPreguntasSegunEstrategia(Curso.EstrategiaAprendizaje estrategia) {
-		// Obtener todas las preguntas del curso
-		List<Pregunta> todasLasPreguntas = new ArrayList<>();
-		for (Bloque bloque : curso.getBloques()) {
-			todasLasPreguntas.addAll(bloque.getPreguntas());
-		}
-
-		switch (estrategia) {
-		case SECUENCIAL:
-			// Las preguntas ya están en orden secuencial
-			preguntasOrdenadas = new ArrayList<>(todasLasPreguntas);
-			break;
-
-		case ALEATORIA:
-			// Mezclar las preguntas aleatoriamente
-			preguntasOrdenadas = new ArrayList<>(todasLasPreguntas);
-			Collections.shuffle(preguntasOrdenadas, new Random()); // CORREGIDO: era todasLasPreguntas
-			break;
-
-		case REPETICION_ESPACIADA:
-			// Para la repetición espaciada, podríamos implementar un algoritmo más complejo
-			// Por ahora, mezclamos con un seed fijo para que sea reproducible
-			preguntasOrdenadas = new ArrayList<>(todasLasPreguntas);
-			Collections.shuffle(preguntasOrdenadas, new Random(42)); // CORREGIDO: era todasLasPreguntas
-			break;
-		}
-
-		// Actualizar el orden de las preguntas en los bloques
-		// actualizarOrdenPreguntas(todasLasPreguntas);
-	}
-
+	/*
+	 * private void prepararPreguntasSegunEstrategia(Curso.EstrategiaAprendizaje
+	 * estrategia) { // Obtener todas las preguntas del curso List<Pregunta>
+	 * todasLasPreguntas = new ArrayList<>(); for (Bloque bloque :
+	 * curso.getBloques()) { todasLasPreguntas.addAll(bloque.getPreguntas()); }
+	 * 
+	 * switch (estrategia) { case SECUENCIAL: // Las preguntas ya están en orden
+	 * secuencial preguntasOrdenadas = new ArrayList<>(todasLasPreguntas); break;
+	 * 
+	 * case ALEATORIA: // Mezclar las preguntas aleatoriamente preguntasOrdenadas =
+	 * new ArrayList<>(todasLasPreguntas); Collections.shuffle(preguntasOrdenadas,
+	 * new Random()); // CORREGIDO: era todasLasPreguntas break;
+	 * 
+	 * case REPETICION_ESPACIADA: // Para la repetición espaciada, podríamos
+	 * implementar un algoritmo más complejo // Por ahora, mezclamos con un seed
+	 * fijo para que sea reproducible preguntasOrdenadas = new
+	 * ArrayList<>(todasLasPreguntas); Collections.shuffle(preguntasOrdenadas, new
+	 * Random(42)); // CORREGIDO: era todasLasPreguntas break; }
+	 * 
+	 * // Actualizar el orden de las preguntas en los bloques //
+	 * actualizarOrdenPreguntas(todasLasPreguntas); }
+	 */
 	/*
 	 * private void actualizarOrdenPreguntas(List<Pregunta> preguntasOrdenadas) { //
 	 * Limpiar preguntas de todos los bloques for (Bloque bloque :

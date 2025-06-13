@@ -410,13 +410,27 @@ public class VentanaRealizarCurso extends JFrame {
 
 	    // Verificar si hemos terminado el bloque actual
 	    Bloque bloqueActualObj = curso.getBloques().get(bloqueActual);
-	    if (preguntaActualEnBloque >= bloqueActualObj.getPreguntas().size()) {
+	    int totalPreguntasBloque = bloqueActualObj.getPreguntas().size();
+	    
+	 // En repetición espaciada, cada pregunta se repite 1 vez (total = preguntas * 2)
+	    EstrategiaAprendizaje estrategiaActual = ControladorTemulingo.getInstance().getEstrategiaAprendizajeActual();
+	    if (estrategiaActual == EstrategiaAprendizaje.REPETICION_ESPACIADA) {
+	        totalPreguntasBloque *= 2;
+	    }
+	    
+	    if (preguntaActualEnBloque >= totalPreguntasBloque) {
 	        bloqueActual++;
 	        mostrarBloque();
 	        return;
 	    }
 	    // Obtener la pregunta actual
-	    preguntaActual = bloqueActualObj.getPreguntas().get(preguntaActualEnBloque);
+	    preguntaActual = ControladorTemulingo.getInstance().getSiguientePregunta();
+	    
+	 // Si no hay más preguntas, mostrar finalización
+	    if (preguntaActual == null) {
+	        mostrarFinalizacion();
+	        return;
+	    }
 	    
 	   /* // ===== DEBUGGING COMPLETO =====
 	    System.out.println("=== DEBUG PREGUNTA ===");
