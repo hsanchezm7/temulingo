@@ -144,17 +144,18 @@ public class ControladorTemulingo {
 	public void guardarCurso(Curso curso) {
 		if (curso != null) {
 			// Verificar si el curso ya existe en la lista del usuario
-	        boolean cursoYaExiste = usuarioActual.getCursos().stream()
-	            .anyMatch(c -> c.getId() != null && c.getId().equals(curso.getId()) || 
-	                          c.getTitulo().equals(curso.getTitulo()));
-	        
-	        if (!cursoYaExiste) {
-	            usuarioActual.addCurso(curso);
-	            repoUsuarios.actualizarUsuario(usuarioActual);
-	            System.out.println("Curso añadido: " + curso.getTitulo());
-	        } else {
-	            System.out.println("El curso ya existe en la lista del usuario: " + curso.getTitulo());
-	        }
+			boolean cursoYaExiste = usuarioActual.getCursos().stream()
+					.anyMatch(c -> c.getId() != null && c.getId().equals(curso.getId())
+							|| c.getTitulo().equals(curso.getTitulo()));
+
+			if (!cursoYaExiste) {
+				usuarioActual.addCurso(curso);
+				repoCursos.guardarCurso(curso);
+				repoUsuarios.actualizarUsuario(usuarioActual);
+				System.out.println("Curso añadido: " + curso.getTitulo());
+			} else {
+				System.out.println("El curso ya existe en la lista del usuario: " + curso.getTitulo());
+			}
 		}
 	}
 
@@ -177,40 +178,32 @@ public class ControladorTemulingo {
 	}
 
 	public void iniciarCurso(Curso curso) {
-		// Persistir curso si es nuevo
-		if (curso.getId() == null) {
-			factoriaDao.getCursoDao().save(curso);
-		}
-		// Obtener curso gestionado por la BD
-		Curso cursoGestionado = factoriaDao.getCursoDao().get(curso.getId())
-				.orElseThrow(() -> new RuntimeException("Curso no encontrado"));
-		
 		// Buscar progreso existente
-		Progreso progresoExistente = usuarioActual.getProgresos().stream()
-				.filter(p -> p.getCurso().equals(cursoGestionado)).findFirst().orElse(null);
+		Progreso progresoExistente = usuarioActual.getProgresos().stream().filter(p -> p.getCurso().equals(curso))
+				.findFirst().orElse(null);
 
 		if (progresoExistente != null) {
 			setCursoActual(progresoExistente);
 			System.out.println("Continuando curso existente: " + curso.getTitulo());
 			progresoExistente.reiniciarConEstrategia(progresoExistente.getCurso().getEstrategiaAprendizaje());
-	        
-	        // Importante: NO limpiar las respuestas aquí, solo reinicializar estructuras
-	        // Por eso creamos un método específico para esto
-	        inicializarEstructurasProgresoExistente(progresoExistente);
-	        System.out.println("Continuando curso existente: " + curso.getTitulo());
-	        System.out.println("Estrategia aplicada: " + progresoExistente.getCurso().getEstrategiaAprendizaje());
-	    
+
+			// Importante: NO limpiar las respuestas aquí, solo reinicializar estructuras
+			// Por eso creamos un método específico para esto
+			inicializarEstructurasProgresoExistente(progresoExistente);
+			System.out.println("Continuando curso existente: " + curso.getTitulo());
+			System.out.println("Estrategia aplicada: " + progresoExistente.getCurso().getEstrategiaAprendizaje());
+
 		} else {
 			Progreso progresoNuevo = new Progreso();
-			progresoNuevo.setCurso(cursoGestionado); // Usa el curso gestionado
+			progresoNuevo.setCurso(curso); // Usa el curso gestionado
 			progresoNuevo.setUsuario(usuarioActual);
 
 			usuarioActual.getProgresos().add(progresoNuevo);
 			progresoDao.save(progresoNuevo);
 			setCursoActual(progresoNuevo);
 			System.out.println("Iniciando nuevo curso: " + curso.getTitulo());
-			System.out.println("Estrategia aplicada: " + cursoGestionado.getEstrategiaAprendizaje());
-		    
+			System.out.println("Estrategia aplicada: " + curso.getEstrategiaAprendizaje());
+
 		}
 	}
 
@@ -368,22 +361,22 @@ public class ControladorTemulingo {
 
 		return estadisticas;
 	}
-	
+
 	/**
-	 * Inicializa las estructuras de estrategia para un progreso existente
-	 * sin borrar las respuestas ya dadas
+	 * Inicializa las estructuras de estrategia para un progreso existente sin
+	 * borrar las respuestas ya dadas
 	 */
 	private void inicializarEstructurasProgresoExistente(Progreso progreso) {
-	    // Guardar las respuestas existentes
-	    Map<Pregunta, String> respuestasExistentes = new HashMap<>(progreso.getRespuestas());
-	    
-	    // Reinicializar estructuras (esto borrará las respuestas temporalmente)
-	    progreso.reiniciarConEstrategia(progreso.getCurso().getEstrategiaAprendizaje());
-	    
-	    // Restaurar las respuestas
-	    progreso.setRespuestas(respuestasExistentes);
-	    
-	    System.out.println("Estructuras de estrategia inicializadas para progreso existente");
-	    System.out.println("Respuestas restauradas: " + respuestasExistentes.size());
+		// Guardar las respuestas existentes
+		Map<Pregunta, String> respuestasExistentes = new HashMap<>(progreso.getRespuestas());
+
+		// Reinicializar estructuras (esto borrará las respuestas temporalmente)
+		progreso.reiniciarConEstrategia(progreso.getCurso().getEstrategiaAprendizaje());
+
+		// Restaurar las respuestas
+		progreso.setRespuestas(respuestasExistentes);
+
+		System.out.println("Estructuras de estrategia inicializadas para progreso existente");
+		System.out.println("Respuestas restauradas: " + respuestasExistentes.size());
 	}
 }
