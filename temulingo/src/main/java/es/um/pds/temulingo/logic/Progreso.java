@@ -1,5 +1,6 @@
 package es.um.pds.temulingo.logic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,7 +13,6 @@ import java.util.Random;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -24,19 +24,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyJoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "PROGRESO")
-public class Progreso {
+public class Progreso implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
+	@ManyToOne 
 	@JoinColumn(name = "CURSO_ID")
 	private Curso curso;
 

@@ -27,13 +27,14 @@ public abstract class DaoImpl<T> implements Dao<T> {
 	}
 
 	@Override
-	public void save(T obj) {
+	public T save(T obj) {
 		EntityManager em = null;
 		try {
 			em = getEntityManager();
 			em.getTransaction().begin();
 			em.persist(obj);
 			em.getTransaction().commit();
+			return obj;
 		} finally {
 			if (em != null) {
 				em.close();
@@ -42,13 +43,14 @@ public abstract class DaoImpl<T> implements Dao<T> {
 	}
 
 	@Override
-	public void edit(T obj) {
+	public T edit(T obj) {
 		EntityManager em = null;
 		try {
 			em = getEntityManager();
 			em.getTransaction().begin();
-			em.merge(obj);
+			T updatedObj = em.merge(obj);
 			em.getTransaction().commit();
+			return updatedObj;
 		} finally {
 			if (em != null) {
 				em.close();
