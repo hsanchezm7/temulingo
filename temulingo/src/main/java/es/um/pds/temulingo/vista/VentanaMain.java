@@ -49,7 +49,9 @@ public class VentanaMain extends JFrame {
 	private JButton btnIniciar;
 	private JButton btnSalir;
 	private JPanel panelListaCursos;
+	private VentanaRealizarCurso ventanaRealizarCursoActual; // Para mantener la referencia a la ventana de curso abierta
 	private JPanel panelWrapper;
+	
 	
 	public VentanaMain() {
 		cargarModelo();
@@ -240,10 +242,61 @@ public class VentanaMain extends JFrame {
 	            JOptionPane.WARNING_MESSAGE);
 	        return;
 	    }
-		
-		VentanaRealizarCurso ventanaIniciar = new VentanaRealizarCurso(cursoSeleccionado);
-		ventanaIniciar.setVisible(true);
+	    
+	    if (ControladorTemulingo.getInstance().tieneProgresoGuardado(cursoSeleccionado)) {
+            int opcion = JOptionPane.showConfirmDialog(this,
+                "Ya tienes progreso guardado para este curso. ¿Deseas reanudarlo?",
+                "Progreso detectado",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+
+            if (opcion == JOptionPane.YES_OPTION) { // Reanudar
+                ControladorTemulingo.getInstance().reanudarCurso(cursoSeleccionado);
+                abrirVentanaRealizarCurso(cursoSeleccionado);
+            } else { // Empezar uno nuevo: Ahora se abre un diálogo para seleccionar estrategia
+                int confirmarNuevo = JOptionPane.showConfirmDialog(this,
+                    "¿Estás seguro de que quieres empezar un curso nuevo? Esto borrará el progreso anterior.",
+                    "Empezar curso nuevo",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+                if (confirmarNuevo == JOptionPane.YES_OPTION) {
+                    ControladorTemulingo.getInstance().empezarCursoNuevo(cursoSeleccionado);
+                    // Abrir el diálogo para seleccionar la estrategia
+                    DialogoSeleccionEstrategia dialogoEstrategia = new DialogoSeleccionEstrategia(this, cursoSeleccionado);
+                    dialogoEstrategia.setVisible(true);
+                    
+                    // Si el usuario selecciona una estrategia y no cancela, se abrirá VentanaRealizarCurso desde el diálogo
+                    // La lógica del diálogo será: si se selecciona estrategia, llamar a setEstrategiaAprendizaje y luego abrir VentanaRealizarCurso
+                    setEnabled(false);
+                }
+            }
+        } else { // No hay progreso guardado, iniciar nuevo directamente con selección de estrategia
+            ControladorTemulingo.getInstance().empezarCursoNuevo(cursoSeleccionado);
+            DialogoSeleccionEstrategia dialogoEstrategia = new DialogoSeleccionEstrategia(this, cursoSeleccionado);
+            dialogoEstrategia.setVisible(true);
+            
+            setEnabled(false);
+        }
 	}
+	
+	// Nuevo método para abrir VentanaRealizarCurso
+    public void abrirVentanaRealizarCurso(Curso curso) {
+    	VentanaRealizarCurso ventanaIniciar = new VentanaRealizarCurso(this, curso); // Pasar 'this' (VentanaMain)
+    	this.ventanaRealizarCursoActual = ventanaIniciar;
+    	ventanaIniciar.setVisible(true);
+        this.setEnabled(false);
+    }
+    
+ // Necesitas un método para hacer visible/habilitar VentanaMain cuando VentanaRealizarCurso se cierre
+    public void ventanaRealizarCursoCerrada() {
+        // setVisible(true); // Opción 1: Mostrar
+        setEnabled(true); // Opción 2: Habilitar
+        toFront(); // Poner VentanaMain al frente
+        repaint(); // Asegurar que se repinte correctamente
+       // actualizarInfoProgresoCurso();
+        this.ventanaRealizarCursoActual = null; // <--- NEW: Clear the reference
+    }
+
 	
 	public Curso obtenerCursoSeleccionado() {
 		return listaCursos.getSelectedValue();

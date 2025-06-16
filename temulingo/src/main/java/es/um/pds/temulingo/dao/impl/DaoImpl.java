@@ -95,7 +95,8 @@ public abstract class DaoImpl<T> implements Dao<T> {
 			em = getEntityManager();
 			em.getTransaction().begin();
 			if (obj != null) {
-				em.remove(obj);
+				T managedObj = em.merge(obj); 
+				em.remove(managedObj);
 			}
 			em.getTransaction().commit();
 		} finally {

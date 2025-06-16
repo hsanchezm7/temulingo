@@ -2,6 +2,7 @@ package es.um.pds.temulingo.logic;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,6 +24,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 @Entity
@@ -42,6 +45,16 @@ public class Progreso implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "USUARIO_ID")
 	private Usuario usuario;
+	
+	@Column(name = "TIEMPO_TRANSCURRIDO")
+	private Long tiempoTranscurrido = 0L; // en milisegundos
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "FECHA_ULTIMA_SESION")
+	private Date fechaUltimaSesion;
+
+	@Column(name = "ESTADO_GUARDADO")
+	private boolean estadoGuardado = false;
 
 	// ¿Sería mejor inicializar el mapa con todas las respuestas en blanco,
 	// por ejemplo, ocn un string vacío? Así no habría que acceder al objeto
@@ -274,6 +287,16 @@ public class Progreso implements Serializable {
 		}
 		return (double) getNumRespuestas() / getNumTotalPreguntas() * 100;
 	}
+	
+	// Getters y setters
+	public Long getTiempoTranscurrido() { return tiempoTranscurrido; }
+	public void setTiempoTranscurrido(Long tiempoTranscurrido) { this.tiempoTranscurrido = tiempoTranscurrido; }
+
+	public Date getFechaUltimaSesion() { return fechaUltimaSesion; }
+	public void setFechaUltimaSesion(Date fechaUltimaSesion) { this.fechaUltimaSesion = fechaUltimaSesion; }
+
+	public boolean isEstadoGuardado() { return estadoGuardado; }
+	public void setEstadoGuardado(boolean estadoGuardado) { this.estadoGuardado = estadoGuardado; }
 
 	@Override
 	public boolean equals(Object o) {
