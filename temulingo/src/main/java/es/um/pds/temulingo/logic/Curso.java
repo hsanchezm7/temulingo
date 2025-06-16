@@ -148,6 +148,7 @@ public class Curso implements Serializable {
 		Curso curso = (Curso) o;
 		return Objects.equals(id, curso.id);
 	}
+	
 
 	@Override
 	public int hashCode() {
