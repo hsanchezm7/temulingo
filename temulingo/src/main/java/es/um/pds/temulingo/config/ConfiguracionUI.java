@@ -1,13 +1,20 @@
 package es.um.pds.temulingo.config;
 
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.IOException;
+import java.io.InputStream;
 
+import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public class ConfiguracionUI {
 
 	private static final Tema TEMA_POR_DEFECTO = Tema.FLAT_INTELLIJ;
+	private static final int RADIO_BORDES = 10;
+
 	private static Tema temaActual = null;
 
 	public static void inicializar() {
@@ -19,8 +26,36 @@ public class ConfiguracionUI {
 			e.printStackTrace();
 		}
 
+		// Opciones en castellano
 		UIManager.put("OptionPane.yesButtonText", "Sí");
 		UIManager.put("OptionPane.noButtonText", "No");
+
+		configurarFuente();
+
+		// Aviso: puede no funcionar con ciertos temas
+		ImageIcon iconoInfo = new ImageIcon(
+				ConfiguracionUI.class.getResource(ConfiguracionTemulingo.getRutaIcono("info.icono")));
+		ImageIcon iconoError = new ImageIcon(
+				ConfiguracionUI.class.getResource(ConfiguracionTemulingo.getRutaIcono("error.icono")));
+
+		UIManager.put("OptionPane.informationIcon", iconoInfo);
+		UIManager.put("OptionPane.errorIcon", iconoError);
+
+		UIManager.put("Component.arc", RADIO_BORDES);
+		UIManager.put("TextComponent.arc", RADIO_BORDES);
+	}
+
+	private static void configurarFuente() {
+		try {
+			InputStream fontStream = ConfiguracionUI.class.getResourceAsStream("/fonts/Inter.ttf");
+			Font interFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(13f);
+
+			UIManager.put("defaultFont", interFont);
+			System.setProperty("awt.useSystemAAFontSettings", "on"); // Anti-aliasing del texto
+		} catch (NullPointerException | FontFormatException | IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public enum CategoriasTema {
@@ -85,8 +120,9 @@ public class ConfiguracionUI {
 	public static void cambiarTema(Tema tema, Component parent) throws Exception {
 		UIManager.setLookAndFeel(tema.getClassName());
 
-		if (parent != null)
+		if (parent != null) {
 			SwingUtilities.updateComponentTreeUI(parent);
+		}
 
 		setTemaActual(tema);
 	}

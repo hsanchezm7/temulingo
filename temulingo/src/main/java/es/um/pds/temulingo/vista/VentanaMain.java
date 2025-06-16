@@ -70,7 +70,7 @@ public class VentanaMain extends JFrame {
 		setLayout(new BorderLayout());
 		setJMenuBar(new BarraMenu(this));
 
-		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("logo.icono");
+		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("logo-icon.icono");
 		ImageIcon iconoLogo = new ImageIcon(getClass().getResource(rutaIconoLogo));
 		setIconImage(iconoLogo.getImage());
 
@@ -91,7 +91,7 @@ public class VentanaMain extends JFrame {
 	private JPanel crearPanelLogo() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, MARGEN, MARGEN));
 
-		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("logo.icono");
+		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("banner.icono");
 		ImageIcon iconoLogo = new ImageIcon(getClass().getResource(rutaIconoLogo));
 
 		JLabel lblLogo = new JLabel(iconoLogo);
