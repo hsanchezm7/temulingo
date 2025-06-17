@@ -58,6 +58,12 @@ public class ConfiguracionUI {
 
 	}
 
+	public static ImageIcon getIconoApp() {
+		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("logo-icon.icono");
+		return new ImageIcon(ConfiguracionUI.class.getResource(rutaIconoLogo));
+
+	}
+
 	public enum CategoriasTema {
 		FLATLAF("Temas de FlatLaf"), SISTEMA("Temas del Sistema"), CLASICOS("Temas Clásicos"),
 		INTELLIJ("Temas de IntelliJ");

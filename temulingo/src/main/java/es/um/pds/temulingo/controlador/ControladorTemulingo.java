@@ -7,10 +7,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 
 import es.um.pds.temulingo.dao.base.Dao;
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
+import es.um.pds.temulingo.exception.ExcepcionCredencialesInvalidas;
 import es.um.pds.temulingo.logic.Bloque;
 import es.um.pds.temulingo.logic.CargadorCursos;
 import es.um.pds.temulingo.logic.Curso;
@@ -97,56 +98,32 @@ public class ControladorTemulingo {
 		return true;
 	}
 
-	public boolean iniciarSesionConEmail(String email, String password) {
-		if (email == null || password == null) {
-			return false;
-			// throw new IllegalArgumentException("El email y la contraseña no pueden ser
-			// nulos");
+	public boolean iniciarSesion(String input, String password)
+			throws NullPointerException, ExcepcionCredencialesInvalidas {
+		// Caso 1: validar los parámetros de entrada
+		Objects.requireNonNull(input, "El username/email no puede ser nulo");
+		Objects.requireNonNull(password, "La contraseña no puede ser nula");
+
+		// Caso 2: usuario no existe
+		Usuario usuario;
+
+		if (input.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+			usuario = repoUsuarios.obtenerPorEmail(input).orElseThrow(
+					() -> new ExcepcionCredencialesInvalidas("Usuario con email '" + input + "' no encontrado"));
+		} else {
+			usuario = repoUsuarios.obtenerPorUsername(input).orElseThrow(() -> new ExcepcionCredencialesInvalidas(
+					"Usuario con nombre de usuario '" + input + "' no encontrado"));
 		}
 
-		Optional<Usuario> usuarioOpt = repoUsuarios.obtenerPorEmail(email);
-
-		if (usuarioOpt.isEmpty()) {
-			return false;
-			// TODO: throw new CredencialesInvalidasException("Usuario no encontrado");
-		}
-
-		Usuario usuario = usuarioOpt.get();
-
+		// Caso 3: la contraseña es incorrecta
 		if (!usuario.getPassword().equals(password)) {
-			return false;
-			// TODO: throw new CredencialesInvalidasException("Contraseña incorrecta");
+			throw new ExcepcionCredencialesInvalidas("La contraseña introducida es incorrecta");
 		}
 
 		usuarioActual = usuario;
 
 		return true;
-	}
 
-	public boolean iniciarSesionConUsername(String username, String password) {
-		if (username == null || password == null) {
-			return false;
-			// throw new IllegalArgumentException("El nombre de usuario y la contraseña no
-			// pueden ser nulos");
-		}
-
-		Optional<Usuario> usuarioOpt = repoUsuarios.obtenerPorUsername(username);
-
-		if (usuarioOpt.isEmpty()) {
-			return false;
-			// TODO: throw new CredencialesInvalidasException("Usuario no encontrado");
-		}
-
-		Usuario usuario = usuarioOpt.get();
-
-		if (!usuario.getPassword().equals(password)) {
-			return false;
-			// TODO: throw new CredencialesInvalidasException("Contraseña incorrecta");
-		}
-
-		usuarioActual = usuario;
-
-		return true;
 	}
 
 	// ========================================
@@ -184,73 +161,74 @@ public class ControladorTemulingo {
 	// ========================================
 	// MÉTODOS DE REANUDACIÓN DE CURSOS
 	// ========================================
-	
+
 	/**
 	 * CU08: Verifica si un curso tiene progreso guardado
 	 */
 	public boolean tieneProgresoGuardado(Curso curso) {
-		if (usuarioActual == null) return false;
-		
+		if (usuarioActual == null) {
+			return false;
+		}
+
 		return usuarioActual.getProgresos().stream()
-			.anyMatch(p -> p.getCurso().equals(curso) && 
-						  (p.isEstadoGuardado() || p.getNumRespuestas() > 0));
+				.anyMatch(p -> p.getCurso().equals(curso) && (p.isEstadoGuardado() || p.getNumRespuestas() > 0));
 	}
 
 	/**
 	 * CU08: Obtiene el progreso guardado de un curso específico
 	 */
 	public Progreso obtenerProgresoGuardado(Curso curso) {
-		if (usuarioActual == null) return null;
-		
+		if (usuarioActual == null) {
+			return null;
+		}
+
 		return usuarioActual.getProgresos().stream()
-			.filter(p -> p.getCurso().equals(curso) && 
-						(p.isEstadoGuardado() || p.getNumRespuestas() > 0))
-			.findFirst()
-			.orElse(null);
+				.filter(p -> p.getCurso().equals(curso) && (p.isEstadoGuardado() || p.getNumRespuestas() > 0))
+				.findFirst().orElse(null);
 	}
-	
+
 	/**
 	 * CU08: Reanuda un curso desde donde se dejó
 	 */
 	public boolean reanudarCurso(Curso curso) {
 		try {
 			Progreso progresoGuardado = obtenerProgresoGuardado(curso);
-			
+
 			if (progresoGuardado == null) {
 				System.err.println("No hay progreso guardado para el curso: " + curso.getTitulo());
 				return false;
 			}
-			
+
 			// Establecer como curso actual
 			setCursoActual(progresoGuardado);
-			
+
 			// Asegurarse de que la estrategia esté configurada en el objeto Progreso
-						if (progresoGuardado.getCurso().getEstrategiaAprendizaje() == null) {
-							// Si por alguna razón no tiene estrategia, establecer una por defecto
-							progresoGuardado.getCurso().setEstrategiaAprendizaje(Curso.EstrategiaAprendizaje.SECUENCIAL);
-							cursoDao.edit(progresoGuardado.getCurso()); // Persistir si se cambió
-						}
-			
+			if (progresoGuardado.getCurso().getEstrategiaAprendizaje() == null) {
+				// Si por alguna razón no tiene estrategia, establecer una por defecto
+				progresoGuardado.getCurso().setEstrategiaAprendizaje(Curso.EstrategiaAprendizaje.SECUENCIAL);
+				cursoDao.edit(progresoGuardado.getCurso()); // Persistir si se cambió
+			}
+
 			// Inicializar estructuras de estrategia sin perder progreso
 			inicializarEstructurasProgresoExistente(progresoGuardado);
-			
+
 			// Actualizar fecha de última sesión
 			progresoGuardado.setFechaUltimaSesion(new Date());
 			progresoDao.edit(progresoGuardado);
-			
+
 			System.out.println("Curso reanudado: " + curso.getTitulo());
 			System.out.println("Progreso: " + String.format("%.1f%%", progresoGuardado.getProgresoPorcentaje()));
-			System.out.println("Preguntas respondidas: " + progresoGuardado.getNumRespuestas() + 
-							  "/" + progresoGuardado.getNumTotalPreguntas());
-			
+			System.out.println("Preguntas respondidas: " + progresoGuardado.getNumRespuestas() + "/"
+					+ progresoGuardado.getNumTotalPreguntas());
+
 			return true;
-			
+
 		} catch (Exception e) {
 			System.err.println("Error al reanudar curso: " + e.getMessage());
 			return false;
 		}
 	}
-	
+
 	/**
 	 * CU08: Inicia un curso completamente nuevo
 	 */
@@ -262,7 +240,8 @@ public class ControladorTemulingo {
 
 			Progreso progresoExistente = obtenerProgresoGuardado(curso); // Esta instancia podría estar detached
 			if (progresoExistente != null) {
-				System.out.println("Intentando eliminar progreso existente para curso: " + curso.getTitulo() + " con ID: " + progresoExistente.getId());
+				System.out.println("Intentando eliminar progreso existente para curso: " + curso.getTitulo()
+						+ " con ID: " + progresoExistente.getId());
 
 				// 1. Obtener una instancia 'gestionada' del progreso existente usando su ID.
 				// El método 'get' de tu DaoImpl es el equivalente a 'findById'.
@@ -278,10 +257,13 @@ public class ControladorTemulingo {
 					progresoDao.delete(progresoManaged); // Usar el método 'delete' de tu DaoImpl
 					System.out.println("Progreso existente eliminado correctamente.");
 				} else {
-					// Esto ocurre si el progreso con ese ID ya no existe en la BD o no se pudo adjuntar.
+					// Esto ocurre si el progreso con ese ID ya no existe en la BD o no se pudo
+					// adjuntar.
 					// No se puede eliminar a través del DAO si no está gestionado o no existe.
-					System.out.println("Advertencia: El progreso existente (ID: " + progresoExistente.getId() + ") no se encontró para adjuntar/eliminar. Puede que ya haya sido eliminado o el ID sea incorrecto.");
-					// Si aún necesitas eliminarlo de la lista en memoria del usuario (si estaba allí):
+					System.out.println("Advertencia: El progreso existente (ID: " + progresoExistente.getId()
+							+ ") no se encontró para adjuntar/eliminar. Puede que ya haya sido eliminado o el ID sea incorrecto.");
+					// Si aún necesitas eliminarlo de la lista en memoria del usuario (si estaba
+					// allí):
 					usuarioActual.getProgresos().remove(progresoExistente);
 				}
 			}
@@ -297,7 +279,8 @@ public class ControladorTemulingo {
 			progresoNuevo.setFechaUltimaSesion(new Date());
 
 			usuarioActual.getProgresos().add(progresoNuevo);
-			progresoDao.save(progresoNuevo); // Asegurarse de que el objeto se guarda y se le asigna un ID si es necesario
+			progresoDao.save(progresoNuevo); // Asegurarse de que el objeto se guarda y se le asigna un ID si es
+												// necesario
 			setCursoActual(progresoNuevo); // ESTO ESTÁ GARANTIZADO SI NO HAY EXCEPCIÓN PREVIA
 
 			System.out.println("Curso nuevo iniciado: " + curso.getTitulo());
@@ -316,14 +299,14 @@ public class ControladorTemulingo {
 	 */
 	public String obtenerResumenProgreso(Curso curso) {
 		Progreso progreso = obtenerProgresoGuardado(curso);
-		if (progreso == null) return "Sin progreso";
-		
-		return String.format("%.1f%% - %d/%d preguntas", 
-							progreso.getProgresoPorcentaje(),
-							progreso.getNumRespuestas(),
-							progreso.getNumTotalPreguntas());
+		if (progreso == null) {
+			return "Sin progreso";
+		}
+
+		return String.format("%.1f%% - %d/%d preguntas", progreso.getProgresoPorcentaje(), progreso.getNumRespuestas(),
+				progreso.getNumTotalPreguntas());
 	}
-	
+
 	/**
 	 * CU08: Obtiene la fecha de la última sesión formateada
 	 */
@@ -332,16 +315,14 @@ public class ControladorTemulingo {
 		if (progreso == null || progreso.getFechaUltimaSesion() == null) {
 			return "Nunca iniciado";
 		}
-		
-		return new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm")
-			   .format(progreso.getFechaUltimaSesion());
+
+		return new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(progreso.getFechaUltimaSesion());
 	}
-	
 
 	// ========================================
-		// MÉTODOS DE PROGRESO Y CURSO ACTUAL
-		// ========================================
-	
+	// MÉTODOS DE PROGRESO Y CURSO ACTUAL
+	// ========================================
+
 	public Progreso getCursoActual() {
 		return cursoActual;
 	}
@@ -351,33 +332,35 @@ public class ControladorTemulingo {
 	}
 
 	public void iniciarCurso(Curso curso) {
-		/*// Buscar progreso existente
-		Progreso progresoExistente = usuarioActual.getProgresos().stream().filter(p -> p.getCurso().equals(curso))
-				.findFirst().orElse(null);
-
-		if (progresoExistente != null) {
-			setCursoActual(progresoExistente);
-			System.out.println("Continuando curso existente: " + curso.getTitulo());
-			progresoExistente.reiniciarConEstrategia(progresoExistente.getCurso().getEstrategiaAprendizaje());
-
-			// Importante: NO limpiar las respuestas aquí, solo reinicializar estructuras
-			// Por eso creamos un método específico para esto
-			inicializarEstructurasProgresoExistente(progresoExistente);
-			System.out.println("Continuando curso existente: " + curso.getTitulo());
-			System.out.println("Estrategia aplicada: " + progresoExistente.getCurso().getEstrategiaAprendizaje());
-
-		} else {
-			Progreso progresoNuevo = new Progreso();
-			progresoNuevo.setCurso(curso); // Usa el curso gestionado
-			progresoNuevo.setUsuario(usuarioActual);
-
-			usuarioActual.getProgresos().add(progresoNuevo);
-			progresoDao.save(progresoNuevo);
-			setCursoActual(progresoNuevo);
-			System.out.println("Iniciando nuevo curso: " + curso.getTitulo());
-			System.out.println("Estrategia aplicada: " + curso.getEstrategiaAprendizaje());
-
-		}*/
+		/*
+		 * // Buscar progreso existente Progreso progresoExistente =
+		 * usuarioActual.getProgresos().stream().filter(p -> p.getCurso().equals(curso))
+		 * .findFirst().orElse(null);
+		 * 
+		 * if (progresoExistente != null) { setCursoActual(progresoExistente);
+		 * System.out.println("Continuando curso existente: " + curso.getTitulo());
+		 * progresoExistente.reiniciarConEstrategia(progresoExistente.getCurso().
+		 * getEstrategiaAprendizaje());
+		 * 
+		 * // Importante: NO limpiar las respuestas aquí, solo reinicializar estructuras
+		 * // Por eso creamos un método específico para esto
+		 * inicializarEstructurasProgresoExistente(progresoExistente);
+		 * System.out.println("Continuando curso existente: " + curso.getTitulo());
+		 * System.out.println("Estrategia aplicada: " +
+		 * progresoExistente.getCurso().getEstrategiaAprendizaje());
+		 * 
+		 * } else { Progreso progresoNuevo = new Progreso();
+		 * progresoNuevo.setCurso(curso); // Usa el curso gestionado
+		 * progresoNuevo.setUsuario(usuarioActual);
+		 * 
+		 * usuarioActual.getProgresos().add(progresoNuevo);
+		 * progresoDao.save(progresoNuevo); setCursoActual(progresoNuevo);
+		 * System.out.println("Iniciando nuevo curso: " + curso.getTitulo());
+		 * System.out.println("Estrategia aplicada: " +
+		 * curso.getEstrategiaAprendizaje());
+		 * 
+		 * }
+		 */
 		if (tieneProgresoGuardado(curso)) {
 			reanudarCurso(curso);
 		} else {
@@ -400,17 +383,19 @@ public class ControladorTemulingo {
 	public void iniciarCursoTest() {
 		iniciarCurso(repoCursos.obtenerTodosLosCursos().get(0));
 	}
-	
+
 	// ========================================
-		// CU08: MÉTODOS DE GUARDADO
-		// ========================================
+	// CU08: MÉTODOS DE GUARDADO
+	// ========================================
 
 	/**
 	 * CU08: Guardado automático mejorado
 	 */
 	public boolean guardarEstadoAutomatico() {
-		if (cursoActual == null) return false;
-		
+		if (cursoActual == null) {
+			return false;
+		}
+
 		try {
 			cursoActual.setEstadoGuardado(true);
 			cursoActual.setFechaUltimaSesion(new Date());
@@ -426,15 +411,15 @@ public class ControladorTemulingo {
 		if (cursoActual == null) {
 			return false;
 		}
-		
+
 		try {
 			// Marcar como guardado explícitamente
 			cursoActual.setEstadoGuardado(true);
 			cursoActual.setFechaUltimaSesion(new Date());
-			
+
 			// Guardar en BD
 			progresoDao.edit(cursoActual);
-			
+
 			return true;
 		} catch (Exception e) {
 			System.err.println("Error al guardar estado del curso: " + e.getMessage());
@@ -446,13 +431,11 @@ public class ControladorTemulingo {
 		if (cursoActual == null) {
 			return false;
 		}
-		
+
 		try {
 			// Actualizar tiempo transcurrido
-			cursoActual.setTiempoTranscurrido(
-				cursoActual.getTiempoTranscurrido() + tiempoTranscurrido
-			);
-			
+			cursoActual.setTiempoTranscurrido(cursoActual.getTiempoTranscurrido() + tiempoTranscurrido);
+
 			// Guardar estado
 			return guardarEstadoCurso();
 		} catch (Exception e) {
@@ -465,19 +448,15 @@ public class ControladorTemulingo {
 		if (cursoActual == null) {
 			return null;
 		}
-		
-		return new EstadoCurso(
-			cursoActual.getSiguientePregunta(),
-			cursoActual.getRespuestas(),
-			cursoActual.getProgresoPorcentaje(),
-			cursoActual.getTiempoTranscurrido(),
-			cursoActual.getFechaUltimaSesion()
-		);
+
+		return new EstadoCurso(cursoActual.getSiguientePregunta(), cursoActual.getRespuestas(),
+				cursoActual.getProgresoPorcentaje(), cursoActual.getTiempoTranscurrido(),
+				cursoActual.getFechaUltimaSesion());
 	}
-	
+
 	// ========================================
-		// MÉTODOS DE ESTRATEGIA DE APRENDIZAJE
-		// ========================================
+	// MÉTODOS DE ESTRATEGIA DE APRENDIZAJE
+	// ========================================
 
 	/**
 	 * Establece la estrategia de aprendizaje para el curso actual. Reinicia el
@@ -498,22 +477,21 @@ public class ControladorTemulingo {
 		cursoActual.getCurso().setEstrategiaAprendizaje(estrategia);
 
 		// Validar el estado del curso antes de continuar
-		//validarCursoActual();
+		// validarCursoActual();
 
 		// Reiniciar el progreso con la nueva estrategia
-		//cursoActual.reiniciarConEstrategia(estrategia);
+		// cursoActual.reiniciarConEstrategia(estrategia);
 		inicializarEstructurasProgresoExistente(cursoActual); // Este método ya maneja la restauración de respuestas.
-		
+
 		// Persistir los cambios en la base de datos
 		progresoDao.edit(cursoActual);
-		
 
 		try {
-		    progresoDao.edit(cursoActual);
-		    cursoDao.edit(cursoActual.getCurso()); // Persistir la estrategia en el Curso
+			progresoDao.edit(cursoActual);
+			cursoDao.edit(cursoActual.getCurso()); // Persistir la estrategia en el Curso
 		} catch (Exception e) {
-		    System.err.println("Error al persistir cambios de estrategia: " + e.getMessage());
-		    e.printStackTrace();
+			System.err.println("Error al persistir cambios de estrategia: " + e.getMessage());
+			e.printStackTrace();
 		}
 
 		System.out.println("Estrategia de aprendizaje establecida: " + estrategia);
@@ -551,9 +529,9 @@ public class ControladorTemulingo {
 	}
 
 	// ========================================
-		// MÉTODOS DE DEBUG Y VALIDACIÓN
-		// ========================================
-	
+	// MÉTODOS DE DEBUG Y VALIDACIÓN
+	// ========================================
+
 	/**
 	 * Método de debug que valida y muestra información detallada del curso actual.
 	 * Útil para depuración y verificación del estado del curso.
@@ -617,11 +595,10 @@ public class ControladorTemulingo {
 		preguntaTest.debug();
 	}
 
-	
 	// ========================================
-			// MÉTODOS DE ESTADÍSTICAS
-			// ========================================
-	
+	// MÉTODOS DE ESTADÍSTICAS
+	// ========================================
+
 	public Estadistica generarEstadisticas() {
 		int cursosCompletados = usuarioActual.getCursosCompletados().size();
 		int preguntasRespondidas = usuarioActual.getTotalPreguntasRespondidas();
