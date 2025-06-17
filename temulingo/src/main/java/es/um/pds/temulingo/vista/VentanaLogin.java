@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
@@ -41,9 +42,8 @@ public class VentanaLogin extends JFrame {
 	private static final String FUNCION = "Login";
 	private static final String NOMBRE_VENTANA = ConfiguracionTemulingo.NOMBRE + " - " + FUNCION;
 
-	// Placeholders para los campos
-	private static final String PLACEHOLDER_USERNAME = "Introduce tu usuario o email";
-	private static final String PLACEHOLDER_PASSWORD = "Introduce tu contraseña";
+	private static final String PLACEHOLDER_USERNAME = "Nombre de usuario/email";
+	private static final String PLACEHOLDER_PASSWORD = "Contraseña";
 
 	private JTextField campoUsernameEmail;
 	private JPasswordField campoPassword;
@@ -79,6 +79,7 @@ public class VentanaLogin extends JFrame {
 		setResizable(true);
 		setMinimumSize(getSize());
 		setLocationRelativeTo(null);
+		SwingUtilities.invokeLater(() -> this.requestFocusInWindow());
 
 		LOGGER.info("Ventana de login inicializada correctamente");
 	}
@@ -88,7 +89,7 @@ public class VentanaLogin extends JFrame {
 		panelLogo.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		JLabel lblAppchat = new JLabel("");
-		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("logo.icono");
+		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("banner-alt.icono");
 		ImageIcon iconoLogo = new ImageIcon(getClass().getResource(rutaIconoLogo));
 		lblAppchat.setIcon(iconoLogo);
 		panelLogo.add(lblAppchat);
@@ -111,14 +112,16 @@ public class VentanaLogin extends JFrame {
 		panelLogin.setBorder(new EmptyBorder(10, 10, 10, 10));
 		panelWrapperForm.add(panelLogin, BorderLayout.CENTER);
 		GridBagLayout gbl_panelLogin = new GridBagLayout();
-		gbl_panelLogin.columnWidths = new int[] { 0, 0, 0, 0 }; // Añadida columna para botón de mostrar password
+		gbl_panelLogin.columnWidths = new int[] { 0, 0, 0, 0 };
 		gbl_panelLogin.rowHeights = new int[] { 0, 0, 0, 0, 0 };
 		gbl_panelLogin.columnWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
 		gbl_panelLogin.rowWeights = new double[] { 0.0, 0.0, 1.0, 1.0, Double.MIN_VALUE };
 		panelLogin.setLayout(gbl_panelLogin);
 
 		// Campo Username/Email con placeholder
-		JLabel lblUsernameEmail = new JLabel("Username / Email: ");
+		String rutaUserLogo = ConfiguracionTemulingo.getRutaIcono("user.icono");
+		ImageIcon userLogo = new ImageIcon(getClass().getResource(rutaUserLogo));
+		JLabel lblUsernameEmail = new JLabel(userLogo);
 		GridBagConstraints gbc_lblUsernameEmail = new GridBagConstraints();
 		gbc_lblUsernameEmail.anchor = GridBagConstraints.EAST;
 		gbc_lblUsernameEmail.insets = new Insets(0, 0, 5, 5);
@@ -127,17 +130,20 @@ public class VentanaLogin extends JFrame {
 		panelLogin.add(lblUsernameEmail, gbc_lblUsernameEmail);
 		lblUsernameEmail.setHorizontalAlignment(SwingConstants.RIGHT);
 
-		campoUsernameEmail = crearCampoConPlaceholder(PLACEHOLDER_USERNAME, false);
+		campoUsernameEmail = new JTextField();
+		configurarPlaceholder(campoUsernameEmail, PLACEHOLDER_USERNAME);
 		GridBagConstraints gbc_campoUsernameEmail = new GridBagConstraints();
 		gbc_campoUsernameEmail.fill = GridBagConstraints.HORIZONTAL;
 		gbc_campoUsernameEmail.insets = new Insets(0, 0, 5, 5);
 		gbc_campoUsernameEmail.gridx = 1;
 		gbc_campoUsernameEmail.gridy = 0;
-		gbc_campoUsernameEmail.gridwidth = 2; // Ocupa dos columnas
+		gbc_campoUsernameEmail.gridwidth = 2;
 		panelLogin.add(campoUsernameEmail, gbc_campoUsernameEmail);
 
 		// Campo Password con placeholder y botón mostrar/ocultar
-		JLabel lblPassword = new JLabel("Contraseña: ");
+		String rutaKeyLogo = ConfiguracionTemulingo.getRutaIcono("key.icono");
+		ImageIcon keyLogo = new ImageIcon(getClass().getResource(rutaKeyLogo));
+		JLabel lblPassword = new JLabel(keyLogo);
 		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
 		gbc_lblPassword.anchor = GridBagConstraints.EAST;
 		gbc_lblPassword.insets = new Insets(0, 0, 5, 5);
@@ -146,7 +152,8 @@ public class VentanaLogin extends JFrame {
 		panelLogin.add(lblPassword, gbc_lblPassword);
 		lblPassword.setHorizontalAlignment(SwingConstants.RIGHT);
 
-		campoPassword = crearCampoPasswordConPlaceholder(PLACEHOLDER_PASSWORD);
+		campoPassword = new JPasswordField();
+		configurarPlaceholder(campoPassword, PLACEHOLDER_PASSWORD);
 		GridBagConstraints gbc_campoPassword = new GridBagConstraints();
 		gbc_campoPassword.fill = GridBagConstraints.HORIZONTAL;
 		gbc_campoPassword.insets = new Insets(0, 0, 5, 5);
@@ -182,9 +189,6 @@ public class VentanaLogin extends JFrame {
 			LOGGER.fine("Iconos de contraseña cargados correctamente");
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error al cargar iconos de contraseña, usando texto por defecto", e);
-			// Fallback en caso de que no se puedan cargar los iconos
-			iconoOjoVisible = null;
-			iconoOjoOculto = null;
 		}
 	}
 
@@ -221,7 +225,7 @@ public class VentanaLogin extends JFrame {
 
 	private void gestionarRegistro() {
 		LOGGER.info("Navegando a ventana de registro");
-		VentanaRegistro registerFrame = new VentanaRegistro(this);
+		VentanaRegistro registerFrame = new VentanaRegistro();
 		registerFrame.setVisible(true);
 		this.setVisible(false);
 	}
@@ -313,31 +317,6 @@ public class VentanaLogin extends JFrame {
 			// Limpiar campo de contraseña por seguridad
 			campoPassword.setText("");
 		}
-	}
-
-	/**
-	 * Crea un campo de texto con placeholder
-	 * 
-	 * @param placeholder Texto del placeholder
-	 * @param isPassword  Si es un campo de contraseña
-	 * @return JTextField configurado con placeholder
-	 */
-	private JTextField crearCampoConPlaceholder(String placeholder, boolean isPassword) {
-		JTextField campo = new JTextField(16);
-		configurarPlaceholder(campo, placeholder);
-		return campo;
-	}
-
-	/**
-	 * Crea un campo de contraseña con placeholder
-	 * 
-	 * @param placeholder Texto del placeholder
-	 * @return JPasswordField configurado con placeholder
-	 */
-	private JPasswordField crearCampoPasswordConPlaceholder(String placeholder) {
-		JPasswordField campo = new JPasswordField(16);
-		configurarPlaceholder(campo, placeholder);
-		return campo;
 	}
 
 	/**
