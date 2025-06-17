@@ -12,6 +12,7 @@ import java.util.Objects;
 import es.um.pds.temulingo.dao.base.Dao;
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
 import es.um.pds.temulingo.exception.ExcepcionCredencialesInvalidas;
+import es.um.pds.temulingo.exception.ExcepcionRegistroInvalido;
 import es.um.pds.temulingo.logic.Bloque;
 import es.um.pds.temulingo.logic.CargadorCursos;
 import es.um.pds.temulingo.logic.Curso;
@@ -75,22 +76,24 @@ public class ControladorTemulingo {
 	// MÉTODOS DE AUTENTICACIÓN Y REGISTRO
 	// ========================================
 
-	public boolean registrarUsuario(String nombre, String email, String username, String password,
-			LocalDate fechaNacim) {
-		if (nombre == null || email == null || username == null || password == null || fechaNacim == null) {
-			return false;
-			// throw new IllegalArgumentException("Ningún campo puede ser nulo");
-		}
+	public boolean registrarUsuario(String nombre, String email, String username, String password, LocalDate fechaNacim)
+			throws NullPointerException, ExcepcionRegistroInvalido {
 
+		// Caso 1: validar los parámetros de entrada
+		Objects.requireNonNull(nombre, "El nombre no puede ser nulo");
+		Objects.requireNonNull(email, "El email no puede ser nulo");
+		Objects.requireNonNull(username, "El nombre de usuario no puede ser nulo");
+		Objects.requireNonNull(password, "La contraseña no puede ser nula");
+		Objects.requireNonNull(fechaNacim, "La fecha de nacimiento no puede ser nula");
+
+		// Caso 2: el email ya está registrado
 		if (repoUsuarios.obtenerPorEmail(email).isPresent()) {
-			return false;
-			// throw new RegistroInvalidoException("Ya existe un usuario con este email");
+			throw new ExcepcionRegistroInvalido("Ya existe un usuario con el email: " + email);
 		}
 
+		// Caso 3: el username ya está registrado
 		if (repoUsuarios.obtenerPorUsername(username).isPresent()) {
-			return false;
-			// throw new RegistroInvalidoException("Ya existe un usuario con este nombre de
-			// usuario");
+			throw new ExcepcionRegistroInvalido("Ya existe un usuario con el nombre de usuario: " + username);
 		}
 
 		repoUsuarios.guardarUsuario(nombre, email, username, password, fechaNacim);
