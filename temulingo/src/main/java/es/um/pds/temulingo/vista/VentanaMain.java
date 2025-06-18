@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -35,7 +36,7 @@ public class VentanaMain extends JFrame {
 	private static final String NOMBRE_VENTANA = ConfiguracionTemulingo.NOMBRE + " - " + FUNCION;
 
 	private static final int MARGEN = 10;
-	private static final int ANCHO_BOTON = 170;
+	private static final int ANCHO_BOTON = 200;
 	private static final int ALTO_BOTON = 50;
 	private static final int ESPACIO_ICONO_TEXTO = 15;
 	private static final int FILAS_VISIBLES_LISTA = 5;
@@ -49,10 +50,10 @@ public class VentanaMain extends JFrame {
 	private JButton btnIniciar;
 	private JButton btnSalir;
 	private JPanel panelListaCursos;
-	private VentanaRealizarCurso ventanaRealizarCursoActual; // Para mantener la referencia a la ventana de curso abierta
+	private VentanaRealizarCurso ventanaRealizarCursoActual; // Para mantener la referencia a la ventana de curso
+																// abierta
 	private JPanel panelWrapper;
-	
-	
+
 	public VentanaMain() {
 		cargarModelo();
 		inicializarComponentes();
@@ -80,6 +81,7 @@ public class VentanaMain extends JFrame {
 		setResizable(false);
 		setMinimumSize(getSize());
 		setLocationRelativeTo(null);
+		SwingUtilities.invokeLater(() -> this.requestFocusInWindow());
 	}
 
 	private void configurarLayout() {
@@ -108,7 +110,7 @@ public class VentanaMain extends JFrame {
 		panelWrapper.setBorder(new TitledBorder(null, "  Menú  ", TitledBorder.CENTER, TitledBorder.TOP));
 
 		panelWrapper.add(crearPanelBotonesAccion(), BorderLayout.NORTH);
-		
+
 		panelListaCursos = crearPanelListaCursos();
 		panelWrapper.add(panelListaCursos, BorderLayout.CENTER);
 
@@ -136,30 +138,31 @@ public class VentanaMain extends JFrame {
 	}
 
 	private JPanel crearPanelListaCursos() {
-	    JPanel panel = new JPanel(new BorderLayout());
-	    panel.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
 
-	    if (modelo.getSize() == 0) {
-	        JLabel labelVacio = new JLabel("No hay ningún curso en la librería");
-	        labelVacio.setHorizontalAlignment(SwingConstants.CENTER);
-	        labelVacio.setFont(labelVacio.getFont().deriveFont(Font.ITALIC));
-	        labelVacio.setForeground(Color.GRAY);
-	        panel.add(labelVacio, BorderLayout.CENTER);
-	    } else {
-	        listaCursos = new JList<>(modelo);
-	        listaCursos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	        listaCursos.setCellRenderer(new CursoCellRenderer());
-	        
-	        int filasVisibles = Math.min(modelo.getSize(), FILAS_VISIBLES_LISTA);
-	        listaCursos.setVisibleRowCount(filasVisibles);
+		if (modelo.getSize() == 0) {
+			JLabel labelVacio = new JLabel("No hay ningún curso en la librería");
+			labelVacio.setHorizontalAlignment(SwingConstants.CENTER);
+			labelVacio.setFont(labelVacio.getFont().deriveFont(Font.ITALIC));
+			labelVacio.setForeground(Color.GRAY);
+			panel.add(labelVacio, BorderLayout.CENTER);
+		} else {
+			listaCursos = new JList<>(modelo);
+			listaCursos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			listaCursos.setCellRenderer(new CursoCellRenderer());
 
-	        JScrollPane scrollPane = new JScrollPane(listaCursos);
-	        scrollPane.setPreferredSize(new Dimension(ANCHO_SCROLL_PANE, scrollPane.getPreferredSize().height - modelo.getSize()));
+			int filasVisibles = Math.min(modelo.getSize(), FILAS_VISIBLES_LISTA);
+			listaCursos.setVisibleRowCount(filasVisibles);
 
-	        panel.add(scrollPane, BorderLayout.CENTER);
-	    }
+			JScrollPane scrollPane = new JScrollPane(listaCursos);
+			scrollPane.setPreferredSize(
+					new Dimension(ANCHO_SCROLL_PANE, scrollPane.getPreferredSize().height - modelo.getSize()));
 
-	    return panel;
+			panel.add(scrollPane, BorderLayout.CENTER);
+		}
+
+		return panel;
 	}
 
 	private JPanel crearPanelBotones() {
@@ -197,7 +200,7 @@ public class VentanaMain extends JFrame {
 		btnEstadisticas.addActionListener(e -> abrirEstadisticas());
 		btnActualizar.addActionListener(e -> actualizarListaCursos());
 		btnImportar.addActionListener(e -> abrirImportarCurso());
-		
+
 		btnSalir.addActionListener(e -> gestionarSalida());
 		btnIniciar.addActionListener(e -> iniciarCurso());
 	}
@@ -205,99 +208,97 @@ public class VentanaMain extends JFrame {
 	private void abrirImportarCurso() {
 		DialogoImportarCurso ventanaImportar = new DialogoImportarCurso(this);
 		ventanaImportar.setVisible(true);
-		
+
 		actualizarListaCursos();
 	}
-	
+
 	private void abrirEstadisticas() {
 		Estadistica estadisticas = ControladorTemulingo.getInstance().generarEstadisticas();
 		DialogoEstadisticas ventanaEstadisticas = new DialogoEstadisticas(this, estadisticas);
 		ventanaEstadisticas.setVisible(true);
 	}
-	
+
 	public void actualizarListaCursos() {
 		modelo.clear();
 		modelo.addAll(ControladorTemulingo.getInstance().getAllCursos());
-		
+
 		// Recrear y actualizar la vista del panel de cursos
 		panelWrapper.remove(panelListaCursos);
 		panelListaCursos = crearPanelListaCursos();
 		panelWrapper.add(panelListaCursos, BorderLayout.CENTER);
-		
+
 		panelWrapper.revalidate();
 		panelWrapper.repaint();
-		
+
 		pack();
 		setLocationRelativeTo(null);
 	}
 
 	private void iniciarCurso() {
 		Curso cursoSeleccionado = obtenerCursoSeleccionado();
-	    
-	    // Verificar que hay un curso seleccionado
-	    if (cursoSeleccionado == null) {
-	        JOptionPane.showMessageDialog(this, 
-	            "Por favor, selecciona un curso de la lista.", 
-	            "Ningún curso seleccionado", 
-	            JOptionPane.WARNING_MESSAGE);
-	        return;
-	    }
-	    
-	    if (ControladorTemulingo.getInstance().tieneProgresoGuardado(cursoSeleccionado)) {
-            int opcion = JOptionPane.showConfirmDialog(this,
-                "Ya tienes progreso guardado para este curso. ¿Deseas reanudarlo?",
-                "Progreso detectado",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
 
-            if (opcion == JOptionPane.YES_OPTION) { // Reanudar
-                ControladorTemulingo.getInstance().reanudarCurso(cursoSeleccionado);
-                abrirVentanaRealizarCurso(cursoSeleccionado);
-            } else { // Empezar uno nuevo: Ahora se abre un diálogo para seleccionar estrategia
-                int confirmarNuevo = JOptionPane.showConfirmDialog(this,
-                    "¿Estás seguro de que quieres empezar un curso nuevo? Esto borrará el progreso anterior.",
-                    "Empezar curso nuevo",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE);
-                if (confirmarNuevo == JOptionPane.YES_OPTION) {
-                    ControladorTemulingo.getInstance().empezarCursoNuevo(cursoSeleccionado);
-                    // Abrir el diálogo para seleccionar la estrategia
-                    DialogoSeleccionEstrategia dialogoEstrategia = new DialogoSeleccionEstrategia(this, cursoSeleccionado);
-                    dialogoEstrategia.setVisible(true);
-                    
-                    // Si el usuario selecciona una estrategia y no cancela, se abrirá VentanaRealizarCurso desde el diálogo
-                    // La lógica del diálogo será: si se selecciona estrategia, llamar a setEstrategiaAprendizaje y luego abrir VentanaRealizarCurso
-                    setEnabled(false);
-                }
-            }
-        } else { // No hay progreso guardado, iniciar nuevo directamente con selección de estrategia
-            ControladorTemulingo.getInstance().empezarCursoNuevo(cursoSeleccionado);
-            DialogoSeleccionEstrategia dialogoEstrategia = new DialogoSeleccionEstrategia(this, cursoSeleccionado);
-            dialogoEstrategia.setVisible(true);
-            
-            setEnabled(false);
-        }
+		// Verificar que hay un curso seleccionado
+		if (cursoSeleccionado == null) {
+			JOptionPane.showMessageDialog(this, "Por favor, selecciona un curso de la lista.",
+					"Ningún curso seleccionado", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		if (ControladorTemulingo.getInstance().tieneProgresoGuardado(cursoSeleccionado)) {
+			int opcion = JOptionPane.showConfirmDialog(this,
+					"Ya tienes progreso guardado para este curso. ¿Deseas reanudarlo?", "Progreso detectado",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+			if (opcion == JOptionPane.YES_OPTION) { // Reanudar
+				ControladorTemulingo.getInstance().reanudarCurso(cursoSeleccionado);
+				abrirVentanaRealizarCurso(cursoSeleccionado);
+			} else { // Empezar uno nuevo: Ahora se abre un diálogo para seleccionar estrategia
+				int confirmarNuevo = JOptionPane.showConfirmDialog(this,
+						"¿Estás seguro de que quieres empezar un curso nuevo? Esto borrará el progreso anterior.",
+						"Empezar curso nuevo", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (confirmarNuevo == JOptionPane.YES_OPTION) {
+					ControladorTemulingo.getInstance().empezarCursoNuevo(cursoSeleccionado);
+					// Abrir el diálogo para seleccionar la estrategia
+					DialogoSeleccionEstrategia dialogoEstrategia = new DialogoSeleccionEstrategia(this,
+							cursoSeleccionado);
+					dialogoEstrategia.setVisible(true);
+
+					// Si el usuario selecciona una estrategia y no cancela, se abrirá
+					// VentanaRealizarCurso desde el diálogo
+					// La lógica del diálogo será: si se selecciona estrategia, llamar a
+					// setEstrategiaAprendizaje y luego abrir VentanaRealizarCurso
+					setEnabled(false);
+				}
+			}
+		} else { // No hay progreso guardado, iniciar nuevo directamente con selección de
+					// estrategia
+			ControladorTemulingo.getInstance().empezarCursoNuevo(cursoSeleccionado);
+			DialogoSeleccionEstrategia dialogoEstrategia = new DialogoSeleccionEstrategia(this, cursoSeleccionado);
+			dialogoEstrategia.setVisible(true);
+
+			setEnabled(false);
+		}
 	}
-	
-	// Nuevo método para abrir VentanaRealizarCurso
-    public void abrirVentanaRealizarCurso(Curso curso) {
-    	VentanaRealizarCurso ventanaIniciar = new VentanaRealizarCurso(this, curso); // Pasar 'this' (VentanaMain)
-    	this.ventanaRealizarCursoActual = ventanaIniciar;
-    	ventanaIniciar.setVisible(true);
-        this.setEnabled(false);
-    }
-    
- // Necesitas un método para hacer visible/habilitar VentanaMain cuando VentanaRealizarCurso se cierre
-    public void ventanaRealizarCursoCerrada() {
-        // setVisible(true); // Opción 1: Mostrar
-        setEnabled(true); // Opción 2: Habilitar
-        toFront(); // Poner VentanaMain al frente
-        repaint(); // Asegurar que se repinte correctamente
-       // actualizarInfoProgresoCurso();
-        this.ventanaRealizarCursoActual = null; // <--- NEW: Clear the reference
-    }
 
-	
+	// Nuevo método para abrir VentanaRealizarCurso
+	public void abrirVentanaRealizarCurso(Curso curso) {
+		VentanaRealizarCurso ventanaIniciar = new VentanaRealizarCurso(this, curso); // Pasar 'this' (VentanaMain)
+		this.ventanaRealizarCursoActual = ventanaIniciar;
+		ventanaIniciar.setVisible(true);
+		this.setEnabled(false);
+	}
+
+	// Necesitas un método para hacer visible/habilitar VentanaMain cuando
+	// VentanaRealizarCurso se cierre
+	public void ventanaRealizarCursoCerrada() {
+		// setVisible(true); // Opción 1: Mostrar
+		setEnabled(true); // Opción 2: Habilitar
+		toFront(); // Poner VentanaMain al frente
+		repaint(); // Asegurar que se repinte correctamente
+		// actualizarInfoProgresoCurso();
+		this.ventanaRealizarCursoActual = null; // <--- NEW: Clear the reference
+	}
+
 	public Curso obtenerCursoSeleccionado() {
 		return listaCursos.getSelectedValue();
 	}
@@ -305,7 +306,7 @@ public class VentanaMain extends JFrame {
 	public void limpiarSeleccion() {
 		listaCursos.clearSelection();
 	}
-	
+
 	private void gestionarSalida() {
 		int respuesta = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas salir?", "Confirmar salida",
 				JOptionPane.YES_NO_OPTION);

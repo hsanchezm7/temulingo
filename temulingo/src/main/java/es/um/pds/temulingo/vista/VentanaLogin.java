@@ -76,7 +76,7 @@ public class VentanaLogin extends JFrame {
 		getContentPane().add(panelBotones, BorderLayout.SOUTH);
 
 		pack();
-		setResizable(true);
+		setResizable(false);
 		setMinimumSize(getSize());
 		setLocationRelativeTo(null);
 		SwingUtilities.invokeLater(() -> this.requestFocusInWindow());
