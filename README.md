@@ -73,15 +73,44 @@ Para ejecutar el proyecto es necesario tener instalado:
 
 ### Instalación
 
-1. Clona el repositorio
+1. Clonar el repositorio
    ```sh
    $ git clone https://github.com/hsanchezm7/temulingo
    ```
-
+2. Entrar al directorio
+   ```sh
+   $ cd temulingo/
+   ```
+3. Compilar y generar ejecutable
+   ```sh
+   $ mvn clean package
+   ```
+4. Ejecutar el `.jar` en la carpeta `target/` del directorio
+   ```sh
+   $ java -jar target/temulingo-{version}-jar-with-dependencies.jar
+   ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
 ## Uso
+
+### Requisitos y casos de uso
+
+Con aprobación del tutor del proyecto, se ha optado por llevar un seguimiento de los casos de uso usando la funcionalidad de _issues_ junto con el uso _pull requests_ de Github. Se ha definido un [documento raíz](https://github.com/hsanchezm7/temulingo/issues/9) que recoge todos los casos de uso contemplados de la aplicación.
+
+### Estructura del proyecto
+
+```
+temulingo/           # Raíz
+├── design           #
+│   └── model        #
+└── temulingo        # Proyecto Java
+    ├── data         # Persistencia
+    ├── src          # Código fuente de 
+    │   ├── main
+    │   └── test     # Suite de tests de Temulingo
+    └── target
+```
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
