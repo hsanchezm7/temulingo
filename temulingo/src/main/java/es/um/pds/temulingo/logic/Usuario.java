@@ -47,6 +47,9 @@ public class Usuario implements Serializable {
 	@Column(name = "FECHA_NACIM")
 	private LocalDate fechaNacim;
 
+	@Column(name = "FIRSTLOGIN")
+	private boolean firstLogin = true;
+
 	@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Curso> cursos = new LinkedList<>();
 
@@ -57,13 +60,14 @@ public class Usuario implements Serializable {
 	}
 
 	public Usuario(Long id, String nombre, String email, String username, String password, LocalDate fechaNacim,
-			List<Curso> cursos, List<Progreso> progresos) {
+			boolean firstLogin, List<Curso> cursos, List<Progreso> progresos) {
 		this.id = id;
 		this.nombre = nombre;
 		this.email = email;
 		this.username = username;
 		this.password = password;
 		this.fechaNacim = fechaNacim;
+		this.firstLogin = firstLogin;
 		this.cursos = cursos;
 		this.progresos = progresos;
 	}
@@ -176,6 +180,14 @@ public class Usuario implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, email);
+	}
+
+	public boolean isFirstLogin() {
+		return firstLogin;
+	}
+
+	public void setFirstLogin(boolean esPrimerLogin) {
+		this.firstLogin = esPrimerLogin;
 	}
 
 }

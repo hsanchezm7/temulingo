@@ -39,6 +39,8 @@ public class ControladorTemulingo {
 	private Dao<Progreso> progresoDao;
 	private Dao<Curso> cursoDao;
 
+	private boolean firstLogin;
+
 	private ControladorTemulingo() {
 		inicializarAdaptadores();
 
@@ -124,6 +126,10 @@ public class ControladorTemulingo {
 		}
 
 		usuarioActual = usuario;
+		firstLogin = usuario.isFirstLogin();
+
+		usuarioActual.setFirstLogin(false);
+		repoUsuarios.actualizarUsuario(usuarioActual);
 
 		return true;
 
@@ -613,6 +619,14 @@ public class ControladorTemulingo {
 		estadisticas.setPreguntasAcertadas(preguntasAcertadas);
 
 		return estadisticas;
+	}
+
+	public boolean isFirstLogin() {
+		return firstLogin;
+	}
+
+	public void setFirstLogin(boolean firstLogin) {
+		this.firstLogin = firstLogin;
 	}
 
 }

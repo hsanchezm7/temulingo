@@ -105,6 +105,7 @@ public class RepositorioUsuarios {
 		usuario.setUsername(username);
 		usuario.setPassword(password);
 		usuario.setFechaNacim(fechaNacim);
+		usuario.setFirstLogin(true);
 
 		guardarUsuario(usuario);
 

@@ -6,7 +6,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -27,6 +32,7 @@ import es.um.pds.temulingo.config.ConfiguracionTemulingo;
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
 import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.logic.Estadistica;
+import es.um.pds.temulingo.logic.Usuario;
 import es.um.pds.temulingo.utils.CursoCellRenderer;
 
 public class VentanaMain extends JFrame {
@@ -105,6 +111,10 @@ public class VentanaMain extends JFrame {
 	private JPanel crearPanelPrincipal() {
 		JPanel panelPrincipal = new JPanel(new BorderLayout());
 		panelPrincipal.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
+
+		// Nuevo panel informativo
+		JPanel panelInformativo = crearPanelInformativo();
+		panelPrincipal.add(panelInformativo, BorderLayout.NORTH);
 
 		panelWrapper = new JPanel(new BorderLayout());
 		panelWrapper.setBorder(new TitledBorder(null, "  Menú  ", TitledBorder.CENTER, TitledBorder.TOP));
@@ -196,6 +206,106 @@ public class VentanaMain extends JFrame {
 		return boton;
 	}
 
+	private JPanel crearPanelInformativo() {
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setBorder(new TitledBorder(null, "  Información  ", TitledBorder.CENTER, TitledBorder.TOP));
+
+		JPanel panelCentral = new JPanel(new GridLayout(1, 2));
+		panelCentral.setBorder(new EmptyBorder(MARGEN, 0, MARGEN, 0));
+
+		Usuario usuario = ControladorTemulingo.getInstance().getUsuarioActual();
+		int cursos = usuario.getCursos().size();
+
+		// Panel izquierdo
+		String lineaSuperiorIzquierda;
+		String lineaInferiorIzquierda;
+
+		if (ControladorTemulingo.getInstance().isFirstLogin()) {
+			lineaSuperiorIzquierda = "¡Bienvenido " + usuario.getNombre() + "!";
+			lineaInferiorIzquierda = "a la mejor plataforma de aprendizaje";
+		} else {
+			lineaSuperiorIzquierda = "Hola de nuevo, " + usuario.getNombre();
+			lineaInferiorIzquierda = "te echábamos de menos";
+		}
+
+		JPanel panelIzquierdo = crearSubPanelInformativo(
+				new ImageIcon(getClass().getResource(ConfiguracionTemulingo.getRutaIcono("person.icono"))),
+				lineaSuperiorIzquierda, lineaInferiorIzquierda, false);
+
+		// Panel derecho
+		String lineaSuperiorDerecha;
+		String lineaInferiorDerecha;
+
+		if (cursos == 0) {
+			lineaSuperiorDerecha = "No tienes cursos";
+			lineaInferiorDerecha = "prueba a añadir uno";
+		} else {
+			lineaSuperiorDerecha = cursos + " cursos";
+			lineaInferiorDerecha = "en la librería";
+		}
+
+		JPanel panelDerecho = crearSubPanelInformativo(
+				new ImageIcon(getClass().getResource(ConfiguracionTemulingo.getRutaIcono("books.icono"))),
+				lineaSuperiorDerecha, lineaInferiorDerecha, true);
+
+		panelCentral.add(panelIzquierdo);
+		panelCentral.add(panelDerecho);
+
+		panel.add(panelCentral, BorderLayout.CENTER);
+
+		return panel;
+	}
+
+	private JPanel crearSubPanelInformativo(ImageIcon icono, String lineaSuperior, String lineaInferior,
+			boolean iconoDerecha) {
+		JPanel panel = new JPanel(new GridBagLayout());
+		panel.setBorder(new EmptyBorder(MARGEN, MARGEN, MARGEN, MARGEN));
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.CENTER;
+
+		JPanel contenido = new JPanel();
+		contenido.setLayout(new BoxLayout(contenido, BoxLayout.X_AXIS));
+		contenido.setOpaque(false);
+
+		JLabel lblIcono = new JLabel(icono);
+
+		JPanel texto = new JPanel();
+		texto.setLayout(new BoxLayout(texto, BoxLayout.Y_AXIS));
+		texto.setOpaque(false);
+
+		JLabel lblLinea1 = new JLabel(lineaSuperior);
+		lblLinea1.setFont(lblLinea1.getFont().deriveFont(Font.BOLD, 16f));
+
+		JLabel lblLinea2 = new JLabel(lineaInferior);
+		lblLinea2.setFont(lblLinea2.getFont().deriveFont(Font.PLAIN, 11f));
+
+		if (iconoDerecha) {
+			lblLinea1.setAlignmentX(Component.RIGHT_ALIGNMENT);
+			lblLinea2.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		} else {
+			lblLinea1.setAlignmentX(Component.LEFT_ALIGNMENT);
+			lblLinea2.setAlignmentX(Component.LEFT_ALIGNMENT);
+		}
+
+		texto.add(lblLinea1);
+		texto.add(lblLinea2);
+
+		if (iconoDerecha) {
+			contenido.add(texto);
+			contenido.add(Box.createRigidArea(new Dimension(15, 0)));
+			contenido.add(lblIcono);
+		} else {
+			contenido.add(lblIcono);
+			contenido.add(Box.createRigidArea(new Dimension(15, 0)));
+			contenido.add(texto);
+		}
+
+		panel.add(contenido, gbc);
+		return panel;
+	}
+
 	private void configurarEventListeners() {
 		btnEstadisticas.addActionListener(e -> abrirEstadisticas());
 		btnActualizar.addActionListener(e -> actualizarListaCursos());
@@ -283,7 +393,7 @@ public class VentanaMain extends JFrame {
 	// Nuevo método para abrir VentanaRealizarCurso
 	public void abrirVentanaRealizarCurso(Curso curso) {
 		VentanaRealizarCurso ventanaIniciar = new VentanaRealizarCurso(this, curso); // Pasar 'this' (VentanaMain)
-		this.ventanaRealizarCursoActual = ventanaIniciar;
+		ventanaRealizarCursoActual = ventanaIniciar;
 		ventanaIniciar.setVisible(true);
 		this.setEnabled(false);
 	}
@@ -296,7 +406,7 @@ public class VentanaMain extends JFrame {
 		toFront(); // Poner VentanaMain al frente
 		repaint(); // Asegurar que se repinte correctamente
 		// actualizarInfoProgresoCurso();
-		this.ventanaRealizarCursoActual = null; // <--- NEW: Clear the reference
+		ventanaRealizarCursoActual = null; // <--- NEW: Clear the reference
 	}
 
 	public Curso obtenerCursoSeleccionado() {
