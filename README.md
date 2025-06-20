@@ -68,8 +68,8 @@ Este proyecto forma parte de las prácticas de la asignatura de **Procesos de De
 
 Para ejecutar el proyecto es necesario tener instalado:
 
-* [Java 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html): Se requiere Java SE 17 o superior.
-* [Maven](https://maven.apache.org/download.cgi): Herramienta de gestión de dependencias y construcción del proyecto.
+- [Java 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html): Se requiere Java SE 17 o superior.
+- [Maven](https://maven.apache.org/download.cgi): Herramienta de gestión de dependencias y construcción del proyecto.
 
 ### Instalación
 
@@ -112,6 +112,27 @@ temulingo/           # Raíz
     └── target
 ```
 
+### Testing
+
+Se ha creado una _suite_ de tests usando las siguientes herramientas:
+
+- [JUnit5](https://junit.org/junit5/): Framework para pruebas unitarias en Java.
+- [Mockito](https://mockito.org/): Librería para crear mocks y facilitar pruebas aisladas.
+- [Maven Surefire Plugin](https://maven.apache.org/surefire/maven-surefire-plugin/): Para simplificar la ejecución y configuración de tests.
+
+  - [Maven Surefire JUnit5 Tree Reporter](https://github.com/fabriciorby/maven-surefire-junit5-tree-reporter): Mejora visualmente la salida de tests en consola con estructura jerárquica.
+
+Para ejecutar los tests *se recomienda usar Maven*. Se pueden ejecutar con el comando:
+
+```sh
+   $ mvn test
+```
+
+También se puede ver en formato `.html` un _report_ de los tests ejecutados. El archivo se encuentra en `temulingo/target/site/surefire.html`.
+
+```sh
+   $ mvn site
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
