@@ -1,6 +1,8 @@
 # Manual de Usuario
 # Introducción
-# Primeros pasos
+Temulingo es una aplicación de aprendizaje interactiva inspirada en el éxito de plataformas como Duolingo y sistemas de tarjetas de estudio como Mochi. Esta aplicación te permite aprender y repasar conceptos de cualquier dominio de conocimiento de manera efectiva y personalizada.
+
+# Funcionamiento
 
 ## Pantalla de Bienvenida
 Al iniciar Temulingo, verás una pantalla de inicio sesión en la que deberás introducir tu nombre de usuario y contraseña que deberías haber introducido previamente al registrarte.
@@ -116,7 +118,7 @@ En la ventana para las de tipo Test solamente tienes que elegir la opción que c
 Antes de pasar a la siguiente pregunta se mostrará tanto si has acertado como si no:
 
 <p align="center">
-  <img src="images/16-resultado-test.png" alt="Resultado pregunta test" width="400"/>
+  <img src="images/16-resultado-test.jpg" alt="Resultado pregunta test" width="400"/>
 </p>
 
 #### Preguntas de Traducción  
