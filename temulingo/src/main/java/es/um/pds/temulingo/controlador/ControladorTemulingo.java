@@ -19,7 +19,9 @@ import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.logic.Estadistica;
 import es.um.pds.temulingo.logic.EstadoCurso;
 import es.um.pds.temulingo.logic.Pregunta;
+import es.um.pds.temulingo.logic.PreguntaHuecos;
 import es.um.pds.temulingo.logic.PreguntaTest;
+import es.um.pds.temulingo.logic.PreguntaTraduccion;
 import es.um.pds.temulingo.logic.Progreso;
 import es.um.pds.temulingo.logic.RepositorioCursos;
 import es.um.pds.temulingo.logic.RepositorioUsuarios;
@@ -159,7 +161,6 @@ public class ControladorTemulingo {
 
 	public void importarCursoDesdeFichero(File fichero) throws IOException {
 		Curso curso = CargadorCursos.parsearDesdeFichero(fichero, Curso.class, CargadorCursos.Formato.YAML);
-
 		guardarCurso(curso);
 	}
 
@@ -171,8 +172,16 @@ public class ControladorTemulingo {
 	// MÉTODOS DE REANUDACIÓN DE CURSOS
 	// ========================================
 
+	public void iniciarCurso(Curso curso) {
+		if (tieneProgresoGuardado(curso)) {
+			reanudarCurso(curso);
+		} else {
+			empezarCursoNuevo(curso);
+		}
+	}
+	
 	/**
-	 * CU08: Verifica si un curso tiene progreso guardado
+	 * Verifica si un curso tiene progreso guardado
 	 */
 	public boolean tieneProgresoGuardado(Curso curso) {
 		if (usuarioActual == null) {
@@ -184,7 +193,7 @@ public class ControladorTemulingo {
 	}
 
 	/**
-	 * CU08: Obtiene el progreso guardado de un curso específico
+	 *  Obtiene el progreso guardado de un curso específico
 	 */
 	public Progreso obtenerProgresoGuardado(Curso curso) {
 		if (usuarioActual == null) {
@@ -197,7 +206,7 @@ public class ControladorTemulingo {
 	}
 
 	/**
-	 * CU08: Reanuda un curso desde donde se dejó
+	 *  Reanuda un curso desde donde se dejó
 	 */
 	public boolean reanudarCurso(Curso curso) {
 		try {
@@ -208,20 +217,15 @@ public class ControladorTemulingo {
 				return false;
 			}
 
-			// Establecer como curso actual
 			setCursoActual(progresoGuardado);
 
-			// Asegurarse de que la estrategia esté configurada en el objeto Progreso
 			if (progresoGuardado.getCurso().getEstrategiaAprendizaje() == null) {
-				// Si por alguna razón no tiene estrategia, establecer una por defecto
 				progresoGuardado.getCurso().setEstrategiaAprendizaje(Curso.EstrategiaAprendizaje.SECUENCIAL);
-				cursoDao.edit(progresoGuardado.getCurso()); // Persistir si se cambió
+				cursoDao.edit(progresoGuardado.getCurso()); 
 			}
 
-			// Inicializar estructuras de estrategia sin perder progreso
 			inicializarEstructurasProgresoExistente(progresoGuardado);
 
-			// Actualizar fecha de última sesión
 			progresoGuardado.setFechaUltimaSesion(new Date());
 			progresoDao.edit(progresoGuardado);
 
@@ -239,47 +243,31 @@ public class ControladorTemulingo {
 	}
 
 	/**
-	 * CU08: Inicia un curso completamente nuevo
+	 * Inicia un curso completamente nuevo
 	 */
 	public boolean empezarCursoNuevo(Curso curso) {
 		try {
-			// =========================================================================
-			// *** CAMBIOS PARA SOLUCIONAR "Removing a detached instance" ***
-			// =========================================================================
 
-			Progreso progresoExistente = obtenerProgresoGuardado(curso); // Esta instancia podría estar detached
+			Progreso progresoExistente = obtenerProgresoGuardado(curso);
 			if (progresoExistente != null) {
 				System.out.println("Intentando eliminar progreso existente para curso: " + curso.getTitulo()
 						+ " con ID: " + progresoExistente.getId());
 
-				// 1. Obtener una instancia 'gestionada' del progreso existente usando su ID.
-				// El método 'get' de tu DaoImpl es el equivalente a 'findById'.
 				Progreso progresoManaged = null;
-				if (progresoExistente.getId() != null) { // Asegúrate de que Progreso tenga un método getId()
+				if (progresoExistente.getId() != null) { 
 					progresoManaged = progresoDao.get(progresoExistente.getId()).orElse(null);
 				}
 
 				if (progresoManaged != null) {
-					// 2. Eliminar la instancia gestionada del progreso de la colección del usuario.
 					usuarioActual.getProgresos().remove(progresoManaged);
-					// 3. Eliminar la instancia gestionada a través del DAO.
 					progresoDao.delete(progresoManaged); // Usar el método 'delete' de tu DaoImpl
 					System.out.println("Progreso existente eliminado correctamente.");
 				} else {
-					// Esto ocurre si el progreso con ese ID ya no existe en la BD o no se pudo
-					// adjuntar.
-					// No se puede eliminar a través del DAO si no está gestionado o no existe.
 					System.out.println("Advertencia: El progreso existente (ID: " + progresoExistente.getId()
 							+ ") no se encontró para adjuntar/eliminar. Puede que ya haya sido eliminado o el ID sea incorrecto.");
-					// Si aún necesitas eliminarlo de la lista en memoria del usuario (si estaba
-					// allí):
 					usuarioActual.getProgresos().remove(progresoExistente);
 				}
 			}
-
-			// =========================================================================
-			// *** FIN DE LOS CAMBIOS DE ELIMINACIÓN ***
-			// =========================================================================
 
 			// Crear nuevo progreso
 			Progreso progresoNuevo = new Progreso();
@@ -288,23 +276,22 @@ public class ControladorTemulingo {
 			progresoNuevo.setFechaUltimaSesion(new Date());
 
 			usuarioActual.getProgresos().add(progresoNuevo);
-			progresoDao.save(progresoNuevo); // Asegurarse de que el objeto se guarda y se le asigna un ID si es
-												// necesario
-			setCursoActual(progresoNuevo); // ESTO ESTÁ GARANTIZADO SI NO HAY EXCEPCIÓN PREVIA
+			progresoDao.save(progresoNuevo); 
+			setCursoActual(progresoNuevo); 
 
 			System.out.println("Curso nuevo iniciado: " + curso.getTitulo());
 			return true;
 
 		} catch (Exception e) {
 			System.err.println("Error al iniciar curso nuevo: " + e.getMessage());
-			e.printStackTrace(); // Imprime el stack trace completo para depuración
-			setCursoActual(null); // Asegurarse de que cursoActual sea null si falla el inicio del curso
+			e.printStackTrace(); 
+			setCursoActual(null);
 			return false;
 		}
 	}
 
 	/**
-	 * CU08: Obtiene información de resumen del progreso
+	 * Obtiene información de resumen del progreso
 	 */
 	public String obtenerResumenProgreso(Curso curso) {
 		Progreso progreso = obtenerProgresoGuardado(curso);
@@ -317,7 +304,7 @@ public class ControladorTemulingo {
 	}
 
 	/**
-	 * CU08: Obtiene la fecha de la última sesión formateada
+	 * Obtiene la fecha de la última sesión formateada
 	 */
 	public String obtenerFechaUltimaSesion(Curso curso) {
 		Progreso progreso = obtenerProgresoGuardado(curso);
@@ -340,43 +327,6 @@ public class ControladorTemulingo {
 		this.cursoActual = cursoActual;
 	}
 
-	public void iniciarCurso(Curso curso) {
-		/*
-		 * // Buscar progreso existente Progreso progresoExistente =
-		 * usuarioActual.getProgresos().stream().filter(p -> p.getCurso().equals(curso))
-		 * .findFirst().orElse(null);
-		 * 
-		 * if (progresoExistente != null) { setCursoActual(progresoExistente);
-		 * System.out.println("Continuando curso existente: " + curso.getTitulo());
-		 * progresoExistente.reiniciarConEstrategia(progresoExistente.getCurso().
-		 * getEstrategiaAprendizaje());
-		 * 
-		 * // Importante: NO limpiar las respuestas aquí, solo reinicializar estructuras
-		 * // Por eso creamos un método específico para esto
-		 * inicializarEstructurasProgresoExistente(progresoExistente);
-		 * System.out.println("Continuando curso existente: " + curso.getTitulo());
-		 * System.out.println("Estrategia aplicada: " +
-		 * progresoExistente.getCurso().getEstrategiaAprendizaje());
-		 * 
-		 * } else { Progreso progresoNuevo = new Progreso();
-		 * progresoNuevo.setCurso(curso); // Usa el curso gestionado
-		 * progresoNuevo.setUsuario(usuarioActual);
-		 * 
-		 * usuarioActual.getProgresos().add(progresoNuevo);
-		 * progresoDao.save(progresoNuevo); setCursoActual(progresoNuevo);
-		 * System.out.println("Iniciando nuevo curso: " + curso.getTitulo());
-		 * System.out.println("Estrategia aplicada: " +
-		 * curso.getEstrategiaAprendizaje());
-		 * 
-		 * }
-		 */
-		if (tieneProgresoGuardado(curso)) {
-			reanudarCurso(curso);
-		} else {
-			empezarCursoNuevo(curso);
-		}
-	}
-
 	public Pregunta getSiguientePregunta() {
 		return cursoActual.getSiguientePregunta();
 	}
@@ -394,11 +344,11 @@ public class ControladorTemulingo {
 	}
 
 	// ========================================
-	// CU08: MÉTODOS DE GUARDADO
+	//  MÉTODOS DE GUARDADO
 	// ========================================
 
 	/**
-	 * CU08: Guardado automático mejorado
+	 *  Guardado automático mejorado
 	 */
 	public boolean guardarEstadoAutomatico() {
 		if (cursoActual == null) {
@@ -485,12 +435,7 @@ public class ControladorTemulingo {
 		// Actualizar la estrategia en el curso
 		cursoActual.getCurso().setEstrategiaAprendizaje(estrategia);
 
-		// Validar el estado del curso antes de continuar
-		// validarCursoActual();
-
-		// Reiniciar el progreso con la nueva estrategia
-		// cursoActual.reiniciarConEstrategia(estrategia);
-		inicializarEstructurasProgresoExistente(cursoActual); // Este método ya maneja la restauración de respuestas.
+		inicializarEstructurasProgresoExistente(cursoActual);
 
 		// Persistir los cambios en la base de datos
 		progresoDao.edit(cursoActual);
@@ -628,5 +573,145 @@ public class ControladorTemulingo {
 	public void setFirstLogin(boolean firstLogin) {
 		this.firstLogin = firstLogin;
 	}
+	
+	// ========================================
+	// MÉTODOS PARA SOPORTE MVC DE LA VISTA
+	// ========================================
+
+	/**
+	 * Encuentra el bloque que contiene una pregunta específica
+	 */
+	public Bloque encontrarBloqueParaPregunta(Pregunta pregunta) {
+	    if (cursoActual == null || cursoActual.getCurso() == null) {
+	        return null;
+	    }
+	    
+	    return cursoActual.getCurso().getBloques().stream()
+	        .filter(bloque -> bloque.getPreguntas().contains(pregunta))
+	        .findFirst()
+	        .orElse(null);
+	}
+
+	/**
+	 * Determina la siguiente acción en el flujo del curso
+	 */
+	public enum TipoAccion {
+	    SIGUIENTE_PREGUNTA, NUEVO_BLOQUE, FINALIZAR
+	}
+
+	public class ResultadoNavegacion {
+	    private TipoAccion tipo;
+	    private Bloque bloque;
+	    
+	    public ResultadoNavegacion(TipoAccion tipo, Bloque bloque) {
+	        this.tipo = tipo;
+	        this.bloque = bloque;
+	    }
+	    
+	    public TipoAccion getTipo() { return tipo; }
+	    public Bloque getBloque() { return bloque; }
+	}
+
+	public ResultadoNavegacion determinarSiguienteAccion(Pregunta preguntaActual) {
+	    Bloque bloqueActual = encontrarBloqueParaPregunta(preguntaActual);
+	    Pregunta proximaPregunta = getSiguientePregunta();
+	    
+	    if (proximaPregunta == null) {
+	        return new ResultadoNavegacion(TipoAccion.FINALIZAR, null);
+	    }
+	    
+	    Bloque bloqueProximaPregunta = encontrarBloqueParaPregunta(proximaPregunta);
+	    
+	    if (bloqueActual != null && bloqueProximaPregunta != null && 
+	        bloqueActual != bloqueProximaPregunta) {
+	        return new ResultadoNavegacion(TipoAccion.NUEVO_BLOQUE, bloqueProximaPregunta);
+	    } else {
+	        return new ResultadoNavegacion(TipoAccion.SIGUIENTE_PREGUNTA, bloqueProximaPregunta);
+	    }
+	}
+
+	/**
+	 * Formatea el tiempo transcurrido para mostrar en la vista
+	 */
+	public String formatearTiempoTranscurrido(long tiempoInicio) {
+	    if (cursoActual == null) {
+	        return "Tiempo: --:--:--";
+	    }
+	    
+	    long tiempoTranscurridoAcumulado = cursoActual.getTiempoTranscurrido();
+	    long tiempoActualSesion = System.currentTimeMillis() - tiempoInicio;
+	    long tiempoTotal = tiempoTranscurridoAcumulado + tiempoActualSesion;
+	    
+	    long segundos = (tiempoTotal / 1000) % 60;
+	    long minutos = (tiempoTotal / (1000 * 60)) % 60;
+	    long horas = (tiempoTotal / (1000 * 60 * 60));
+	    
+	    return String.format("Tiempo: %02d:%02d:%02d", horas, minutos, segundos);
+	}
+
+	/**
+	 * Actualiza el tiempo transcurrido del curso actual
+	 */
+	public boolean actualizarTiempoSesion(long tiempoInicio) {
+	    if (cursoActual == null) {
+	        return false;
+	    }
+	    
+	    long tiempoActualSesion = System.currentTimeMillis() - tiempoInicio;
+	    cursoActual.setTiempoTranscurrido(cursoActual.getTiempoTranscurrido() + tiempoActualSesion);
+	    
+	    return true;
+	}
+	
+	/**
+	 * Procesa una respuesta y retorna toda la información necesaria para la vista
+	 */
+	public RespuestaProcesada procesarRespuestaCompleta(Pregunta pregunta, String respuesta) {
+	    boolean esCorrecta = resolverPregunta(pregunta, respuesta);
+	    String respuestaCorrecta = obtenerRespuestaCorrecta(pregunta);
+	    
+	    String feedbackTexto;
+	    if (esCorrecta) {
+	        feedbackTexto = "¡Correcto! Muy bien.";
+	    } else {
+	        feedbackTexto = "Incorrecto. La respuesta correcta era: " + respuestaCorrecta;
+	    }
+	    
+	    return new RespuestaProcesada(esCorrecta, feedbackTexto, respuestaCorrecta);
+	}
+	
+	/**
+	 * Obtiene la respuesta correcta de cualquier tipo de pregunta
+	 */
+	private String obtenerRespuestaCorrecta(Pregunta pregunta) {
+	    if (pregunta instanceof PreguntaTest) {
+	        return ((PreguntaTest) pregunta).getSolucion();
+	    } else if (pregunta instanceof PreguntaHuecos) {
+	        return ((PreguntaHuecos) pregunta).getSolucion();
+	    } else if (pregunta instanceof PreguntaTraduccion) {
+	        return ((PreguntaTraduccion) pregunta).getSolucion();
+	    }
+	    return "Respuesta no disponible";
+	}
+	
+	/**
+	 * Clase para encapsular el resultado del procesamiento de una respuesta
+	 */
+	public class RespuestaProcesada {
+	    private boolean esCorrecta;
+	    private String feedbackTexto;
+	    private String respuestaCorrecta;
+	    
+	    public RespuestaProcesada(boolean esCorrecta, String feedbackTexto, String respuestaCorrecta) {
+	        this.esCorrecta = esCorrecta;
+	        this.feedbackTexto = feedbackTexto;
+	        this.respuestaCorrecta = respuestaCorrecta;
+	    }
+	    
+	    public boolean isEsCorrecta() { return esCorrecta; }
+	    public String getFeedbackTexto() { return feedbackTexto; }
+	    public String getRespuestaCorrecta() { return respuestaCorrecta; }
+	}
+	
 
 }

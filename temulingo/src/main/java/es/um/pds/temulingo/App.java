@@ -8,13 +8,15 @@ import javax.swing.SwingUtilities;
 
 import es.um.pds.temulingo.config.ConfiguracionUI;
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
+import es.um.pds.temulingo.exception.ExcepcionCredencialesInvalidas;
+import es.um.pds.temulingo.exception.ExcepcionRegistroInvalido;
 import es.um.pds.temulingo.utils.H2EmbeddedServer;
 import es.um.pds.temulingo.vista.VentanaLogin;
 import es.um.pds.temulingo.vista.VentanaMain;
 
 public class App {
 
-	public static void main(String[] args) throws InterruptedException, IOException {
+	public static void main(String[] args) throws InterruptedException, IOException, NullPointerException, ExcepcionRegistroInvalido, ExcepcionCredencialesInvalidas {
 		ConfiguracionUI.inicializar();
 
 		// Consola web H2 para el acceso a la BBDD: http://localhost:8082
@@ -28,13 +30,26 @@ public class App {
 		ControladorTemulingo controlador = ControladorTemulingo.getInstance();
 
 		// Intento de login
-		controlador.registrarUsuario("Juan Pérez", "juan@example.com", "juanp", "123456", LocalDate.of(1990, 5, 20));
+		//controlador.registrarUsuario("Juan Pérez", "juan@example.com", "juanp", "123456", LocalDate.of(1990, 5, 20));
 
+		boolean loginExitoso = false;
 		try {
-			boolean loginExitoso = controlador.iniciarSesionConEmail("juan@example.com", "123456");
+			loginExitoso = controlador.iniciarSesion("juan@example.com", "123456");
 			System.out.println("¿Login exitoso?: " + loginExitoso);
 		} catch (Exception e) {
 			System.out.println("Error al iniciar sesión: " + e.getMessage());
+			
+			// Si falla el login, intentar registrar el usuario
+	        try {
+	            controlador.registrarUsuario("Juan Pérez", "juan@example.com", "juanp", "123456", LocalDate.of(1990, 5, 20));
+	            System.out.println("Usuario registrado correctamente");
+	            
+	            // Ahora intentar login de nuevo
+	            loginExitoso = controlador.iniciarSesion("juan@example.com", "123456");
+	            System.out.println("¿Login exitoso después del registro?: " + loginExitoso);
+	        } catch (ExcepcionRegistroInvalido ex) {
+	            System.out.println("Error al registrar usuario: " + ex.getMessage());
+	        }
 		}
 
 		// Ruta del archivo
@@ -45,27 +60,9 @@ public class App {
 
 		controlador.importarCursoDesdeFichero(archivo);
 
-//		// Iniciar curso
-//        controlador.iniciarCursoTest();
-//        System.out.println("Curso iniciado...\n");
-//
-//        // Loop de preguntas
-//        while (!controlador.esCursoActualCompletado()) {
-//            Pregunta pregunta = controlador.getSiguientePregunta();
-//            System.out.println("Pregunta: " + pregunta.getEnunciado());
-//
-//            String respuesta = "test";
-//            boolean correcta = controlador.resolverPregunta(pregunta, respuesta);
-//            System.out.println("Respuesta dada: \"" + respuesta + "\" - ¿Correcta?: " + correcta + "\n");
-//        }
-//
-//        System.out.println("✅ Curso completado.");
-
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				/*VentanaMain ventanaMain = new VentanaMain();
-				ventanaMain.setVisible(true);*/
 				VentanaLogin ventanaLogin = new VentanaLogin();
                 ventanaLogin.setVisible(true);
 			}

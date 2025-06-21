@@ -12,7 +12,6 @@ import java.awt.event.MouseEvent;
 public class PanelInformacionBloque extends JPanel {
 
     private static final Color COLOR_PRIMARIO = new Color(74, 144, 226); // azul
-    private static final Color COLOR_SECUNDARIO = new Color(52, 120, 199); // No se usa aquí, pero se mantiene la referencia a los colores generales.
     private static final Color COLOR_EXITO = new Color(46, 174, 52);// verde
     private static final Color COLOR_CARD = Color.WHITE;
 
@@ -70,9 +69,6 @@ public class PanelInformacionBloque extends JPanel {
                 + bloque.getDescripcion() + "</div></html>");
         etiquetaProgreso.setText("Progreso del curso: " + progresoResumen);
         
-        etiquetaTitulo.revalidate();
-        etiquetaDescripcion.revalidate();
-        etiquetaProgreso.revalidate();
         revalidate();
         repaint();
     }
