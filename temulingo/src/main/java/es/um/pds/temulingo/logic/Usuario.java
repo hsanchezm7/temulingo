@@ -150,8 +150,9 @@ public class Usuario implements Serializable {
 	public Progreso iniciarCurso(Curso curso) {
 		Progreso cursoNuevo = new Progreso();
 		cursoNuevo.setCurso(curso);
-		cursoNuevo.setUsuario(this);
-		progresos.add(cursoNuevo);
+		/*cursoNuevo.setUsuario(this);
+		progresos.add(cursoNuevo);*/
+		addProgreso(cursoNuevo);
 
 		return cursoNuevo;
 	}

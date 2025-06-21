@@ -261,7 +261,8 @@ public class Progreso implements Serializable {
 
 	public int getNumTotalPreguntas() {
 		// TODO: mover lógica a Curso, para no violar patrón experto
-		return curso.getBloques().stream().mapToInt(b -> b.getPreguntas().size()).sum();
+		//return curso.getBloques().stream().mapToInt(b -> b.getPreguntas().size()).sum();
+		return curso.getTotalPreguntas();
 	}
 
 	public int getNumRespuestasCorrectas() {
@@ -334,37 +335,5 @@ public class Progreso implements Serializable {
 		}
 		System.out.println("==========================================");
 	}
-
-	/*
-	 * private void prepararPreguntasSegunEstrategia(Curso.EstrategiaAprendizaje
-	 * estrategia) { // Obtener todas las preguntas del curso List<Pregunta>
-	 * todasLasPreguntas = new ArrayList<>(); for (Bloque bloque :
-	 * curso.getBloques()) { todasLasPreguntas.addAll(bloque.getPreguntas()); }
-	 * 
-	 * switch (estrategia) { case SECUENCIAL: // Las preguntas ya están en orden
-	 * secuencial preguntasOrdenadas = new ArrayList<>(todasLasPreguntas); break;
-	 * 
-	 * case ALEATORIA: // Mezclar las preguntas aleatoriamente preguntasOrdenadas =
-	 * new ArrayList<>(todasLasPreguntas); Collections.shuffle(preguntasOrdenadas,
-	 * new Random()); // CORREGIDO: era todasLasPreguntas break;
-	 * 
-	 * case REPETICION_ESPACIADA: // Para la repetición espaciada, podríamos
-	 * implementar un algoritmo más complejo // Por ahora, mezclamos con un seed
-	 * fijo para que sea reproducible preguntasOrdenadas = new
-	 * ArrayList<>(todasLasPreguntas); Collections.shuffle(preguntasOrdenadas, new
-	 * Random(42)); // CORREGIDO: era todasLasPreguntas break; }
-	 * 
-	 * // Actualizar el orden de las preguntas en los bloques //
-	 * actualizarOrdenPreguntas(todasLasPreguntas); }
-	 */
-	/*
-	 * private void actualizarOrdenPreguntas(List<Pregunta> preguntasOrdenadas) { //
-	 * Limpiar preguntas de todos los bloques for (Bloque bloque :
-	 * curso.getBloques()) { bloque.getPreguntas().clear(); }
-	 * 
-	 * // Redistribuir las preguntas ordenadas // Por simplicidad, las ponemos todas
-	 * en el primer bloque if (!curso.getBloques().isEmpty()) {
-	 * curso.getBloques().get(0).getPreguntas().addAll(preguntasOrdenadas); } }
-	 */
 
 }
