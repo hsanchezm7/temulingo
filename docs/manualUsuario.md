@@ -1,10 +1,15 @@
-# Manual de Usuario
+# Manual de Usuario de Temulingo
+
 # Introducción
-Temulingo es una aplicación de aprendizaje interactiva inspirada en el éxito de plataformas como Duolingo y sistemas de tarjetas de estudio como Mochi. Esta aplicación te permite aprender y repasar conceptos de cualquier dominio de conocimiento de manera efectiva y personalizada.
+
+Temulingo es una aplicación de aprendizaje interactiva inspirada en el éxito de plataformas como Duolingo y sistemas de tarjetas de estudio como Mochi. Esta aplicación te permite aprender y repasar conceptos de cualquier dominio de conocimiento de manera efectiva y personalizada. 
+
+Este manual proporciona una guía básica para nuevos usuarios, explicando las principales pantallas y funcionalidades de Temulingo. Su objetivo es ayudar a comenzar a usar la aplicación de forma sencilla y efectiva, sin necesidad de conocimientos técnicos previos.
 
 # Funcionamiento
 
 ## Pantalla de Bienvenida
+
 Al iniciar Temulingo, verás una pantalla de inicio sesión en la que deberás introducir tu nombre de usuario y contraseña que deberías haber introducido previamente al registrarte.
 
 <p align="center">
@@ -13,6 +18,7 @@ Al iniciar Temulingo, verás una pantalla de inicio sesión en la que deberás i
 
 
 ## Registro de usuario
+
 En caso de que sea la primera vez que inicies la aplicación, no tendrás ninguna cuenta creada con la que iniciar sesión, por lo que lo primero es que crees tu cuenta. Para ello, pulsa el botón "Crear cuenta" y se abrirá la siguiente ventana.
 
 <p align="center">
@@ -26,6 +32,7 @@ Los datos a introducir son: tu nombre completo, una cuenta de correo electrónic
 </p>
 
 ## Inicio de sesión
+
 Cuando tienes ya tu cuenta creada, rellena los campos con tus datos en la ventana de inicio de sesión y pulsa el botón de Login.
 
 <p align="center">
@@ -41,6 +48,7 @@ Si te falta algún dato se mostrará el aviso correspondiente para que puedas in
 </p>
 
 ## Menú principal
+
 La primera vez que inicies la aplicación, se mostrará la siguiente ventana principal, en la que podrás iniciar cursos, reanudarlos, ver tus estadísticas en la aplicación o importar cursos.
 
 <p align="center">
@@ -50,6 +58,7 @@ La primera vez que inicies la aplicación, se mostrará la siguiente ventana pri
 Como sería la primera vez, no verás más que la ventana con un mensaje dirigido a ti, y los botones para empezar a usar la app. En todo momento puedes cerrar la aplicación pulsando "Salir" en la parte inferior izquierda de la ventana.
 
 ## Estadísticas
+
 Si no has iniciado ningún curso, las estadísticas se mostrarán vacías:
 
 <p align="center">
@@ -65,6 +74,7 @@ En caso contrario se mostrará con la información y datos pertinentes:
 ## Gestión cursos
 
 ### Importar curso
+
 Lo primero será importar el curso que quieres realizar, pulsando el botón "Importar cursos" se te abre la ventana en la que podrás buscar por tus archivos el curso en cuestión:
 
 <p align="center">
@@ -78,6 +88,7 @@ Una vez que lo encuentres, lo seleccionas y le das a "Importar". Cuando cierres 
 </p>
 
 ### Iniciar curso
+
 Cuando tienes el curso, si quieres realizarlo pulsa "Iniciar" y se abrirá una ventana en la que podrás elegir entre las diferentes estrategias de aprendizaje:
 
 <p align="center">
@@ -89,6 +100,7 @@ Cuando tienes el curso, si quieres realizarlo pulsa "Iniciar" y se abrirá una v
 - **Repetición espaciada**: Las preguntas se repetirán una vez cada 3 preguntas mientras queden preguntas nuevas
 
 ### Realización curso
+
 Ahora que ya tienes elegido el orden de las preguntas, la aplicación te va a mostrar un panel informativo del bloque de preguntas que vas a ir contestando:
 
 <p align="center">
@@ -109,6 +121,7 @@ Como se puede observar, en la parte inferior de la ventana, se muestra el tiempo
 ### Tipos de Ejercicios
 
 #### Preguntas Tipo Test
+
 En la ventana para las de tipo Test solamente tienes que elegir la opción que consideres y pulsar el botón "Responder":
 
 <p align="center">
@@ -121,7 +134,8 @@ Antes de pasar a la siguiente pregunta se mostrará tanto si has acertado como s
   <img src="images/16-resultado-test.jpg" alt="Resultado pregunta test" width="400"/>
 </p>
 
-#### Preguntas de Traducción  
+#### Preguntas de Traducción
+
 En Traducción se te pedirá que escribas la traducción de una palabra:
 
 <p align="center">
@@ -129,6 +143,7 @@ En Traducción se te pedirá que escribas la traducción de una palabra:
 </p>
 
 #### Rellenar Huecos
+
 En Rellenar Huecos debes introducir la palabra que debería estar en el espacio en blanco:
 
 <p align="center">
@@ -136,6 +151,7 @@ En Rellenar Huecos debes introducir la palabra que debería estar en el espacio 
 </p>
 
 ### Reanudar Curso
+
 En caso de que decidas pausar el curso y salir para continuar más tarde, cuando vuelvas a iniciar el curso, como antes, pulsando "Iniciar", si tienes un progreso guardado, mostrará los siguientes mensajes:
 
 <p align="center">
@@ -155,6 +171,7 @@ Como antes debes darle a "Comenzar Bloque" para continuar.
 Pero si decides comenzarlo de 0, deberás empezar otra vez desde la elección de la estrategia de aprendizaje. 
 
 ### Finalización Curso
+
 Cuando finalices un curso te saldrá la siguiente pantalla indicando que ya has completado el curso. 
 
 <p align="center">

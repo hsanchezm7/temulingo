@@ -1,10 +1,10 @@
+<a id="readme-top"></a>
+
 <!-- PROJECT SHIELDS -->
-![Java Version](https://img.shields.io/badge/java-17-orange)
+![Java Version](https://img.shields.io/badge/java-17-orange) ![Maven](https://img.shields.io/badge/build-Maven-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 <!-- PROJECT LOGO -->
-<br />
 <div align="center">
-
   <img src="temulingo/src/main/resources/media/banner.png" alt="Logo Temulingo" width="640" height="160">
 
   <h3 align="center">Temulingo</h3>
@@ -60,6 +60,7 @@ Este proyecto forma parte de las prácticas de la asignatura de **Procesos de De
   </tr>
 </table>
 
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Inicio rápido
@@ -89,7 +90,8 @@ Para ejecutar el proyecto es necesario tener instalado:
    ```sh
    $ java -jar target/temulingo-{version}-jar-with-dependencies.jar
    ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
 <!-- USAGE EXAMPLES -->
 ## Uso
@@ -97,6 +99,10 @@ Para ejecutar el proyecto es necesario tener instalado:
 ### Requisitos y casos de uso
 
 Con aprobación del tutor del proyecto, se ha optado por llevar un seguimiento de los casos de uso usando la funcionalidad de _issues_ junto con el uso _pull requests_ de Github. Se ha definido un [documento raíz](https://github.com/hsanchezm7/temulingo/issues/9) que recoge todos los casos de uso contemplados de la aplicación.
+
+### Manual de usuario
+
+Se ha definido un [manual de usuario](docs/manualUsuario.md) básico que recoge las principales funcionalidades de la aplicación.
 
 ### Estructura del proyecto
 
@@ -122,7 +128,7 @@ Se ha creado una _suite_ de tests usando las siguientes herramientas:
 
   - [Maven Surefire JUnit5 Tree Reporter](https://github.com/fabriciorby/maven-surefire-junit5-tree-reporter): Mejora visualmente la salida de tests en consola con estructura jerárquica.
 
-Para ejecutar los tests *se recomienda usar Maven*. Se pueden ejecutar con el comando:
+Para ejecutar los tests **se recomienda usar Maven**. Se pueden ejecutar con el comando:
 
 ```sh
    $ mvn test
@@ -134,9 +140,7 @@ También se puede ver en formato `.html` un _report_ de los tests ejecutados. El
    $ mvn site
 ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
 <!-- ACKNOWLEDGMENTS -->
 
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
