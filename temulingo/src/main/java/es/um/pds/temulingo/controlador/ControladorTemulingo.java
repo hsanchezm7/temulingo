@@ -160,7 +160,17 @@ public class ControladorTemulingo {
 	}
 
 	public void importarCursoDesdeFichero(File fichero) throws IOException {
-		Curso curso = ParseadorCursos.parsearDesdeFichero(fichero, Curso.class, ParseadorCursos.Formato.YAML);
+		ParseadorCursos.Formato formato = null;
+		String nombre = fichero.getName().toLowerCase();
+
+		// Detectar por extensión
+		if (nombre.endsWith(".json")) {
+			formato = ParseadorCursos.Formato.JSON;
+		} else if (nombre.endsWith(".yaml") || nombre.endsWith(".yml")) {
+			formato = ParseadorCursos.Formato.YAML;
+		}
+
+		Curso curso = ParseadorCursos.parsearDesdeFichero(fichero, Curso.class, formato);
 		guardarCurso(curso);
 	}
 
