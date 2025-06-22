@@ -13,6 +13,7 @@ import es.um.pds.temulingo.logic.Progreso;
 import es.um.pds.temulingo.logic.Usuario;
 
 public class FactoriaDaoImpl extends FactoriaDao {
+
 	@Override
 	public Dao<Usuario> getUsuarioDao() {
 		return UsuarioDaoImpl.getInstance();
@@ -37,4 +38,5 @@ public class FactoriaDaoImpl extends FactoriaDao {
 	public Dao<Progreso> getProgresoDao() {
 		return ProgresoDaoImpl.getInstance();
 	}
+
 }

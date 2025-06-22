@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import es.um.pds.temulingo.dao.base.Dao;
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
@@ -28,9 +30,39 @@ import es.um.pds.temulingo.logic.RepositorioUsuarios;
 import es.um.pds.temulingo.logic.Usuario;
 import es.um.pds.temulingo.utils.PasswordUtils;
 
+/**
+ * Clase que actúa como controlador central de la aplicación Temulingo.
+ * 
+ * <p>
+ * Implementa el patrón Singleton para garantizar una única instancia durante el
+ * ciclo de vida de la aplicación. Su responsabilidad principal es coordinar la
+ * lógica de negocio entre usuarios, cursos y progreso, así como facilitar la
+ * persistencia y recuperación de datos.
+ * </p>
+ *
+ * <h2>Responsabilidades principales:</h2>
+ * <ul>
+ * <li>Gestión de autenticación y registro de usuarios</li>
+ * <li>Importación, exportación y almacenamiento de cursos</li>
+ * <li>Inicio, reanudación y seguimiento del progreso de los cursos</li>
+ * <li>Gestión del estado actual del curso (pregunta, avance, tiempo, etc.)</li>
+ * <li>Guardado automático y manual del estado del curso</li>
+ * </ul>
+ *
+ * <h2>Colaboradores:</h2>
+ * <ul>
+ * <li>{@link RepositorioUsuarios} para operaciones CRUD con usuarios</li>
+ * <li>{@link RepositorioCursos} para operaciones sobre cursos</li>
+ * <li>{@link Dao<Progreso>} para persistencia de progreso del curso</li>
+ * <li>{@link FactoriaDao} como fábrica abstracta para DAOs</li>
+ * </ul>
+ *
+ */
 public class ControladorTemulingo {
 
 	private static ControladorTemulingo instance = null;
+
+	private static final Logger LOGGER = Logger.getLogger(ControladorTemulingo.class.getName());
 
 	private Usuario usuarioActual;
 	private Progreso cursoActual;
@@ -77,10 +109,20 @@ public class ControladorTemulingo {
 		cursoDao = factoriaDao.getCursoDao();
 	}
 
-	// ========================================
-	// MÉTODOS DE AUTENTICACIÓN Y REGISTRO
-	// ========================================
-
+	/**
+	 * Registra un nuevo usuario en el sistema si no existe previamente por email o
+	 * username.
+	 *
+	 * @param nombre     Nombre del usuario.
+	 * @param email      Dirección de correo electrónico.
+	 * @param username   Nombre de usuario deseado.
+	 * @param password   Contraseña del usuario.
+	 * @param fechaNacim Fecha de nacimiento.
+	 * @return {@code true} si el registro fue exitoso.
+	 * @throws NullPointerException      si alguno de los campos es nulo.
+	 * @throws ExcepcionRegistroInvalido si el email o username ya están
+	 *                                   registrados.
+	 */
 	public boolean registrarUsuario(String nombre, String email, String username, String password, LocalDate fechaNacim)
 			throws NullPointerException, ExcepcionRegistroInvalido {
 
@@ -106,6 +148,22 @@ public class ControladorTemulingo {
 		return true;
 	}
 
+	/**
+	 * Inicia sesión con un nombre de usuario o correo electrónico y contraseña.
+	 *
+	 * <p>
+	 * El sistema distingue si el identificador es un email o username mediante una
+	 * expresión regular. También marca al usuario como ya no "firstLogin" después
+	 * de su primera sesión.
+	 * </p>
+	 *
+	 * @param input    Username o correo electrónico.
+	 * @param password Contraseña en texto plano.
+	 * @return {@code true} si la autenticación fue exitosa.
+	 * @throws NullPointerException           si los campos son nulos.
+	 * @throws ExcepcionCredencialesInvalidas si no se encuentra el usuario o la
+	 *                                        contraseña no coincide.
+	 */
 	public boolean iniciarSesion(String input, String password)
 			throws NullPointerException, ExcepcionCredencialesInvalidas {
 		// Caso 1: validar los parámetros de entrada
@@ -138,10 +196,12 @@ public class ControladorTemulingo {
 
 	}
 
-	// ========================================
-	// MÉTODOS DE GESTIÓN DE CURSOS
-	// ========================================
-
+	/**
+	 * Guarda un curso en la lista del usuario actual, evitando duplicados por ID o
+	 * título.
+	 *
+	 * @param curso Curso a guardar.
+	 */
 	public void guardarCurso(Curso curso) {
 		if (curso != null) {
 			// Verificar si el curso ya existe en la lista del usuario
@@ -153,13 +213,24 @@ public class ControladorTemulingo {
 				usuarioActual.addCurso(curso);
 				repoCursos.guardarCurso(curso);
 				repoUsuarios.actualizarUsuario(usuarioActual);
-				System.out.println("Curso añadido: " + curso.getTitulo());
+				LOGGER.info("Curso añadido: " + curso.getTitulo());
 			} else {
-				System.out.println("El curso ya existe en la lista del usuario: " + curso.getTitulo());
+				LOGGER.info("El curso ya existe en la lista del usuario: " + curso.getTitulo());
 			}
 		}
 	}
 
+	/**
+	 * Importa un curso desde un fichero en formato JSON o YAML.
+	 *
+	 * <p>
+	 * Detecta el formato a partir de la extensión del archivo y lo parsea usando
+	 * {@code ParseadorCursos}.
+	 * </p>
+	 *
+	 * @param fichero Archivo de curso a importar.
+	 * @throws IOException si ocurre un error de lectura del archivo.
+	 */
 	public void importarCursoDesdeFichero(File fichero) throws IOException {
 		ParseadorCursos.Formato formato = null;
 		String nombre = fichero.getName().toLowerCase();
@@ -175,6 +246,14 @@ public class ControladorTemulingo {
 		guardarCurso(curso);
 	}
 
+	/**
+	 * Exporta un curso a un fichero en el formato especificado (JSON o YAML).
+	 *
+	 * @param curso   El curso que se desea exportar.
+	 * @param fichero El fichero de destino donde se guardará el curso.
+	 * @param formato El formato de exportación (JSON o YAML).
+	 * @throws IOException Si ocurre un error durante la escritura del fichero.
+	 */
 	public void exportarCursoAFichero(Curso curso, File fichero, ParseadorCursos.Formato formato) throws IOException {
 		ParseadorCursos.parsearAFichero(curso, fichero, formato);
 	}
@@ -183,10 +262,12 @@ public class ControladorTemulingo {
 		return usuarioActual.getCursos();
 	}
 
-	// ========================================
-	// MÉTODOS DE REANUDACIÓN DE CURSOS
-	// ========================================
-
+	/**
+	 * Inicia un curso. Si existe progreso guardado, lo reanuda; si no, lo comienza
+	 * desde cero.
+	 *
+	 * @param curso Curso a iniciar o reanudar.
+	 */
 	public void iniciarCurso(Curso curso) {
 		if (tieneProgresoGuardado(curso)) {
 			reanudarCurso(curso);
@@ -221,14 +302,18 @@ public class ControladorTemulingo {
 	}
 
 	/**
-	 * Reanuda un curso desde donde se dejó
+	 * Reanuda un curso desde el progreso guardado.
+	 *
+	 * @param curso Curso a reanudar.
+	 * @return {@code true} si se pudo reanudar correctamente, {@code false} si no
+	 *         había progreso guardado o hubo errores.
 	 */
 	public boolean reanudarCurso(Curso curso) {
 		try {
 			Progreso progresoGuardado = obtenerProgresoGuardado(curso);
 
 			if (progresoGuardado == null) {
-				System.err.println("No hay progreso guardado para el curso: " + curso.getTitulo());
+				LOGGER.log(Level.SEVERE, "No hay progreso guardado para el curso");
 				return false;
 			}
 
@@ -244,29 +329,32 @@ public class ControladorTemulingo {
 			progresoGuardado.setFechaUltimaSesion(new Date());
 			progresoDao.edit(progresoGuardado);
 
-			System.out.println("Curso reanudado: " + curso.getTitulo());
-			System.out.println("Progreso: " + String.format("%.1f%%", progresoGuardado.getProgresoPorcentaje()));
-			System.out.println("Preguntas respondidas: " + progresoGuardado.getNumRespuestas() + "/"
+			LOGGER.info("Curso reanudado: " + curso.getTitulo());
+			LOGGER.info(String.format("Progreso: %.1f%%", progresoGuardado.getProgresoPorcentaje()));
+			LOGGER.info("Preguntas respondidas: " + progresoGuardado.getNumRespuestas() + "/"
 					+ progresoGuardado.getNumTotalPreguntas());
 
 			return true;
-
 		} catch (Exception e) {
-			System.err.println("Error al reanudar curso: " + e.getMessage());
+			LOGGER.log(Level.SEVERE, "Error al reanudar curso", e);
 			return false;
 		}
 	}
 
 	/**
-	 * Inicia un curso completamente nuevo
+	 * Inicia un nuevo curso desde cero, eliminando progreso previo si existe.
+	 *
+	 * @param curso Curso a comenzar desde el inicio.
+	 * @return {@code true} si el curso fue iniciado correctamente, {@code false} si
+	 *         hubo un error.
 	 */
 	public boolean empezarCursoNuevo(Curso curso) {
 		try {
 
 			Progreso progresoExistente = obtenerProgresoGuardado(curso);
 			if (progresoExistente != null) {
-				System.out.println("Intentando eliminar progreso existente para curso: " + curso.getTitulo()
-						+ " con ID: " + progresoExistente.getId());
+				LOGGER.info("Intentando eliminar progreso existente para curso: " + curso.getTitulo() + " con ID: "
+						+ progresoExistente.getId());
 
 				Progreso progresoManaged = null;
 				if (progresoExistente.getId() != null) {
@@ -275,11 +363,11 @@ public class ControladorTemulingo {
 
 				if (progresoManaged != null) {
 					usuarioActual.getProgresos().remove(progresoManaged);
-					progresoDao.delete(progresoManaged); // Usar el método 'delete' de tu DaoImpl
-					System.out.println("Progreso existente eliminado correctamente.");
+					progresoDao.delete(progresoManaged);
+					LOGGER.info("Progreso existente eliminado correctamente.");
 				} else {
-					System.out.println("Advertencia: El progreso existente (ID: " + progresoExistente.getId()
-							+ ") no se encontró para adjuntar/eliminar. Puede que ya haya sido eliminado o el ID sea incorrecto.");
+					LOGGER.warning("El progreso existente (ID: " + progresoExistente.getId()
+							+ ") no se encontró para adjuntar/eliminar.");
 					usuarioActual.getProgresos().remove(progresoExistente);
 				}
 			}
@@ -294,11 +382,12 @@ public class ControladorTemulingo {
 			progresoDao.save(progresoNuevo);
 			setCursoActual(progresoNuevo);
 
-			System.out.println("Curso nuevo iniciado: " + curso.getTitulo());
+			LOGGER.info("Curso nuevo iniciado: " + curso.getTitulo());
+
 			return true;
 
 		} catch (Exception e) {
-			System.err.println("Error al iniciar curso nuevo: " + e.getMessage());
+			LOGGER.log(Level.SEVERE, "Error al iniciar curso nuevo", e);
 			e.printStackTrace();
 			setCursoActual(null);
 			return false;

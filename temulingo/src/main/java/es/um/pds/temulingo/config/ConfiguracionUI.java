@@ -10,6 +10,15 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+/**
+ * Clase responsable de configurar la apariencia de la interfaz gráfica (UI) de
+ * la aplicación.
+ * <p>
+ * Aplica un tema visual, define fuentes, iconos personalizados y ajusta
+ * propiedades de estilo como bordes redondeados. Utiliza temas de FlatLaf e
+ * integra recursos visuales propios.
+ * </p>
+ */
 public class ConfiguracionUI {
 
 	private static final Tema TEMA_POR_DEFECTO = Tema.FLAT_INTELLIJ;
@@ -17,6 +26,11 @@ public class ConfiguracionUI {
 
 	private static Tema temaActual = null;
 
+	/**
+	 * Inicializa la configuración visual de la interfaz. Aplica el tema por
+	 * defecto, configura la fuente, los textos en español y los iconos
+	 * personalizados para los diálogos estándar.
+	 */
 	public static void inicializar() {
 		setTemaActual(TEMA_POR_DEFECTO);
 
@@ -34,9 +48,9 @@ public class ConfiguracionUI {
 
 		// Aviso: puede no funcionar con ciertos temas
 		ImageIcon iconoInfo = new ImageIcon(
-				ConfiguracionUI.class.getResource(ConfiguracionTemulingo.getRutaIcono("info.icono")));
+				ConfiguracionUI.class.getResource(ConfiguracionImagenes.getRutaIcono("info.icono")));
 		ImageIcon iconoError = new ImageIcon(
-				ConfiguracionUI.class.getResource(ConfiguracionTemulingo.getRutaIcono("error.icono")));
+				ConfiguracionUI.class.getResource(ConfiguracionImagenes.getRutaIcono("error.icono")));
 
 		UIManager.put("OptionPane.informationIcon", iconoInfo);
 		UIManager.put("OptionPane.errorIcon", iconoError);
@@ -58,8 +72,13 @@ public class ConfiguracionUI {
 
 	}
 
+	/**
+	 * Devuelve el icono principal de la aplicación.
+	 *
+	 * @return imagen del icono cargado desde recursos
+	 */
 	public static ImageIcon getIconoApp() {
-		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("logo-icon.icono");
+		String rutaIconoLogo = ConfiguracionImagenes.getRutaIcono("logo-icon.icono");
 		return new ImageIcon(ConfiguracionUI.class.getResource(rutaIconoLogo));
 
 	}
@@ -79,6 +98,16 @@ public class ConfiguracionUI {
 		}
 	}
 
+	/**
+	 * Enum que representa los distintos temas visuales disponibles en la
+	 * aplicación.
+	 * 
+	 * <p>
+	 * Cada tema contiene un nombre legible, el nombre de clase del LookAndFeel
+	 * correspondiente, y una categoría que permite agruparlos lógicamente (FlatLaf,
+	 * Sistema, Clásicos, IntelliJ, etc.).
+	 * </p>
+	 */
 	public enum Tema {
 		FLAT_LIGHT("Light", "com.formdev.flatlaf.FlatLightLaf", CategoriasTema.FLATLAF),
 		FLAT_DARK("Dark", "com.formdev.flatlaf.FlatDarkLaf", CategoriasTema.FLATLAF),
@@ -123,6 +152,14 @@ public class ConfiguracionUI {
 		}
 	}
 
+	/**
+	 * Cambia el tema visual de la aplicación en tiempo de ejecución.
+	 *
+	 * @param tema   tema que se desea aplicar
+	 * @param parent componente raíz sobre el que actualizar la UI, puede ser
+	 *               {@code null}
+	 * @throws Exception si ocurre un error al aplicar el tema
+	 */
 	public static void cambiarTema(Tema tema, Component parent) throws Exception {
 		UIManager.setLookAndFeel(tema.getClassName());
 

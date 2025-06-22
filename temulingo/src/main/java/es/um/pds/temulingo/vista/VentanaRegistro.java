@@ -29,6 +29,7 @@ import javax.swing.border.TitledBorder;
 
 import com.toedter.calendar.JDateChooser;
 
+import es.um.pds.temulingo.config.ConfiguracionImagenes;
 import es.um.pds.temulingo.config.ConfiguracionTemulingo;
 import es.um.pds.temulingo.config.ConfiguracionUI;
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
@@ -97,7 +98,7 @@ public class VentanaRegistro extends JFrame {
 		panelLogo.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		JLabel lblAppchat = new JLabel("");
-		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("banner-alt.icono");
+		String rutaIconoLogo = ConfiguracionImagenes.getRutaIcono("banner-alt.icono");
 		ImageIcon iconoLogo = new ImageIcon(getClass().getResource(rutaIconoLogo));
 		lblAppchat.setIcon(iconoLogo);
 		panelLogo.add(lblAppchat);
@@ -127,7 +128,7 @@ public class VentanaRegistro extends JFrame {
 		panelRegistro.setLayout(gbl_panelRegistro);
 
 		// Campo Nombre
-		String rutaIdLogo = ConfiguracionTemulingo.getRutaIcono("id.icono");
+		String rutaIdLogo = ConfiguracionImagenes.getRutaIcono("id.icono");
 		ImageIcon idLogo = new ImageIcon(getClass().getResource(rutaIdLogo));
 		JLabel lblNombre = new JLabel(idLogo);
 		GridBagConstraints gbc_lblNombre = new GridBagConstraints();
@@ -148,7 +149,7 @@ public class VentanaRegistro extends JFrame {
 		panelRegistro.add(campoNombre, gbc_campoNombre);
 
 		// Campo Email
-		String rutaEmailLogo = ConfiguracionTemulingo.getRutaIcono("email.icono");
+		String rutaEmailLogo = ConfiguracionImagenes.getRutaIcono("email.icono");
 		ImageIcon emailLogo = new ImageIcon(getClass().getResource(rutaEmailLogo));
 		JLabel lblEmail = new JLabel(emailLogo);
 		GridBagConstraints gbc_lblEmail = new GridBagConstraints();
@@ -169,7 +170,7 @@ public class VentanaRegistro extends JFrame {
 		panelRegistro.add(campoEmail, gbc_campoEmail);
 
 		// Campo Username
-		String rutaUsernameLogo = ConfiguracionTemulingo.getRutaIcono("user.icono");
+		String rutaUsernameLogo = ConfiguracionImagenes.getRutaIcono("user.icono");
 		ImageIcon usernameLogo = new ImageIcon(getClass().getResource(rutaUsernameLogo));
 		JLabel lblUsername = new JLabel(usernameLogo);
 		GridBagConstraints gbc_lblUsername = new GridBagConstraints();
@@ -190,7 +191,7 @@ public class VentanaRegistro extends JFrame {
 		panelRegistro.add(campoUsername, gbc_campoUsername);
 
 		// Campo Contraseña
-		String rutaPasswordLogo = ConfiguracionTemulingo.getRutaIcono("key.icono");
+		String rutaPasswordLogo = ConfiguracionImagenes.getRutaIcono("key.icono");
 		ImageIcon passwordLogo = new ImageIcon(getClass().getResource(rutaPasswordLogo));
 		JLabel lblPassword = new JLabel(passwordLogo);
 		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
@@ -220,7 +221,7 @@ public class VentanaRegistro extends JFrame {
 		panelRegistro.add(btnMostrarPassword, gbc_btnMostrarPassword);
 
 		// Campo Fecha de nacimiento
-		String rutaEventoLogo = ConfiguracionTemulingo.getRutaIcono("event.icono");
+		String rutaEventoLogo = ConfiguracionImagenes.getRutaIcono("event.icono");
 		ImageIcon eventoLogo = new ImageIcon(getClass().getResource(rutaEventoLogo));
 		JLabel lblFechaNacimiento = new JLabel(eventoLogo);
 		GridBagConstraints gbc_lblFechaNacimiento = new GridBagConstraints();
@@ -248,10 +249,10 @@ public class VentanaRegistro extends JFrame {
 	 */
 	private void cargarIconosPassword() {
 		try {
-			String rutaIconoVisible = ConfiguracionTemulingo.getRutaIcono("view.icono");
+			String rutaIconoVisible = ConfiguracionImagenes.getRutaIcono("view.icono");
 			iconoOjoVisible = new ImageIcon(getClass().getResource(rutaIconoVisible));
 
-			String rutaIconoOculto = ConfiguracionTemulingo.getRutaIcono("hide.icono");
+			String rutaIconoOculto = ConfiguracionImagenes.getRutaIcono("hide.icono");
 			iconoOjoOculto = new ImageIcon(getClass().getResource(rutaIconoOculto));
 
 			LOGGER.fine("Iconos de contraseña cargados correctamente");

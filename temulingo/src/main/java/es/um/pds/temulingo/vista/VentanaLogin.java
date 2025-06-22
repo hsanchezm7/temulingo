@@ -24,6 +24,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import es.um.pds.temulingo.config.ConfiguracionImagenes;
 import es.um.pds.temulingo.config.ConfiguracionTemulingo;
 import es.um.pds.temulingo.config.ConfiguracionUI;
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
@@ -89,7 +90,7 @@ public class VentanaLogin extends JFrame {
 		panelLogo.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		JLabel lblAppchat = new JLabel("");
-		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("banner-alt.icono");
+		String rutaIconoLogo = ConfiguracionImagenes.getRutaIcono("banner-alt.icono");
 		ImageIcon iconoLogo = new ImageIcon(getClass().getResource(rutaIconoLogo));
 		lblAppchat.setIcon(iconoLogo);
 		panelLogo.add(lblAppchat);
@@ -119,7 +120,7 @@ public class VentanaLogin extends JFrame {
 		panelLogin.setLayout(gbl_panelLogin);
 
 		// Campo Username/Email con placeholder
-		String rutaUserLogo = ConfiguracionTemulingo.getRutaIcono("user.icono");
+		String rutaUserLogo = ConfiguracionImagenes.getRutaIcono("user.icono");
 		ImageIcon userLogo = new ImageIcon(getClass().getResource(rutaUserLogo));
 		JLabel lblUsernameEmail = new JLabel(userLogo);
 		GridBagConstraints gbc_lblUsernameEmail = new GridBagConstraints();
@@ -141,7 +142,7 @@ public class VentanaLogin extends JFrame {
 		panelLogin.add(campoUsernameEmail, gbc_campoUsernameEmail);
 
 		// Campo Password con placeholder y botón mostrar/ocultar
-		String rutaKeyLogo = ConfiguracionTemulingo.getRutaIcono("key.icono");
+		String rutaKeyLogo = ConfiguracionImagenes.getRutaIcono("key.icono");
 		ImageIcon keyLogo = new ImageIcon(getClass().getResource(rutaKeyLogo));
 		JLabel lblPassword = new JLabel(keyLogo);
 		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
@@ -180,10 +181,10 @@ public class VentanaLogin extends JFrame {
 	 */
 	private void cargarIconosPassword() {
 		try {
-			String rutaIconoVisible = ConfiguracionTemulingo.getRutaIcono("view.icono");
+			String rutaIconoVisible = ConfiguracionImagenes.getRutaIcono("view.icono");
 			iconoOjoVisible = new ImageIcon(getClass().getResource(rutaIconoVisible));
 
-			String rutaIconoOculto = ConfiguracionTemulingo.getRutaIcono("hide.icono");
+			String rutaIconoOculto = ConfiguracionImagenes.getRutaIcono("hide.icono");
 			iconoOjoOculto = new ImageIcon(getClass().getResource(rutaIconoOculto));
 
 			LOGGER.fine("Iconos de contraseña cargados correctamente");

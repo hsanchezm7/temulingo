@@ -28,6 +28,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import es.um.pds.temulingo.config.ConfiguracionImagenes;
 import es.um.pds.temulingo.config.ConfiguracionTemulingo;
 import es.um.pds.temulingo.controlador.ControladorTemulingo;
 import es.um.pds.temulingo.logic.Curso;
@@ -75,7 +76,7 @@ public class VentanaMain extends JFrame {
 		setLayout(new BorderLayout());
 		setJMenuBar(new BarraMenu(this));
 
-		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("logo-icon.icono");
+		String rutaIconoLogo = ConfiguracionImagenes.getRutaIcono("logo-icon.icono");
 		ImageIcon iconoLogo = new ImageIcon(getClass().getResource(rutaIconoLogo));
 		setIconImage(iconoLogo.getImage());
 
@@ -97,7 +98,7 @@ public class VentanaMain extends JFrame {
 	private JPanel crearPanelLogo() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, MARGEN, MARGEN));
 
-		String rutaIconoLogo = ConfiguracionTemulingo.getRutaIcono("banner.icono");
+		String rutaIconoLogo = ConfiguracionImagenes.getRutaIcono("banner.icono");
 		ImageIcon iconoLogo = new ImageIcon(getClass().getResource(rutaIconoLogo));
 
 		JLabel lblLogo = new JLabel(iconoLogo);
@@ -130,11 +131,11 @@ public class VentanaMain extends JFrame {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, MARGEN, MARGEN));
 		Dimension tamanoBoton = new Dimension(ANCHO_BOTON, ALTO_BOTON);
 
-		btnEstadisticas = crearBotonAccion("Estadísticas", ConfiguracionTemulingo.getRutaIcono("stats.icono"),
+		btnEstadisticas = crearBotonAccion("Estadísticas", ConfiguracionImagenes.getRutaIcono("stats.icono"),
 				tamanoBoton, "Ver estadísticas");
-		btnExportar = crearBotonAccion("Exportar", ConfiguracionTemulingo.getRutaIcono("export.icono"), tamanoBoton,
+		btnExportar = crearBotonAccion("Exportar", ConfiguracionImagenes.getRutaIcono("export.icono"), tamanoBoton,
 				"Exportar curso");
-		btnImportar = crearBotonAccion("Importar", ConfiguracionTemulingo.getRutaIcono("add.icono"), tamanoBoton,
+		btnImportar = crearBotonAccion("Importar", ConfiguracionImagenes.getRutaIcono("add.icono"), tamanoBoton,
 				"Importar curso");
 
 		panel.add(btnEstadisticas);
@@ -226,7 +227,7 @@ public class VentanaMain extends JFrame {
 		}
 
 		JPanel panelIzquierdo = crearSubPanelInformativo(
-				new ImageIcon(getClass().getResource(ConfiguracionTemulingo.getRutaIcono("person.icono"))),
+				new ImageIcon(getClass().getResource(ConfiguracionImagenes.getRutaIcono("person.icono"))),
 				lineaSuperiorIzquierda, lineaInferiorIzquierda, false);
 
 		// Panel derecho
@@ -242,7 +243,7 @@ public class VentanaMain extends JFrame {
 		}
 
 		JPanel panelDerecho = crearSubPanelInformativo(
-				new ImageIcon(getClass().getResource(ConfiguracionTemulingo.getRutaIcono("books.icono"))),
+				new ImageIcon(getClass().getResource(ConfiguracionImagenes.getRutaIcono("books.icono"))),
 				lineaSuperiorDerecha, lineaInferiorDerecha, true);
 
 		panelCentral.add(panelIzquierdo);

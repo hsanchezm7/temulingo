@@ -4,6 +4,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 /**
  * Utilidades para el hash y verificación de contraseñas usando BCrypt.
+ * 
  * <p>
  * Esta clase permite generar un hash seguro para una contraseña en texto plano,
  * así como verificar una contraseña comparándola con un hash previamente
@@ -11,9 +12,9 @@ import org.mindrot.jbcrypt.BCrypt;
  * </p>
  * 
  * <p>
- * Se utiliza un factor de trabajo (work factor) configurable para el proceso de
- * hash, que determina la complejidad y el tiempo de cómputo para aumentar la
- * seguridad.
+ * Se utiliza un factor de trabajo (<i>work factor</i>) configurable para el
+ * proceso de hash, que determina la complejidad y el tiempo de cómputo para
+ * aumentar la seguridad.
  * </p>
  */
 public class PasswordUtils {

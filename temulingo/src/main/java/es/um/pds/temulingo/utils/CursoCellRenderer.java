@@ -20,7 +20,7 @@ import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 
-import es.um.pds.temulingo.config.ConfiguracionTemulingo;
+import es.um.pds.temulingo.config.ConfiguracionImagenes;
 import es.um.pds.temulingo.logic.Curso;
 
 /**
@@ -120,7 +120,7 @@ public class CursoCellRenderer extends JPanel implements ListCellRenderer<Curso>
 
 	private void cargarIconoCurso() {
 		if (iconoCurso == null) {
-			String rutaIconoCurso = ConfiguracionTemulingo.getRutaIcono("curso.icono");
+			String rutaIconoCurso = ConfiguracionImagenes.getRutaIcono("curso.icono");
 			ImageIcon icono = new ImageIcon(getClass().getResource(rutaIconoCurso));
 			Image iconoEscalado = icono.getImage().getScaledInstance(TAMANO_IMAGEN, TAMANO_IMAGEN, Image.SCALE_SMOOTH);
 			iconoCurso = new ImageIcon(iconoEscalado);
