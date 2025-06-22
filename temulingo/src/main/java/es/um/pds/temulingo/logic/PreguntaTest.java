@@ -3,6 +3,7 @@ package es.um.pds.temulingo.logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
@@ -106,6 +107,7 @@ public class PreguntaTest extends Pregunta {
 	 * 
 	 * @return Respuesta correcta
 	 */
+	@Override
 	@JsonProperty("solucion")
 	public String getSolucion() {
 		return solucion;
@@ -151,6 +153,7 @@ public class PreguntaTest extends Pregunta {
 	 * 
 	 * @return true si la pregunta es válida, false en caso contrario
 	 */
+	@JsonIgnore
 	public boolean isValid() {
 		// Verificar enunciado
 		if (getEnunciado() == null || getEnunciado().trim().isEmpty()) {
