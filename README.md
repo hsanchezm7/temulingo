@@ -120,6 +120,9 @@ temulingo/           # Raíz
 
 ### Testing
 
+> [!WARNING]
+> Es probable que los tests no se ejecuten correctamente si no se utiliza la misma versión Java que el proyecto, Java 17.
+
 Se ha creado una _suite_ de tests usando las siguientes herramientas:
 
 - [JUnit5](https://junit.org/junit5/): Framework para pruebas unitarias en Java.
@@ -139,7 +142,6 @@ También se puede ver en formato `.html` un _report_ de los tests ejecutados. El
 ```sh
    $ mvn site
 ```
-
 <p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
 <!-- ACKNOWLEDGMENTS -->
