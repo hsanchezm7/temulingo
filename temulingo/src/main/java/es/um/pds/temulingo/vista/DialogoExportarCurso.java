@@ -42,7 +42,7 @@ public class DialogoExportarCurso extends JDialog {
 
 	private static final String DEFAULT_DIRECTORIO = "user.home";
 	private static final int ANCHO_DIALOGO = 400;
-	private static final int ALTO_DIALOGO = 260;
+	private static final int ALTO_DIALOGO = 230;
 
 	// --- Componentes UI ---
 	private JComboBox<Curso> comboCursos;
@@ -172,6 +172,7 @@ public class DialogoExportarCurso extends JDialog {
 					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
+
 		if (ficheroDestino == null) {
 			JOptionPane.showMessageDialog(this, "Debe seleccionar un fichero de destino.", "Error de validación",
 					JOptionPane.WARNING_MESSAGE);
@@ -183,7 +184,6 @@ public class DialogoExportarCurso extends JDialog {
 
 		try {
 			ControladorTemulingo.getInstance().exportarCursoAFichero(cursoSeleccionado, ficheroDestino, formato);
-
 			JOptionPane.showMessageDialog(this, "Curso exportado correctamente.", "Éxito",
 					JOptionPane.INFORMATION_MESSAGE);
 			dispose();
@@ -191,8 +191,6 @@ public class DialogoExportarCurso extends JDialog {
 			JOptionPane.showMessageDialog(this, "Error al exportar el curso: " + ex.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
 		}
-		JOptionPane.showMessageDialog(this, "Curso exportado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-		dispose();
 	}
 
 	/**
