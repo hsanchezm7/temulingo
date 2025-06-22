@@ -26,6 +26,7 @@ import es.um.pds.temulingo.logic.Progreso;
 import es.um.pds.temulingo.logic.RepositorioCursos;
 import es.um.pds.temulingo.logic.RepositorioUsuarios;
 import es.um.pds.temulingo.logic.Usuario;
+import es.um.pds.temulingo.utils.PasswordUtils;
 
 public class ControladorTemulingo {
 
@@ -123,7 +124,7 @@ public class ControladorTemulingo {
 		}
 
 		// Caso 3: la contraseña es incorrecta
-		if (!usuario.getPassword().equals(password)) {
+		if (!PasswordUtils.verifyPassword(password, usuario.getPassword())) {
 			throw new ExcepcionCredencialesInvalidas("La contraseña introducida es incorrecta");
 		}
 

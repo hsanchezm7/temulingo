@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import es.um.pds.temulingo.dao.base.Dao;
 import es.um.pds.temulingo.dao.factory.FactoriaDao;
+import es.um.pds.temulingo.utils.PasswordUtils;
 
 /**
  * Repositorio para la entidad Usuario que sigue el patrón Singleton. Mantiene
@@ -72,7 +73,7 @@ public class RepositorioUsuarios {
 	 *
 	 * @param usuario El {@code Usuario} a guardar.
 	 */
-	public void guardarUsuario(Usuario usuario) {
+	private void guardarUsuario(Usuario usuario) {
 		usuarioDao.save(usuario);
 
 		usuarios.put(usuario.getId(), usuario);
@@ -103,7 +104,7 @@ public class RepositorioUsuarios {
 		usuario.setNombre(nombre);
 		usuario.setEmail(email);
 		usuario.setUsername(username);
-		usuario.setPassword(password);
+		usuario.setPassword(PasswordUtils.hashPassword(password));
 		usuario.setFechaNacim(fechaNacim);
 		usuario.setFirstLogin(true);
 
