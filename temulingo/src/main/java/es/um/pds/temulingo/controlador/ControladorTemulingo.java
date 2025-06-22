@@ -14,10 +14,10 @@ import es.um.pds.temulingo.dao.factory.FactoriaDao;
 import es.um.pds.temulingo.exception.ExcepcionCredencialesInvalidas;
 import es.um.pds.temulingo.exception.ExcepcionRegistroInvalido;
 import es.um.pds.temulingo.logic.Bloque;
-import es.um.pds.temulingo.logic.CargadorCursos;
 import es.um.pds.temulingo.logic.Curso;
 import es.um.pds.temulingo.logic.Estadistica;
 import es.um.pds.temulingo.logic.EstadoCurso;
+import es.um.pds.temulingo.logic.ParseadorCursos;
 import es.um.pds.temulingo.logic.Pregunta;
 import es.um.pds.temulingo.logic.PreguntaHuecos;
 import es.um.pds.temulingo.logic.PreguntaTest;
@@ -160,8 +160,12 @@ public class ControladorTemulingo {
 	}
 
 	public void importarCursoDesdeFichero(File fichero) throws IOException {
-		Curso curso = CargadorCursos.parsearDesdeFichero(fichero, Curso.class, CargadorCursos.Formato.YAML);
+		Curso curso = ParseadorCursos.parsearDesdeFichero(fichero, Curso.class, ParseadorCursos.Formato.YAML);
 		guardarCurso(curso);
+	}
+
+	public void exportarCursoAFichero(Curso curso, File fichero, ParseadorCursos.Formato formato) throws IOException {
+		ParseadorCursos.parsearAFichero(curso, fichero, formato);
 	}
 
 	public List<Curso> getAllCursos() {
@@ -179,7 +183,7 @@ public class ControladorTemulingo {
 			empezarCursoNuevo(curso);
 		}
 	}
-	
+
 	/**
 	 * Verifica si un curso tiene progreso guardado
 	 */
@@ -193,7 +197,7 @@ public class ControladorTemulingo {
 	}
 
 	/**
-	 *  Obtiene el progreso guardado de un curso específico
+	 * Obtiene el progreso guardado de un curso específico
 	 */
 	public Progreso obtenerProgresoGuardado(Curso curso) {
 		if (usuarioActual == null) {
@@ -206,7 +210,7 @@ public class ControladorTemulingo {
 	}
 
 	/**
-	 *  Reanuda un curso desde donde se dejó
+	 * Reanuda un curso desde donde se dejó
 	 */
 	public boolean reanudarCurso(Curso curso) {
 		try {
@@ -221,7 +225,7 @@ public class ControladorTemulingo {
 
 			if (progresoGuardado.getCurso().getEstrategiaAprendizaje() == null) {
 				progresoGuardado.getCurso().setEstrategiaAprendizaje(Curso.EstrategiaAprendizaje.SECUENCIAL);
-				cursoDao.edit(progresoGuardado.getCurso()); 
+				cursoDao.edit(progresoGuardado.getCurso());
 			}
 
 			inicializarEstructurasProgresoExistente(progresoGuardado);
@@ -254,7 +258,7 @@ public class ControladorTemulingo {
 						+ " con ID: " + progresoExistente.getId());
 
 				Progreso progresoManaged = null;
-				if (progresoExistente.getId() != null) { 
+				if (progresoExistente.getId() != null) {
 					progresoManaged = progresoDao.get(progresoExistente.getId()).orElse(null);
 				}
 
@@ -276,15 +280,15 @@ public class ControladorTemulingo {
 			progresoNuevo.setFechaUltimaSesion(new Date());
 
 			usuarioActual.getProgresos().add(progresoNuevo);
-			progresoDao.save(progresoNuevo); 
-			setCursoActual(progresoNuevo); 
+			progresoDao.save(progresoNuevo);
+			setCursoActual(progresoNuevo);
 
 			System.out.println("Curso nuevo iniciado: " + curso.getTitulo());
 			return true;
 
 		} catch (Exception e) {
 			System.err.println("Error al iniciar curso nuevo: " + e.getMessage());
-			e.printStackTrace(); 
+			e.printStackTrace();
 			setCursoActual(null);
 			return false;
 		}
@@ -344,11 +348,11 @@ public class ControladorTemulingo {
 	}
 
 	// ========================================
-	//  MÉTODOS DE GUARDADO
+	// MÉTODOS DE GUARDADO
 	// ========================================
 
 	/**
-	 *  Guardado automático mejorado
+	 * Guardado automático mejorado
 	 */
 	public boolean guardarEstadoAutomatico() {
 		if (cursoActual == null) {
@@ -573,7 +577,7 @@ public class ControladorTemulingo {
 	public void setFirstLogin(boolean firstLogin) {
 		this.firstLogin = firstLogin;
 	}
-	
+
 	// ========================================
 	// MÉTODOS PARA SOPORTE MVC DE LA VISTA
 	// ========================================
@@ -582,136 +586,145 @@ public class ControladorTemulingo {
 	 * Encuentra el bloque que contiene una pregunta específica
 	 */
 	public Bloque encontrarBloqueParaPregunta(Pregunta pregunta) {
-	    if (cursoActual == null || cursoActual.getCurso() == null) {
-	        return null;
-	    }
-	    
-	    return cursoActual.getCurso().getBloques().stream()
-	        .filter(bloque -> bloque.getPreguntas().contains(pregunta))
-	        .findFirst()
-	        .orElse(null);
+		if (cursoActual == null || cursoActual.getCurso() == null) {
+			return null;
+		}
+
+		return cursoActual.getCurso().getBloques().stream().filter(bloque -> bloque.getPreguntas().contains(pregunta))
+				.findFirst().orElse(null);
 	}
 
 	/**
 	 * Determina la siguiente acción en el flujo del curso
 	 */
 	public enum TipoAccion {
-	    SIGUIENTE_PREGUNTA, NUEVO_BLOQUE, FINALIZAR
+		SIGUIENTE_PREGUNTA, NUEVO_BLOQUE, FINALIZAR
 	}
 
 	public class ResultadoNavegacion {
-	    private TipoAccion tipo;
-	    private Bloque bloque;
-	    
-	    public ResultadoNavegacion(TipoAccion tipo, Bloque bloque) {
-	        this.tipo = tipo;
-	        this.bloque = bloque;
-	    }
-	    
-	    public TipoAccion getTipo() { return tipo; }
-	    public Bloque getBloque() { return bloque; }
+		private TipoAccion tipo;
+		private Bloque bloque;
+
+		public ResultadoNavegacion(TipoAccion tipo, Bloque bloque) {
+			this.tipo = tipo;
+			this.bloque = bloque;
+		}
+
+		public TipoAccion getTipo() {
+			return tipo;
+		}
+
+		public Bloque getBloque() {
+			return bloque;
+		}
 	}
 
 	public ResultadoNavegacion determinarSiguienteAccion(Pregunta preguntaActual) {
-	    Bloque bloqueActual = encontrarBloqueParaPregunta(preguntaActual);
-	    Pregunta proximaPregunta = getSiguientePregunta();
-	    
-	    if (proximaPregunta == null) {
-	        return new ResultadoNavegacion(TipoAccion.FINALIZAR, null);
-	    }
-	    
-	    Bloque bloqueProximaPregunta = encontrarBloqueParaPregunta(proximaPregunta);
-	    
-	    if (bloqueActual != null && bloqueProximaPregunta != null && 
-	        bloqueActual != bloqueProximaPregunta) {
-	        return new ResultadoNavegacion(TipoAccion.NUEVO_BLOQUE, bloqueProximaPregunta);
-	    } else {
-	        return new ResultadoNavegacion(TipoAccion.SIGUIENTE_PREGUNTA, bloqueProximaPregunta);
-	    }
+		Bloque bloqueActual = encontrarBloqueParaPregunta(preguntaActual);
+		Pregunta proximaPregunta = getSiguientePregunta();
+
+		if (proximaPregunta == null) {
+			return new ResultadoNavegacion(TipoAccion.FINALIZAR, null);
+		}
+
+		Bloque bloqueProximaPregunta = encontrarBloqueParaPregunta(proximaPregunta);
+
+		if (bloqueActual != null && bloqueProximaPregunta != null && bloqueActual != bloqueProximaPregunta) {
+			return new ResultadoNavegacion(TipoAccion.NUEVO_BLOQUE, bloqueProximaPregunta);
+		} else {
+			return new ResultadoNavegacion(TipoAccion.SIGUIENTE_PREGUNTA, bloqueProximaPregunta);
+		}
 	}
 
 	/**
 	 * Formatea el tiempo transcurrido para mostrar en la vista
 	 */
 	public String formatearTiempoTranscurrido(long tiempoInicio) {
-	    if (cursoActual == null) {
-	        return "Tiempo: --:--:--";
-	    }
-	    
-	    long tiempoTranscurridoAcumulado = cursoActual.getTiempoTranscurrido();
-	    long tiempoActualSesion = System.currentTimeMillis() - tiempoInicio;
-	    long tiempoTotal = tiempoTranscurridoAcumulado + tiempoActualSesion;
-	    
-	    long segundos = (tiempoTotal / 1000) % 60;
-	    long minutos = (tiempoTotal / (1000 * 60)) % 60;
-	    long horas = (tiempoTotal / (1000 * 60 * 60));
-	    
-	    return String.format("Tiempo: %02d:%02d:%02d", horas, minutos, segundos);
+		if (cursoActual == null) {
+			return "Tiempo: --:--:--";
+		}
+
+		long tiempoTranscurridoAcumulado = cursoActual.getTiempoTranscurrido();
+		long tiempoActualSesion = System.currentTimeMillis() - tiempoInicio;
+		long tiempoTotal = tiempoTranscurridoAcumulado + tiempoActualSesion;
+
+		long segundos = (tiempoTotal / 1000) % 60;
+		long minutos = (tiempoTotal / (1000 * 60)) % 60;
+		long horas = (tiempoTotal / (1000 * 60 * 60));
+
+		return String.format("Tiempo: %02d:%02d:%02d", horas, minutos, segundos);
 	}
 
 	/**
 	 * Actualiza el tiempo transcurrido del curso actual
 	 */
 	public boolean actualizarTiempoSesion(long tiempoInicio) {
-	    if (cursoActual == null) {
-	        return false;
-	    }
-	    
-	    long tiempoActualSesion = System.currentTimeMillis() - tiempoInicio;
-	    cursoActual.setTiempoTranscurrido(cursoActual.getTiempoTranscurrido() + tiempoActualSesion);
-	    
-	    return true;
+		if (cursoActual == null) {
+			return false;
+		}
+
+		long tiempoActualSesion = System.currentTimeMillis() - tiempoInicio;
+		cursoActual.setTiempoTranscurrido(cursoActual.getTiempoTranscurrido() + tiempoActualSesion);
+
+		return true;
 	}
-	
+
 	/**
 	 * Procesa una respuesta y retorna toda la información necesaria para la vista
 	 */
 	public RespuestaProcesada procesarRespuestaCompleta(Pregunta pregunta, String respuesta) {
-	    boolean esCorrecta = resolverPregunta(pregunta, respuesta);
-	    String respuestaCorrecta = obtenerRespuestaCorrecta(pregunta);
-	    
-	    String feedbackTexto;
-	    if (esCorrecta) {
-	        feedbackTexto = "¡Correcto! Muy bien.";
-	    } else {
-	        feedbackTexto = "Incorrecto. La respuesta correcta era: " + respuestaCorrecta;
-	    }
-	    
-	    return new RespuestaProcesada(esCorrecta, feedbackTexto, respuestaCorrecta);
+		boolean esCorrecta = resolverPregunta(pregunta, respuesta);
+		String respuestaCorrecta = obtenerRespuestaCorrecta(pregunta);
+
+		String feedbackTexto;
+		if (esCorrecta) {
+			feedbackTexto = "¡Correcto! Muy bien.";
+		} else {
+			feedbackTexto = "Incorrecto. La respuesta correcta era: " + respuestaCorrecta;
+		}
+
+		return new RespuestaProcesada(esCorrecta, feedbackTexto, respuestaCorrecta);
 	}
-	
+
 	/**
 	 * Obtiene la respuesta correcta de cualquier tipo de pregunta
 	 */
 	private String obtenerRespuestaCorrecta(Pregunta pregunta) {
-	    if (pregunta instanceof PreguntaTest) {
-	        return ((PreguntaTest) pregunta).getSolucion();
-	    } else if (pregunta instanceof PreguntaHuecos) {
-	        return ((PreguntaHuecos) pregunta).getSolucion();
-	    } else if (pregunta instanceof PreguntaTraduccion) {
-	        return ((PreguntaTraduccion) pregunta).getSolucion();
-	    }
-	    return "Respuesta no disponible";
+		if (pregunta instanceof PreguntaTest) {
+			return ((PreguntaTest) pregunta).getSolucion();
+		} else if (pregunta instanceof PreguntaHuecos) {
+			return ((PreguntaHuecos) pregunta).getSolucion();
+		} else if (pregunta instanceof PreguntaTraduccion) {
+			return ((PreguntaTraduccion) pregunta).getSolucion();
+		}
+		return "Respuesta no disponible";
 	}
-	
+
 	/**
 	 * Clase para encapsular el resultado del procesamiento de una respuesta
 	 */
 	public class RespuestaProcesada {
-	    private boolean esCorrecta;
-	    private String feedbackTexto;
-	    private String respuestaCorrecta;
-	    
-	    public RespuestaProcesada(boolean esCorrecta, String feedbackTexto, String respuestaCorrecta) {
-	        this.esCorrecta = esCorrecta;
-	        this.feedbackTexto = feedbackTexto;
-	        this.respuestaCorrecta = respuestaCorrecta;
-	    }
-	    
-	    public boolean isEsCorrecta() { return esCorrecta; }
-	    public String getFeedbackTexto() { return feedbackTexto; }
-	    public String getRespuestaCorrecta() { return respuestaCorrecta; }
+		private boolean esCorrecta;
+		private String feedbackTexto;
+		private String respuestaCorrecta;
+
+		public RespuestaProcesada(boolean esCorrecta, String feedbackTexto, String respuestaCorrecta) {
+			this.esCorrecta = esCorrecta;
+			this.feedbackTexto = feedbackTexto;
+			this.respuestaCorrecta = respuestaCorrecta;
+		}
+
+		public boolean isEsCorrecta() {
+			return esCorrecta;
+		}
+
+		public String getFeedbackTexto() {
+			return feedbackTexto;
+		}
+
+		public String getRespuestaCorrecta() {
+			return respuestaCorrecta;
+		}
 	}
-	
 
 }
