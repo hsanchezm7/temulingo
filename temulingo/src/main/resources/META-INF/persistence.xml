@@ -8,7 +8,7 @@
         <class>es.um.pds.temulingo.logic.Bloque</class>
         <class>es.um.pds.temulingo.logic.Pregunta</class>
         <class>es.um.pds.temulingo.logic.Progreso</class>
-	<class>es.um.pds.temulingo.logic.PreguntaTest</class>
+	      <class>es.um.pds.temulingo.logic.PreguntaTest</class>
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:./data/temulingo_bbdd;AUTO_SERVER=true;DB_CLOSE_DELAY=-1"/>

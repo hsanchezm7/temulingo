@@ -1,4 +1,4 @@
-@startuml LearningApp
+@startuml Temulingo
 
 skinparam DefaultFontName Helvetica
 skinparam classBackgroundColor PaleGoldenrod
