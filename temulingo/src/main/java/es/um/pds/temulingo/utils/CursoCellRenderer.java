@@ -23,6 +23,21 @@ import javax.swing.SwingConstants;
 import es.um.pds.temulingo.config.ConfiguracionTemulingo;
 import es.um.pds.temulingo.logic.Curso;
 
+/**
+ * Renderizador personalizado para objetos {@link Curso} en una
+ * {@link javax.swing.JList}.
+ * <p>
+ * Esta implementa {@link javax.swing.ListCellRenderer} para proporcionar una
+ * visualización personalizada de los elementos de tipo {@code Curso} dentro de
+ * listas Swing.
+ * </p>
+ *
+ * <p>
+ * Se puede usar para mostrar propiedades específicas de un curso, como su
+ * nombre, descripción, o cualquier otra información relevante, con un formato
+ * visual adaptado.
+ * </p>
+ */
 public class CursoCellRenderer extends JPanel implements ListCellRenderer<Curso> {
 
 	private static final long serialVersionUID = 1L;
@@ -154,7 +169,7 @@ public class CursoCellRenderer extends JPanel implements ListCellRenderer<Curso>
 		if (getComponentCount() > 1) {
 			remove(1);
 		}
-		
+
 		if (index < list.getModel().getSize() - 1) {
 			JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
 			separator.setForeground(Color.LIGHT_GRAY);

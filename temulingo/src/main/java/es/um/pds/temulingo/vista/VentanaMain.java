@@ -56,8 +56,6 @@ public class VentanaMain extends JFrame {
 	private JButton btnIniciar;
 	private JButton btnSalir;
 	private JPanel panelListaCursos;
-	private VentanaRealizarCurso ventanaRealizarCursoActual; // Para mantener la referencia a la ventana de curso
-																// abierta
 	private JPanel panelWrapper;
 
 	public VentanaMain() {
@@ -398,7 +396,6 @@ public class VentanaMain extends JFrame {
 	// Nuevo método para abrir VentanaRealizarCurso
 	public void abrirVentanaRealizarCurso(Curso curso) {
 		VentanaRealizarCurso ventanaIniciar = new VentanaRealizarCurso(this, curso); // Pasar 'this' (VentanaMain)
-		ventanaRealizarCursoActual = ventanaIniciar;
 		ventanaIniciar.setVisible(true);
 		this.setEnabled(false);
 	}
@@ -411,7 +408,6 @@ public class VentanaMain extends JFrame {
 		toFront(); // Poner VentanaMain al frente
 		repaint(); // Asegurar que se repinte correctamente
 		// actualizarInfoProgresoCurso();
-		ventanaRealizarCursoActual = null; // <--- NEW: Clear the reference
 	}
 
 	public Curso obtenerCursoSeleccionado() {

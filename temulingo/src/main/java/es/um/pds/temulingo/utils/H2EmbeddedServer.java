@@ -4,6 +4,9 @@ import java.sql.SQLException;
 
 import org.h2.tools.Server;
 
+/**
+ * Clase utilitaria para iniciar y detener un servidor web embebido de H2.
+ */
 public class H2EmbeddedServer {
 	private static final String DEFAULT_PORT = "8082";
 

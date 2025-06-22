@@ -39,7 +39,6 @@ public class Usuario implements Serializable {
 	@Column(name = "USERNAME", unique = true)
 	private String username;
 
-	// TODO: Implementar cifrado/hash de contraseña para no usar texto plano
 	@Column(name = "PASSWORD", nullable = false)
 	private String password;
 
@@ -150,8 +149,9 @@ public class Usuario implements Serializable {
 	public Progreso iniciarCurso(Curso curso) {
 		Progreso cursoNuevo = new Progreso();
 		cursoNuevo.setCurso(curso);
-		/*cursoNuevo.setUsuario(this);
-		progresos.add(cursoNuevo);*/
+		/*
+		 * cursoNuevo.setUsuario(this); progresos.add(cursoNuevo);
+		 */
 		addProgreso(cursoNuevo);
 
 		return cursoNuevo;
