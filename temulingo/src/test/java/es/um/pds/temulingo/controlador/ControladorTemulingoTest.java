@@ -35,6 +35,7 @@ import es.um.pds.temulingo.logic.Progreso;
 import es.um.pds.temulingo.logic.RepositorioCursos;
 import es.um.pds.temulingo.logic.RepositorioUsuarios;
 import es.um.pds.temulingo.logic.Usuario;
+import es.um.pds.temulingo.utils.PasswordUtils;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Tests para el controlador de Temulingo")
@@ -224,13 +225,14 @@ class ControladorTemulingoTest {
 	@DisplayName("Debe iniciar sesión exitosamente con email válido")
 	void iniciarSesionEmail() throws Exception {
 		String email = "juan@test.com";
-		String password = "password123";
+		String passwordPlano = "password123";
+		String passwordHasheada = PasswordUtils.hashPassword(passwordPlano);
 
-		when(mockUsuario.getPassword()).thenReturn(password);
+		when(mockUsuario.getPassword()).thenReturn(passwordHasheada);
 		when(mockUsuario.isFirstLogin()).thenReturn(true);
 		when(mockRepoUsuarios.obtenerPorEmail(email)).thenReturn(Optional.of(mockUsuario));
 
-		boolean resultado = controlador.iniciarSesion(email, password);
+		boolean resultado = controlador.iniciarSesion(email, passwordPlano);
 
 		assertTrue(resultado, "El inicio de sesión debe ser exitoso");
 		assertEquals(mockUsuario, controlador.getUsuarioActual());
@@ -247,13 +249,17 @@ class ControladorTemulingoTest {
 	@DisplayName("Debe iniciar sesión exitosamente con username válido")
 	void iniciarSesionUsername() throws Exception {
 		String username = "juanp";
-		String password = "password123";
+		String passwordPlano = "password123";
 
-		when(mockUsuario.getPassword()).thenReturn(password);
+		// Simula el hash de la contraseña (podrías usar PasswordUtils para generar el
+		// hash real)
+		String passwordHasheada = PasswordUtils.hashPassword(passwordPlano);
+
+		when(mockUsuario.getPassword()).thenReturn(passwordHasheada);
 		when(mockUsuario.isFirstLogin()).thenReturn(true);
 		when(mockRepoUsuarios.obtenerPorUsername(username)).thenReturn(Optional.of(mockUsuario));
 
-		boolean resultado = controlador.iniciarSesion(username, password);
+		boolean resultado = controlador.iniciarSesion(username, passwordPlano);
 
 		assertTrue(resultado, "El inicio de sesión debe ser exitoso");
 		assertEquals(mockUsuario, controlador.getUsuarioActual());
@@ -304,10 +310,13 @@ class ControladorTemulingoTest {
 	@DisplayName("Debe lanzar excepción cuando la contraseña es incorrecta")
 	void iniciarSesionPasswordIncorrecta() {
 		String email = "juan@test.com";
-		String passwordCorrecta = "password123";
+		String passwordCorrectaPlano = "password123";
 		String passwordIncorrecta = "wrongpassword";
 
-		when(mockUsuario.getPassword()).thenReturn(passwordCorrecta);
+		// Hasheamos la contraseña correcta para simular lo almacenado
+		String passwordHasheada = PasswordUtils.hashPassword(passwordCorrectaPlano);
+
+		when(mockUsuario.getPassword()).thenReturn(passwordHasheada);
 		when(mockRepoUsuarios.obtenerPorEmail(email)).thenReturn(Optional.of(mockUsuario));
 
 		ExcepcionCredencialesInvalidas excepcion = assertThrows(ExcepcionCredencialesInvalidas.class,
@@ -353,17 +362,21 @@ class ControladorTemulingoTest {
 	void iniciarSesionDetectaFormatoEmail() throws Exception {
 		String[] emailsValidos = { "test@temulingotest.es", "user.name@temulingotest.co.uk",
 				"test123@temulingo-test.es", "a+b@temulingo-test.org.es" };
+		String passwordPlano = "pass";
+		String passwordHasheada = PasswordUtils.hashPassword(passwordPlano);
 
 		for (String email : emailsValidos) {
-			when(mockUsuario.getPassword()).thenReturn("pass");
+			when(mockUsuario.getPassword()).thenReturn(passwordHasheada);
+			when(mockUsuario.isFirstLogin()).thenReturn(false); // Para simplificar, no es primer login
 			when(mockRepoUsuarios.obtenerPorEmail(email)).thenReturn(Optional.of(mockUsuario));
 
 			// No debe lanzar excepción para emails válidos
-			assertDoesNotThrow(() -> controlador.iniciarSesion(email, "pass"),
+			assertDoesNotThrow(() -> controlador.iniciarSesion(email, passwordPlano),
 					"Email válido no debe lanzar excepción: " + email);
 
 			verify(mockRepoUsuarios, atLeastOnce()).obtenerPorEmail(email);
 			reset(mockRepoUsuarios, mockUsuario);
 		}
 	}
+
 }
