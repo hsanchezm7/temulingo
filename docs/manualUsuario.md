@@ -6,6 +6,10 @@ Temulingo es una aplicación de aprendizaje interactiva inspirada en el éxito d
 
 Este manual proporciona una guía básica para nuevos usuarios, explicando las principales pantallas y funcionalidades de Temulingo. Su objetivo es ayudar a comenzar a usar la aplicación de forma sencilla y efectiva, sin necesidad de conocimientos técnicos previos.
 
+>[!IMPORTANT]
+>Nuestra base de datos está inicializada con un usuario registrado con los siguientes datos: Username: admin, Correo: admin@temulingo.es y Contraseña: 1234. 
+La aplicación tiene ya 2 cursos en su biblioteca sin progreso. 
+
 # Funcionamiento
 
 ## Pantalla de Bienvenida
