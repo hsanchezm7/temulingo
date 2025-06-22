@@ -84,7 +84,15 @@ Lo primero será importar el curso que quieres realizar, pulsando el botón "Imp
 Una vez que lo encuentres, lo seleccionas y le das a "Importar". Cuando cierres esta ventana, la ventana principal se actualizará con tu nuevo curso.
 
 <p align="center">
-  <img src="images/11-curso-importado.png" alt="Curso importado exitosamente" width="400"/>
+  <img src="images/TEMU_MAIN.png" alt="Curso importado exitosamente" width="400"/>
+</p>
+
+### Exportar curso
+
+Para exportar un curso, lo primero será seleccionar de entre tus cursos, el que quieras guardar en tu biblioteca. Una vez elegido el curso a exportar, selecciona a dónde quieres que vaya y pulsas "Exportar"
+
+<p align="center">
+  <img src="images/TEMU_EXPORTAR.png" alt="Curso importado exitosamente" width="400"/>
 </p>
 
 ### Iniciar curso
