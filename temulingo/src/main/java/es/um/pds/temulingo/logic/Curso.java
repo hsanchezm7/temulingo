@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 import jakarta.persistence.CascadeType;
@@ -36,6 +37,7 @@ public class Curso implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonIgnore
 	private Long id;
 
 	@Column(name = "TITULO")
@@ -60,6 +62,7 @@ public class Curso implements Serializable {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "USUARIO_ID")
+	@JsonIgnore
 	private Usuario usuario;
 
 	public Curso() {
@@ -148,16 +151,21 @@ public class Curso implements Serializable {
 		Curso curso = (Curso) o;
 		return Objects.equals(id, curso.id);
 	}
-	
 
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(id);
 	}
 
+	@JsonIgnore
 	public int getTotalPreguntas() {
 		// Contar total de preguntas en todos los bloques
 		return bloques.stream().mapToInt(bloque -> bloque.getPreguntas().size()).sum();
+	}
+
+	@Override
+	public String toString() {
+		return titulo;
 	}
 
 }

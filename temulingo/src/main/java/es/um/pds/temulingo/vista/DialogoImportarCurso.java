@@ -115,6 +115,7 @@ public class DialogoImportarCurso extends JDialog {
 			ControladorTemulingo.getInstance().importarCursoDesdeFichero(fichero);
 			JOptionPane.showMessageDialog(this, "Curso importado correctamente.", "Éxito",
 					JOptionPane.INFORMATION_MESSAGE);
+			dispose();
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this, "Error al importar el curso: " + e.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);

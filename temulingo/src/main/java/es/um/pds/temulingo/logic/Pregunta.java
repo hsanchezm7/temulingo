@@ -1,5 +1,6 @@
 package es.um.pds.temulingo.logic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -30,6 +31,7 @@ public abstract class Pregunta {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonIgnore
 	private Long id;
 
 	@Column(name = "ENUNCIADO")
@@ -37,6 +39,7 @@ public abstract class Pregunta {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BLOQUE_ID")
+	@JsonIgnore
 	private Bloque bloque;
 
 	protected Pregunta() {
@@ -61,11 +64,7 @@ public abstract class Pregunta {
 	}
 
 	public void setEnunciado(String enunciado) {
-		System.out.println("=== SETTER ENUNCIADO ===");
-        System.out.println("Enunciado recibido: '" + enunciado + "'");
-        this.enunciado = enunciado;
-        System.out.println("Enunciado establecido: '" + this.enunciado + "'");
-        System.out.println("========================");
+		this.enunciado = enunciado;
 	}
 
 	public Bloque getBloque() {
@@ -75,8 +74,8 @@ public abstract class Pregunta {
 	public void setBloque(Bloque bloque) {
 		this.bloque = bloque;
 	}
-	
-    public abstract String getSolucion();
+
+	public abstract String getSolucion();
 
 	public abstract boolean esSolucion(String respuesta);
 

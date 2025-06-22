@@ -51,7 +51,7 @@ public class VentanaMain extends JFrame {
 	private DefaultListModel<Curso> modelo = new DefaultListModel<>();
 	private JList<Curso> listaCursos;
 	private JButton btnEstadisticas;
-	private JButton btnActualizar;
+	private JButton btnExportar;
 	private JButton btnImportar;
 	private JButton btnIniciar;
 	private JButton btnSalir;
@@ -134,14 +134,13 @@ public class VentanaMain extends JFrame {
 
 		btnEstadisticas = crearBotonAccion("Estadísticas", ConfiguracionTemulingo.getRutaIcono("stats.icono"),
 				tamanoBoton, "Ver estadísticas");
-
-		btnActualizar = crearBotonAccion("Actualizar", ConfiguracionTemulingo.getRutaIcono("update.icono"), tamanoBoton,
-				"Actualizar cursos");
+		btnExportar = crearBotonAccion("Exportar", ConfiguracionTemulingo.getRutaIcono("export.icono"), tamanoBoton,
+				"Exportar curso");
 		btnImportar = crearBotonAccion("Importar", ConfiguracionTemulingo.getRutaIcono("add.icono"), tamanoBoton,
 				"Importar curso");
 
 		panel.add(btnEstadisticas);
-		panel.add(btnActualizar);
+		panel.add(btnExportar);
 		panel.add(btnImportar);
 
 		return panel;
@@ -308,11 +307,17 @@ public class VentanaMain extends JFrame {
 
 	private void configurarEventListeners() {
 		btnEstadisticas.addActionListener(e -> abrirEstadisticas());
-		btnActualizar.addActionListener(e -> actualizarListaCursos());
+		// btnActualizar.addActionListener(e -> actualizarListaCursos());
+		btnExportar.addActionListener(e -> abrirExportarCurso());
 		btnImportar.addActionListener(e -> abrirImportarCurso());
 
 		btnSalir.addActionListener(e -> gestionarSalida());
 		btnIniciar.addActionListener(e -> iniciarCurso());
+	}
+
+	private void abrirExportarCurso() {
+		DialogoExportarCurso ventanaExportar = new DialogoExportarCurso(this);
+		ventanaExportar.setVisible(true);
 	}
 
 	private void abrirImportarCurso() {

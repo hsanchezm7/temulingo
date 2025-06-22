@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,6 +27,7 @@ public class Bloque implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonIgnore
 	private Long id;
 
 	@Column(name = "NOMBRE")
@@ -35,6 +38,7 @@ public class Bloque implements Serializable {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "CURSO_ID")
+	@JsonIgnore
 	private Curso curso;
 
 	@OneToMany(mappedBy = "bloque", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
