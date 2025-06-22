@@ -82,12 +82,16 @@ Para ejecutar el proyecto es necesario tener instalado:
    ```sh
    $ cd temulingo/
    ```
-3. Compilar y generar ejecutable
+
+3. Ejecutar
+   ```sh
+   $ java -jar temulingo-1.0.0.jar
+   ```
+
+También puedes compilar el código fuente de la siguiente forma:
+
    ```sh
    $ mvn clean package
-   ```
-4. Ejecutar el `.jar` en la carpeta `target/` del directorio
-   ```sh
    $ java -jar target/temulingo-{version}-jar-with-dependencies.jar
    ```
 
