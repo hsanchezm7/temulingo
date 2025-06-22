@@ -50,6 +50,7 @@ Basada en soluciones reales como [Duolingo](https://duolingo.com/), Temulingo of
 - Ver estadísticas de progreso.
 
 Este proyecto forma parte de las prácticas de la asignatura de **Procesos de Desarrollo de Software** de la Universidad de Murcia del curso 24/25.
+El docente [**Jesús Sánchez Cuadrado**](https://jesusc.github.io/) ([@jesusc](https://github.com/jesusc)) es el tutor y guía del proyecto.
 
 ### Miembros del equipo
 
@@ -102,7 +103,7 @@ También puedes compilar el código fuente de la siguiente forma:
 
 ### Requisitos y casos de uso
 
-Con aprobación del tutor del proyecto, se ha optado por llevar un seguimiento de los casos de uso usando la funcionalidad de _issues_ junto con el uso _pull requests_ de Github. Se ha definido un [documento raíz](https://github.com/hsanchezm7/temulingo/issues/9) que recoge todos los casos de uso contemplados de la aplicación.
+Con aprobación del tutor del proyecto, se ha optado por llevar un seguimiento de los casos de uso usando la funcionalidad de _issues_ junto con el uso _pull requests_ de Github. Se ha definido un [documento raíz](https://github.com/hsanchezm7/temulingo/issues/9) que recoge todos los casos de uso contemplados de la aplicación. El documento también especifica algunas de las funcionalidades adicionales más relevantes de la aplicación.
 
 ### Manual de usuario
 
